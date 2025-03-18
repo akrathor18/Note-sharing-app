@@ -15,6 +15,7 @@ import {
   SettingsIcon,
   UserCircle,
 } from "lucide-react"
+import {NavLink , Outlet } from "react-router-dom";
 import Dashboard from "./Dashboard"
 import Notes from "./Notes"
 import Quiz from "./Quiz"
@@ -282,74 +283,79 @@ function navBar() {
         <nav className="flex-1">
           <ul className="space-y-2">
             <li>
-              <button
-                onClick={() => {
-                  setActiveTab("dashboard")
-                  setIsMobileMenuOpen(false)
-                }}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                  activeTab === "dashboard" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#1A1A1A]/80"
-                }`}
-              >
+              <NavLink
+              to={'/'}
+              className={({ isActive }) =>
+                `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                  isActive
+                    ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
+                    : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
+                }`
+              }
+            >
                 <Home size={20} />
                 <span>Dashboard</span>
-              </button>
+              </NavLink>
             </li>
             <li>
-              <button
-                onClick={() => {
-                  setActiveTab("notes")
-                  setIsMobileMenuOpen(false)
-                }}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                  activeTab === "notes" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#1A1A1A]/80"
-                }`}
+              <NavLink
+                to={'/notes'}
+                className={({ isActive }) =>
+                  `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
+                      : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
+                  }`
+                }
               >
                 <FileText size={20} />
                 <span>Notes</span>
-              </button>
+              </NavLink>
             </li>
             <li>
-              <button
-                onClick={() => {
-                  setActiveTab("quiz")
-                  setIsMobileMenuOpen(false)
-                }}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                  activeTab === "quiz" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#1A1A1A]/80"
-                }`}
-              >
+              <NavLink
+               to={'/quizzes'}
+               className={({ isActive }) =>
+                 `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                   isActive
+                     ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
+                     : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
+                 }`
+               }
+             >
                 <BrainCircuit size={20} />
                 <span>Quizzes</span>
-              </button>
+              </NavLink>
             </li>
             <li>
-              <button
-                onClick={() => {
-                  setActiveTab("profile")
-                  setIsMobileMenuOpen(false)
-                }}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                  activeTab === "profile" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#1A1A1A]/80"
-                }`}
+              <NavLink
+                to={'/profile'}
+                className={({ isActive }) =>
+                  `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
+                      : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
+                  }`
+                }
               >
                 <UserCircle size={20} />
                 <span>Profile</span>
-              </button>
+              </NavLink>
             </li>
             <li>
-              <button
-                onClick={() => {
-                  setActiveTab("settings")
-                  setIsMobileMenuOpen(false)
-                }}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                  activeTab === "settings" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#1A1A1A]/80"
-                }`}
+              <NavLink
+                to={'/settings'}
+                className={({ isActive }) =>
+                  `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
+                      : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
+                  }`
+                }
               >
                 <SettingsIcon size={20} />
                 <span>Settings</span>
-              </button>
+              </NavLink>
             </li>
           </ul>
         </nav>
@@ -476,12 +482,13 @@ function navBar() {
 
         {/* Content */}
         <main className="p-4 md:p-6">
-          {activeTab === "dashboard" && <Dashboard user={user} />}
+          {/* {activeTab === "dashboard" && <Dashboard user={user} />}
           {activeTab === "notes" && <Notes />}
           {activeTab === "quiz" && <Quiz />}
           {activeTab === "profile" && <Profile user={user} setUser={setUser} />}
           {activeTab === "settings" && <Settings user={user} setUser={setUser} />}
-          {activeTab === "search" && searchResults && <SearchResults results={searchResults} />}
+          {activeTab === "search" && searchResults && <SearchResults results={searchResults} />} */}
+           <Outlet/>
         </main>
       </div>
 
