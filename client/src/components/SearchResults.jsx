@@ -80,7 +80,7 @@ export default function SearchResults({ results }) {
         <div className="flex items-center gap-2 bg-[#1A1A1A] border border-[#F5F5F5]/10 rounded-lg px-3 w-full sm:w-auto">
           <Filter size={18} className="text-[#F5F5F5]/40" />
           <select
-            className="bg-transparent py-2 focus:outline-none w-full"
+            className="bg-[#1A1A1A] py-2 focus:outline-none w-full"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
           >

@@ -121,7 +121,7 @@ function navBar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(true)
   const [authView, setAuthView] = useState("signin") // signin, signup
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(userData)
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState(null)
   const [notifications, setNotifications] = useState([
