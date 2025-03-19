@@ -7,6 +7,7 @@ import Notes from "./components/Notes.jsx";
 import Quiz from "./components/Quiz.jsx";
 import Profile from "./components/Profile.jsx";
 import Settings from "./components/Settings.jsx";
+import SearchResults from "./components/SearchResults.jsx";
 import SignIn from "./components/SignIn.jsx";
 import SignUp from "./components/SignUp.jsx";
 function App() {
@@ -34,6 +35,10 @@ function App() {
         {
           path: "settings",
           element: <Settings />,
+        },
+        {
+          path: "search",
+          element: <SearchResults />,
         },
       ],
     },

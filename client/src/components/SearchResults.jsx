@@ -1,39 +1,134 @@
-"use client"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { FileText, BrainCircuit, Search, Filter, Download, ChevronRight } from "lucide-react"
+import { useSearchParams } from "react-router-dom";
 
-export default function SearchResults({ results }) {
-  const [activeTab, setActiveTab] = useState("all") // all, notes, quizzes
-  const [sortBy, setSortBy] = useState("relevance") // relevance, newest, oldest
 
-  // Filter results based on active tab
+const allNotes = [
+  {
+    id: 1,
+    title: "Data Structures & Algorithms",
+    subject: "Computer Science",
+    subjectId: "cs",
+    content: "This note covers basic data structures like arrays, linked lists, stacks, and queues.",
+  },
+  {
+    id: 2,
+    title: "Calculus II: Integration Techniques",
+    subject: "Mathematics",
+    subjectId: "math",
+    content: "Learn about integration by parts, substitution, and partial fractions.",
+  },
+  {
+    id: 3,
+    title: "Quantum Mechanics Fundamentals",
+    subject: "Physics",
+    subjectId: "physics",
+    content: "Introduction to quantum mechanics, wave functions, and Schrödinger's equation.",
+  },
+  {
+    id: 4,
+    title: "Organic Chemistry Reactions",
+    subject: "Chemistry",
+    subjectId: "chemistry",
+    content: "Common organic chemistry reactions including substitution and elimination.",
+  },
+  {
+    id: 5,
+    title: "Cell Biology & Genetics",
+    subject: "Biology",
+    subjectId: "biology",
+    content: "Cell structure, function, and basic principles of genetics and inheritance.",
+  },
+  {
+    id: 6,
+    title: "Database Systems",
+    subject: "Computer Science",
+    subjectId: "cs",
+    content: "Relational database design, SQL queries, and normalization techniques.",
+  },
+]
+
+const allQuizzes = [
+  {
+    id: 1,
+    title: "Data Structures Fundamentals",
+    subject: "Computer Science",
+    description: "Test your knowledge of basic data structures and algorithms.",
+  },
+  {
+    id: 2,
+    title: "Calculus: Derivatives & Integrals",
+    subject: "Mathematics",
+    description: "Challenge yourself with calculus problems involving derivatives and integrals.",
+  },
+  {
+    id: 3,
+    title: "Quantum Physics Basics",
+    subject: "Physics",
+    description: "Explore the fundamental concepts of quantum physics and mechanics.",
+  },
+  {
+    id: 4,
+    title: "Organic Chemistry Reactions",
+    subject: "Chemistry",
+    description: "Test your understanding of organic chemistry reaction mechanisms.",
+  },
+]
+
+export default function SearchResults() {
+  
+  const [results, setSearchResults] = useState({ notes: [], quizzes: [], query: "" });
+  const [activeTab, setActiveTab] = useState("all");
+  const [sortBy, setSortBy] = useState("relevance");
+
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get("query") || "";
+
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+
+      const matchingNotes = allNotes.filter(
+        (note) =>
+          note.title.toLowerCase().includes(query) ||
+          note.subject.toLowerCase().includes(query) ||
+          note.content.toLowerCase().includes(query)
+      );
+
+      const matchingQuizzes = allQuizzes.filter(
+        (quiz) =>
+          quiz.title.toLowerCase().includes(query) ||
+          quiz.subject.toLowerCase().includes(query) ||
+          quiz.description.toLowerCase().includes(query)
+      );
+
+      setSearchResults({ notes: matchingNotes, quizzes: matchingQuizzes, query });
+    }
+  }, [searchQuery]);
+
   const filteredResults =
     activeTab === "all"
       ? { notes: results.notes, quizzes: results.quizzes }
       : activeTab === "notes"
-        ? { notes: results.notes, quizzes: [] }
-        : { notes: [], quizzes: results.quizzes }
+      ? { notes: results.notes, quizzes: [] }
+      : { notes: [], quizzes: results.quizzes };
 
-  // Sort results based on sortBy
   const sortResults = (items) => {
     if (sortBy === "newest") {
-      return [...items].sort((a, b) => new Date(b.date) - new Date(a.date))
+      return [...items].sort((a, b) => new Date(b.date) - new Date(a.date));
     } else if (sortBy === "oldest") {
-      return [...items].sort((a, b) => new Date(a.date) - new Date(b.date))
+      return [...items].sort((a, b) => new Date(a.date) - new Date(b.date));
     }
-    // Default: sort by relevance (as they come from the search)
-    return items
-  }
+    return items;
+  };
 
   const sortedResults = {
     notes: sortResults(filteredResults.notes),
     quizzes: sortResults(filteredResults.quizzes),
-  }
+  };
 
-  // Calculate total results
-  const totalResults = results.notes.length + results.quizzes.length
-  const totalFilteredResults = sortedResults.notes.length + sortedResults.quizzes.length
+  const totalResults = (results?.notes?.length || 0) + (results?.quizzes?.length || 0);
+  const totalFilteredResults = (sortedResults?.notes?.length || 0) + (sortedResults?.quizzes?.length || 0);
 
   return (
     <div className="space-y-6">
@@ -184,4 +279,3 @@ export default function SearchResults({ results }) {
     </div>
   )
 }
-

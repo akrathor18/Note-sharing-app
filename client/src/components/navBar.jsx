@@ -15,7 +15,7 @@ import {
   SettingsIcon,
   UserCircle,
 } from "lucide-react"
-import {NavLink , Outlet } from "react-router-dom";
+import { NavLink, Outlet,useNavigate  } from "react-router-dom";
 import Dashboard from "./Dashboard"
 import Notes from "./Notes"
 import Quiz from "./Quiz"
@@ -117,7 +117,8 @@ const allQuizzes = [
 ]
 
 function navBar() {
-  const [activeTab, setActiveTab] = useState("dashboard")
+  // const [activeTab, setActiveTab] = useState("dashboard")
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(true)
@@ -190,44 +191,18 @@ function navBar() {
     setIsAuthenticated(false)
     setUser(null)
     setIsUserMenuOpen(false)
-    setActiveTab("dashboard")
   }
 
   // Handle search
   const handleSearch = (e) => {
     e.preventDefault()
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
-
-      // Search in notes
-      const matchingNotes = allNotes.filter(
-        (note) =>
-          note.title.toLowerCase().includes(query) ||
-          note.subject.toLowerCase().includes(query) ||
-          note.content.toLowerCase().includes(query),
-      )
-
-      // Search in quizzes
-      const matchingQuizzes = allQuizzes.filter(
-        (quiz) =>
-          quiz.title.toLowerCase().includes(query) ||
-          quiz.subject.toLowerCase().includes(query) ||
-          quiz.description.toLowerCase().includes(query),
-      )
-
-      setSearchResults({ notes: matchingNotes, quizzes: matchingQuizzes, query })
-      setActiveTab("search")
-      setIsMobileMenuOpen(false)
+    console.log('clicked')
+    if (searchQuery.trim() !== "") {
+      navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
     }
   }
 
-  // Clear search results when changing tabs
-  useEffect(() => {
-    if (activeTab !== "search") {
-      setSearchResults(null)
-      setSearchQuery("")
-    }
-  }, [activeTab])
+
 
   // Close menus when clicking outside
   useEffect(() => {
@@ -271,28 +246,26 @@ function navBar() {
 
       {/* Sidebar - Desktop always visible, Mobile as overlay */}
       <div
-        className={`${
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 fixed md:static inset-y-0 left-0 z-20 w-64 bg-[#1A1A1A] p-4 flex flex-col transition-transform duration-300 ease-in-out overflow-y-auto`}
+        className={`${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 fixed md:static inset-y-0 left-0 z-20 w-64 bg-[#1A1A1A] p-4 flex flex-col transition-transform duration-300 ease-in-out overflow-y-auto`}
       >
-        <div className="flex items-center gap-2 mb-8">
+        <NavLink to={'/'} className="flex items-center gap-2 mb-8">
           <BookOpen className="text-[#FF007F]" />
           <h1 className="text-xl font-bold">StudyHub</h1>
-        </div>
+        </NavLink>
 
         <nav className="flex-1">
           <ul className="space-y-2">
             <li>
               <NavLink
-              to={'/'}
-              className={({ isActive }) =>
-                `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                  isActive
+                to={'/'}
+                className={({ isActive }) =>
+                  `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
                     ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
                     : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
-                }`
-              }
-            >
+                  }`
+                }
+              >
                 <Home size={20} />
                 <span>Dashboard</span>
               </NavLink>
@@ -301,10 +274,9 @@ function navBar() {
               <NavLink
                 to={'/notes'}
                 className={({ isActive }) =>
-                  `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                    isActive
-                      ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
-                      : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
+                  `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                    ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
+                    : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
                   }`
                 }
               >
@@ -314,15 +286,14 @@ function navBar() {
             </li>
             <li>
               <NavLink
-               to={'/quizzes'}
-               className={({ isActive }) =>
-                 `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                   isActive
-                     ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
-                     : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
-                 }`
-               }
-             >
+                to={'/quizzes'}
+                className={({ isActive }) =>
+                  `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                    ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
+                    : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
+                  }`
+                }
+              >
                 <BrainCircuit size={20} />
                 <span>Quizzes</span>
               </NavLink>
@@ -331,10 +302,9 @@ function navBar() {
               <NavLink
                 to={'/profile'}
                 className={({ isActive }) =>
-                  `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                    isActive
-                      ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
-                      : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
+                  `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                    ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
+                    : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
                   }`
                 }
               >
@@ -346,10 +316,9 @@ function navBar() {
               <NavLink
                 to={'/settings'}
                 className={({ isActive }) =>
-                  `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                    isActive
-                      ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
-                      : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
+                  `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                    ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
+                    : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
                   }`
                 }
               >
@@ -404,7 +373,7 @@ function navBar() {
 
               {/* Notification Dropdown */}
               {isNotificationMenuOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-[#1A1A1A] rounded-lg shadow-lg border border-[#F5F5F5]/10 py-1 z-50">
+                <div className="absolute xs:right-0 -right-14 mt-2 w-80 bg-[#1A1A1A] rounded-lg shadow-lg border border-[#F5F5F5]/10 py-1 z-50">
                   <div className="px-4 py-2 border-b border-[#F5F5F5]/10">
                     <h3 className="font-medium">Notifications</h3>
                   </div>
@@ -446,26 +415,30 @@ function navBar() {
               {/* User Dropdown Menu */}
               {isUserMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-[#1A1A1A] rounded-lg shadow-lg border border-[#F5F5F5]/10 py-1 z-50">
-                  <button
-                    onClick={() => {
-                      setActiveTab("profile")
-                      setIsUserMenuOpen(false)
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-[#F5F5F5]/5 flex items-center gap-2"
-                  >
+                  <NavLink
+                to={'/profile'}
+                className={({ isActive }) =>
+                  `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                    ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
+                    : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
+                  }`
+                }
+              >
                     <UserCircle size={16} />
                     <span>Profile</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setActiveTab("settings")
-                      setIsUserMenuOpen(false)
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-[#F5F5F5]/5 flex items-center gap-2"
-                  >
+                  </NavLink>
+                  <NavLink
+                to={'/settings'}
+                className={({ isActive }) =>
+                  `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                    ? "bg-[#FF007F]/10 text-[#FF007F]" // Active state
+                    : "hover:bg-[#1A1A1A]/80 text-white" // Default & hover state
+                  }`
+                }
+              >
                     <SettingsIcon size={16} />
                     <span>Settings</span>
-                  </button>
+                  </NavLink>
                   <div className="border-t border-[#F5F5F5]/10 my-1"></div>
                   <button
                     onClick={handleLogout}
@@ -482,13 +455,7 @@ function navBar() {
 
         {/* Content */}
         <main className="p-4 md:p-6">
-          {/* {activeTab === "dashboard" && <Dashboard user={user} />}
-          {activeTab === "notes" && <Notes />}
-          {activeTab === "quiz" && <Quiz />}
-          {activeTab === "profile" && <Profile user={user} setUser={setUser} />}
-          {activeTab === "settings" && <Settings user={user} setUser={setUser} />}
-          {activeTab === "search" && searchResults && <SearchResults results={searchResults} />} */}
-           <Outlet/>
+          <Outlet />
         </main>
       </div>
 
