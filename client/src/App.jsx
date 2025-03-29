@@ -10,6 +10,7 @@ import Settings from "./components/Settings.jsx";
 import SearchResults from "./components/SearchResults.jsx";
 import SignIn from "./components/SignIn.jsx";
 import SignUp from "./components/SignUp.jsx";
+import NotFound from "./components/NotFound.jsx";
 function App() {
   const router = createBrowserRouter([
     {
@@ -43,8 +44,12 @@ function App() {
       ],
     },
     {
-      path: "/sign-in",
-      element: <SignIn />,
+      path: "*",
+      element: <NotFound />,
+    },
+    {
+      path: "/sign-up",
+      element: <SignUp />,
     },
     {
       path: "/sign-up",
