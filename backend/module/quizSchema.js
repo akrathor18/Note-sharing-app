@@ -4,6 +4,7 @@ const quizSchema = new mongoose.Schema({
   title: { type: String, required: true }, 
   category: { type: String, required: true }, 
   timeLimit: { type: Number, default: 10 }, 
+  difficulty: { type: String, enum: ["Easy", "Medium", "Hard"], default: "Medium" }, 
   questions: [
     {
       questionText: { type: String, required: true }, 

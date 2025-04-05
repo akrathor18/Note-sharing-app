@@ -52,8 +52,8 @@ function App() {
       element: <SignUp />,
     },
     {
-      path: "/sign-up",
-      element: <SignUp />,
+      path: "/sign-in",
+      element: <SignIn />,
     },
   ]);
   
