@@ -1,5 +1,5 @@
 import multer from 'multer';
-import { storage } from './cloudinary.js';
+import { storage } from '../config/cloudinary.js';
 
 const upload = multer({ storage });
 

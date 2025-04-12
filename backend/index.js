@@ -2,6 +2,7 @@ import express from "express";
 import db from './config/db.js'
 import users from'./routers/users.js'
 import quiz from './routers/quizzes.js'
+import notes from './routers/notes.js'
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser"; 
 const app = express()
@@ -15,6 +16,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/users', users)
 app.use('/api/quiz', quiz)
+app.use('/api/notes', notes)
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
