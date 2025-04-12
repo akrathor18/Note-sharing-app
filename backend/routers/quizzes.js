@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import Quiz from '../module/quizSchema.js';
+import Quiz from '../model/quizSchema.js';
 import jwt from 'jsonwebtoken'
 
 router.post("/createQuiz", async (req, res) => {
