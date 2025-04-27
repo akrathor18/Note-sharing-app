@@ -1,17 +1,27 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BookOpen, Eye, EyeOff, Mail, Lock } from "lucide-react";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate   } from "react-router-dom";
+import { toast } from "react-toastify";
+import API from "../config/axios";
 export default function SignIn({ onLogin, onSwitchToSignUp }) {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [showPassword, setShowPassword] = useState(false);
-
-  const onSubmit = (data) => {
-    const { email, password } = data;
-    console.log(data)
+  const navigate = useNavigate();
+  const onSubmit = async (data) => {
+    try {
+      const response = await API.post("/users/login", {
+          email: data.email,
+          password:data.password,
+        });
+        localStorage.setItem("token", response.data.token);
+        navigate("/");
+        toast.success("resgister successfully!"); 
+  
+    } catch (error) {
+  toast.error(error.response?.data || "Login failed");
+    }
   };
-
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-[#F5F5F5] flex items-center justify-center p-4">
       <div className="w-full max-w-md p-6 bg-[#1A1A1A] rounded-xl shadow-lg">

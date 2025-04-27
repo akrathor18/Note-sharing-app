@@ -16,17 +16,8 @@ import {
   UserCircle,
 } from "lucide-react"
 import { NavLink, Outlet,useNavigate  } from "react-router-dom";
-import Dashboard from "./Dashboard"
-import Notes from "./Notes"
-import Quiz from "./Quiz"
 import SignIn from "./SignIn"
 import SignUp from "./SignUp"
-import Profile from "./Profile"
-import Settings from "./Settings"
-import SearchResults from "./SearchResults"
-// import "./index.css"
-
-// Sample user data
 const userData = {
   id: "user123",
   name: "John Doe",
@@ -188,10 +179,10 @@ function navBar() {
   }
 
   const handleLogout = () => {
-    setIsAuthenticated(false)
-    setUser(null)
-    setIsUserMenuOpen(false)
-  }
+    localStorage.removeItem("token"); // Remove token
+    toast.success("Log-out successfully!");
+    navigate("/signin");
+  };
 
   // Handle search
   const handleSearch = (e) => {

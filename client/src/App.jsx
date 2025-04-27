@@ -49,7 +49,7 @@ function App() {
   
   
   return (
-    <div className="flex flex-col h-screen">
+    <>
        <ToastContainer 
     position="top-right"
     autoClose={3000}
@@ -59,8 +59,10 @@ function App() {
     draggable
     theme="dark" 
   />
+    <div className="flex flex-col h-screen">
         <RouterProvider router={router} />
     </div>
+    </>
   )
 }
 
