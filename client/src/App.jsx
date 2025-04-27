@@ -1,6 +1,8 @@
 import {  createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css"
 
+import { ToastContainer } from "react-toastify";
+import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import Navbar from "./components/navBar.jsx"
 import Dashboard from "./components/Dashboard.jsx";
 import Notes from "./components/Notes.jsx";
@@ -18,28 +20,15 @@ function App() {
       element: <Navbar />,
       children: [
         {
-          index: true,
-          element: <Dashboard />,
-        },
-        {
-          path: "notes",
-          element: <Notes />,
-        },
-        {
-          path: "quizzes",
-          element: <Quiz />,
-        },
-        {
-          path: "profile",
-          element: <Profile />,
-        },
-        {
-          path: "settings",
-          element: <Settings />,
-        },
-        {
-          path: "search",
-          element: <SearchResults />,
+          element: <ProtectedRoute />, // <<=== Protect all child routes
+          children: [
+            { index: true, element: <Dashboard /> },
+            { path: "notes", element: <Notes /> },
+            { path: "quizzes", element: <Quiz /> },
+            { path: "profile", element: <Profile /> },
+            { path: "settings", element: <Settings /> },
+            { path: "search", element: <SearchResults /> },
+          ],
         },
       ],
     },
@@ -48,18 +37,28 @@ function App() {
       element: <NotFound />,
     },
     {
-      path: "/sign-up",
+      path: "/signup",
       element: <SignUp />,
     },
     {
-      path: "/sign-in",
+      path: "/signin",
       element: <SignIn />,
     },
   ]);
   
   
+  
   return (
     <div className="flex flex-col h-screen">
+       <ToastContainer 
+    position="top-right"
+    autoClose={3000}
+    hideProgressBar={false}
+    closeOnClick
+    pauseOnHover
+    draggable
+    theme="dark" 
+  />
         <RouterProvider router={router} />
     </div>
   )
