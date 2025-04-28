@@ -4,7 +4,7 @@ import { BookOpen, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Link, useNavigate   } from "react-router-dom";
 import { toast } from "react-toastify";
 import API from "../config/axios";
-export default function SignIn({ onLogin, onSwitchToSignUp }) {
+export default function SignIn() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();

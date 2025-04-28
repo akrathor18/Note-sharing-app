@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BookOpen, Eye, EyeOff, Mail, Lock, User } from "lucide-react";
-import { Link } from "react-router-dom";
-export default function SignUp({ onSignup, onSwitchToSignIn }) {
+import { Link,useNavigate  } from "react-router-dom";
+import { toast } from "react-toastify";
+import API from "../config/axios";
+export default function SignUp() {
   const {
     register,
     handleSubmit,
@@ -12,9 +14,23 @@ export default function SignUp({ onSignup, onSwitchToSignIn }) {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = (data) => {
-    // onSignup(data.name, data.email, data.password);
-    console.log(data)
+  const navigate = useNavigate();
+  const onSubmit = async (data) => {
+    try {
+      const response = await API.post("users/register", {
+          email: data.email,
+          password: data.password,
+          name: data.name,
+      });
+    console.log(response)
+      localStorage.setItem("token", response.data.token);
+      navigate("/");
+      toast.success("resgister successfully!");
+
+  } catch (error) {
+    console.log(error)
+      toast.error(error.response?.data);
+  }
   };
 
   const password = watch("password");
