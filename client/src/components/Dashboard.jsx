@@ -13,13 +13,6 @@ export default function Dashboard() {
     { id: 1, title: "Database Systems", date: "Tomorrow, 2:00 PM", questions: 20 },
     { id: 2, title: "Modern Physics", date: "Friday, 10:00 AM", questions: 15 },
   ]
-
-  const activityStats = [
-    { label: "Notes Viewed", value: 24, icon: FileText, color: "#FF007F" },
-    { label: "Quizzes Completed", value: 8, icon: CheckCircle2, color: "#00E5FF" },
-    { label: "Study Hours", value: "12h", icon: Clock, color: "#FF007F" },
-  ]
-
   const [userDetails, setUserDetails] = useState()
   
   const fetchUserDetail=async()=>{
@@ -33,15 +26,41 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    fetchUserDetail()
-    console.log(userDetails)
-  }, [])
+    fetchUserDetail();
+  }, []);
   
-
+  useEffect(() => {
+    console.log("Fetched user details:", userDetails);
+  }, [userDetails]);
+  
+  const activityStats = [
+    {
+      label: "Notes Viewed",
+      value: userDetails?.stats?.totalNoteVisits ?? 10,
+      icon: FileText,
+      color: "#FF007F",
+    },
+    {
+      label: "Quizzes Completed",
+      value: userDetails?.stats?.quizzesTaken ?? 10,
+      icon: CheckCircle2,
+      color: "#00E5FF",
+    },
+    {
+      label: "Study Hours",
+      value: userDetails?.stats?.totalStudyTime ?? 10,
+      icon: Clock,
+      color: "#FF007F",
+    },
+  ];
+  
+  if (!userDetails) {
+    return <p>Loading...</p>; // or a spinner
+  }
   return (
     <div className="space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold mb-1">Welcome back, !</h1>
+        <h1 className="text-xl md:text-2xl font-bold mb-1">Welcome back, {userDetails.name} !</h1>
         <p className="text-[#F5F5F5]/60">Here's what's happening with your studies</p>
       </div>
 
