@@ -13,9 +13,11 @@ export default function SignUp() {
   } = useForm();
 
   const [showPassword, setShowPassword] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const onSubmit = async (data) => {
+    if (loading) return;
+    setLoading(true);
     try {
       const response = await API.post("users/register", {
           email: data.email,
@@ -30,6 +32,8 @@ export default function SignUp() {
   } catch (error) {
     console.log(error)
       toast.error(error.response?.data);
+  }finally {
+    setLoading(false);
   }
   };
 
@@ -169,10 +173,11 @@ export default function SignUp() {
 
           {/* Submit Button */}
           <button
+          disabled={loading}
             type="submit"
             className="w-full bg-[#FF007F] hover:bg-[#FF007F]/90 text-white py-2 rounded-lg transition-colors font-medium"
           >
-            Sign Up
+             {loading ? "Signing Up..." : "Sign Up"}
           </button>
         </form>
 

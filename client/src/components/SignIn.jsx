@@ -1,25 +1,31 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BookOpen, Eye, EyeOff, Mail, Lock } from "lucide-react";
-import { Link, useNavigate   } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import API from "../config/axios";
 export default function SignIn() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate();
   const onSubmit = async (data) => {
+    if (loading) return; // Prevent multiple clicks
+
+    setLoading(true);
     try {
       const response = await API.post("/users/login", {
-          email: data.email,
-          password:data.password,
-        });
-        localStorage.setItem("token", response.data.token);
-        navigate("/");
-        toast.success("resgister successfully!"); 
-  
+        email: data.email,
+        password: data.password,
+      });
+      localStorage.setItem("token", response.data.token);
+      navigate("/");
+      toast.success("resgister successfully!");
+
     } catch (error) {
-  toast.error(error.response?.data || "Login failed");
+      toast.error(error.response?.data || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -111,10 +117,11 @@ export default function SignIn() {
 
           {/* Submit button */}
           <button
+            disabled={loading}
             type="submit"
             className="w-full bg-[#FF007F] hover:bg-[#FF007F]/90 text-white py-2 rounded-lg transition-colors font-medium"
           >
-            Sign In
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 

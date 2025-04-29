@@ -1,6 +1,5 @@
-"use client"
-
-import { useState, useRef } from "react"
+import API from "../config/axios"
+import { useState, useRef, useEffect } from "react"
 import {
   Mail,
   Calendar,
@@ -40,6 +39,25 @@ import {
       studyHours: 24,
     },
   }
+
+  const [userDetails, setUserDetails] = useState(user)
+
+  const fetchUserDetail=async()=>{
+     try {
+      const response = await API.get("/users/profile")
+      console.log(response.data);
+      setUserDetails(response.data);
+     } catch (error) {
+      console.log(error)
+     }
+    }
+  
+    useEffect(() => {
+      fetchUserDetail()
+      console.log(userDetails)
+    }, [])
+    
+
   const [isEditing, setIsEditing] = useState(false)
   const [editedUser, setEditedUser] = useState({ ...user })
   const [activeTab, setActiveTab] = useState("overview") // overview, notes, quizzes, activity, achievements

@@ -1,6 +1,5 @@
-"use client"
-
 import { useState, useEffect } from "react"
+import { toast } from "react-toastify";
 import {
   BookOpen,
   Home,
@@ -18,22 +17,7 @@ import {
 import { NavLink, Outlet,useNavigate  } from "react-router-dom";
 import SignIn from "./SignIn"
 import SignUp from "./SignUp"
-const userData = {
-  id: "user123",
-  name: "John Doe",
-  email: "john.doe@example.com",
-  avatar: null, // Will use initial instead
-  role: "Student",
-  joinDate: "January 2023",
-  stats: {
-    notesCreated: 12,
-    notesViewed: 45,
-    quizzesTaken: 8,
-    quizzesPassed: 7,
-    studyHours: 24,
-  },
-}
-
+import API from "../config/axios";
 // Sample notes and quizzes for search
 const allNotes = [
   {
@@ -114,7 +98,7 @@ function navBar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(true)
   const [authView, setAuthView] = useState("signin") // signin, signup
-  const [user, setUser] = useState(userData)
+  const [user, setUser] = useState()
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState(null)
   const [notifications, setNotifications] = useState([
@@ -122,6 +106,20 @@ function navBar() {
     { id: 2, title: "New note shared", message: "Alex shared a note with you: Organic Chemistry", read: false },
     { id: 3, title: "Study streak", message: "You've been studying for 5 days in a row!", read: true },
   ])
+
+  const fetchUserDetail=async()=>{
+     try {
+      const response = await API.get("/users/profile")
+      setUser(response.data);
+     } catch (error) {
+      console.log(error)
+     }
+    }
+  
+    useEffect(() => {
+      fetchUserDetail()
+    }, [])
+    
 
   // Toggle mobile menu
   const toggleMobileMenu = () => {

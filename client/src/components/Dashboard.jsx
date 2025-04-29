@@ -1,5 +1,6 @@
 import { Clock, FileText, CheckCircle2, ChevronRight, Download } from "lucide-react"
-
+import { useEffect, useState } from "react"
+import API from "../config/axios"
 export default function Dashboard() {
   // Sample data
   const recentNotes = [
@@ -19,10 +20,28 @@ export default function Dashboard() {
     { label: "Study Hours", value: "12h", icon: Clock, color: "#FF007F" },
   ]
 
+  const [userDetails, setUserDetails] = useState()
+  
+  const fetchUserDetail=async()=>{
+   try {
+    const response = await API.get("/users/profile")
+    console.log(response.data);
+    setUserDetails(response.data);
+   } catch (error) {
+    console.log(error)
+   }
+  }
+
+  useEffect(() => {
+    fetchUserDetail()
+    console.log(userDetails)
+  }, [])
+  
+
   return (
     <div className="space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold mb-1">Welcome back, John!</h1>
+        <h1 className="text-xl md:text-2xl font-bold mb-1">Welcome back, !</h1>
         <p className="text-[#F5F5F5]/60">Here's what's happening with your studies</p>
       </div>
 
