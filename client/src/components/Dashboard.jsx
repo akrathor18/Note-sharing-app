@@ -55,12 +55,12 @@ export default function Dashboard() {
   ];
   
   if (!userDetails) {
-    return <p>Loading...</p>; // or a spinner
+    return <h1>Loading...</h1>;
   }
   return (
     <div className="space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold mb-1">Welcome back, {userDetails.name} !</h1>
+        <h1 className="text-xl md:text-2xl font-bold mb-1">Welcome back, {userDetails.name}!</h1>
         <p className="text-[#F5F5F5]/60">Here's what's happening with your studies</p>
       </div>
 

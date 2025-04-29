@@ -211,17 +211,6 @@ function navBar() {
   }, [isUserMenuOpen, isNotificationMenuOpen])
 
   // If not authenticated, show auth screens
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-[#0D0D0D] text-[#F5F5F5] flex items-center justify-center p-4">
-        {authView === "signin" ? (
-          <SignIn onLogin={handleLogin} onSwitchToSignUp={() => setAuthView("signup")} />
-        ) : (
-          <SignUp onSignup={handleSignup} onSwitchToSignIn={() => setAuthView("signin")} />
-        )}
-      </div>
-    )
-  }
 
   return (
     <div className="flex h-screen bg-[#0D0D0D] text-[#F5F5F5] relative">
