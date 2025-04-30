@@ -186,6 +186,10 @@ import {
     }
   }
 
+  if (!userDetails) {
+    return <h1>Loading...</h1>;
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* Profile Header */}
@@ -223,7 +227,7 @@ import {
                     id="name"
                     name="name"
                     type="text"
-                    value={editedUser.name}
+                    value={userDetails.name}
                     onChange={handleInputChange}
                     className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
                   />
@@ -236,7 +240,7 @@ import {
                     id="email"
                     name="email"
                     type="email"
-                    value={editedUser.email}
+                    value={userDetails.email}
                     onChange={handleInputChange}
                     className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
                   />
@@ -249,7 +253,7 @@ import {
                     id="role"
                     name="role"
                     type="text"
-                    value={editedUser.role}
+                    value={userDetails.role}
                     onChange={handleInputChange}
                     className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
                   />
@@ -275,8 +279,8 @@ import {
               <>
                 <div className="flex justify-between items-start">
                   <div>
-                    <h1 className="text-2xl font-bold">{user.name}</h1>
-                    <p className="text-[#F5F5F5]/60">{user.role}</p>
+                    <h1 className="text-2xl font-bold">{userDetails.name}</h1>
+                    <p className="text-[#F5F5F5]/60">{userDetails.role}</p>
                   </div>
                   <button
                     onClick={() => setIsEditing(true)}
@@ -289,7 +293,7 @@ import {
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center gap-2 text-sm">
                     <Mail size={16} className="text-[#F5F5F5]/60" />
-                    <span>{user.email}</span>
+                    <span>{userDetails.email}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar size={16} className="text-[#F5F5F5]/60" />
