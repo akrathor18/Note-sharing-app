@@ -57,7 +57,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-
 router.post('/changepassword', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
   try {
     const { password, newPassword } = req.body;
@@ -91,6 +90,20 @@ router.get("/profile",authMiddleware ,VerifyJwtMiddleware, async (req, res) => {
     res.status(200).json(req.user);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.patch('/bio',authMiddleware ,VerifyJwtMiddleware, async (req, res) => {
+  const userId = req.user.id; // Extracted from the token
+  const { bio } = req.body;
+
+  try {
+    const user = await User.findByIdAndUpdate(userId, { bio }, { new: true });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

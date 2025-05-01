@@ -23,7 +23,7 @@ import {
   CheckCircle2,
 } from "lucide-react"
 
- function Profile() {
+function Profile() {
   const user = {
     id: "user123",
     name: "John Doe",
@@ -40,32 +40,32 @@ import {
     },
   }
 
-  const [userDetails, setUserDetails] = useState(user)
+  const [userDetails, setUserDetails] = useState()
 
-  const fetchUserDetail=async()=>{
-     try {
+  const fetchUserDetail = async () => {
+    try {
       const response = await API.get("/users/profile")
       console.log(response.data);
       setUserDetails(response.data);
-     } catch (error) {
+      setNewBio(response.data.bio)
+      setBio(response.data.bio)
+    } catch (error) {
       console.log(error)
-     }
     }
-  
-    useEffect(() => {
-      fetchUserDetail()
-      console.log(userDetails)
-    }, [])
-    
+  }
+
+  useEffect(() => {
+    fetchUserDetail()
+    console.log(userDetails)
+  }, [])
+
 
   const [isEditing, setIsEditing] = useState(false)
   const [editedUser, setEditedUser] = useState({ ...user })
   const [activeTab, setActiveTab] = useState("overview") // overview, notes, quizzes, activity, achievements
-  const [bio, setBio] = useState(
-    "Computer Science student passionate about learning and sharing knowledge. Interested in data structures, algorithms, and web development.",
-  )
+  const [bio, setBio] = useState("")
   const [editingBio, setEditingBio] = useState(false)
-  const [newBio, setNewBio] = useState(bio)
+  const [newBio, setNewBio] = useState()
   const fileInputRef = useRef(null)
 
   // Sample activity data
@@ -155,9 +155,19 @@ import {
     setNewBio(bio)
   }
 
-  const handleBioSave = () => {
-    setBio(newBio)
-    setEditingBio(false)
+  const handleBioSave = async () => {
+
+    try {
+      const response = await API.patch('/users/bio', {
+        bio: newBio
+      })
+
+      setBio(newBio)
+      setEditingBio(false)
+      console.log(newBio)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const handleBioCancel = () => {
@@ -186,6 +196,15 @@ import {
     }
   }
 
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    return date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+  }
+
   if (!userDetails) {
     return <h1>Loading...</h1>;
   }
@@ -198,7 +217,7 @@ import {
           {/* Profile Picture */}
           <div className="relative group">
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#00E5FF] flex items-center justify-center text-[#0D0D0D] text-4xl font-bold overflow-hidden">
-              {user.name.charAt(0)}
+              {userDetails.name.toUpperCase().charAt(0)}
               {/* If user has a profile picture, show it instead of the initial */}
               {/* {user.profilePicture ? (
                 <img src={user.profilePicture || "/placeholder.svg"} alt={user.name} className="w-full h-full object-cover" />
@@ -297,7 +316,7 @@ import {
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar size={16} className="text-[#F5F5F5]/60" />
-                    <span>Joined {user.joinDate}</span>
+                    <span>Joined {formatDate(userDetails.createdAt)}</span>
                   </div>
                   <div className="flex flex-wrap gap-3 mt-3">
                     <a href="#" className="p-2 rounded-full bg-[#0D0D0D] hover:bg-[#F5F5F5]/10 transition-colors">
@@ -326,35 +345,35 @@ import {
           <div className="w-10 h-10 mx-auto rounded-full bg-[#FF007F]/10 flex items-center justify-center mb-2">
             <FileText size={18} className="text-[#FF007F]" />
           </div>
-          <p className="text-2xl font-bold">{user.stats.notesCreated}</p>
+          <p className="text-2xl font-bold">{userDetails.stats.totalNoteCreated}</p>
           <p className="text-xs text-[#F5F5F5]/60">Notes Created</p>
         </div>
         <div className="bg-[#1A1A1A] rounded-xl p-4 text-center">
           <div className="w-10 h-10 mx-auto rounded-full bg-[#00E5FF]/10 flex items-center justify-center mb-2">
             <FileText size={18} className="text-[#00E5FF]" />
           </div>
-          <p className="text-2xl font-bold">{user.stats.notesViewed}</p>
+          <p className="text-2xl font-bold">{userDetails.stats.totalNoteVisits}</p>
           <p className="text-xs text-[#F5F5F5]/60">Notes Viewed</p>
         </div>
         <div className="bg-[#1A1A1A] rounded-xl p-4 text-center">
           <div className="w-10 h-10 mx-auto rounded-full bg-[#FF007F]/10 flex items-center justify-center mb-2">
             <BrainCircuit size={18} className="text-[#FF007F]" />
           </div>
-          <p className="text-2xl font-bold">{user.stats.quizzesTaken}</p>
+          <p className="text-2xl font-bold">{userDetails.stats.quizzesTaken}</p>
           <p className="text-xs text-[#F5F5F5]/60">Quizzes Taken</p>
         </div>
         <div className="bg-[#1A1A1A] rounded-xl p-4 text-center">
           <div className="w-10 h-10 mx-auto rounded-full bg-[#00E5FF]/10 flex items-center justify-center mb-2">
             <CheckCircle2 size={18} className="text-[#00E5FF]" />
           </div>
-          <p className="text-2xl font-bold">{user.stats.quizzesPassed}</p>
+          <p className="text-2xl font-bold">{userDetails.stats.quizzesPassed}</p>
           <p className="text-xs text-[#F5F5F5]/60">Quizzes Passed</p>
         </div>
         <div className="bg-[#1A1A1A] rounded-xl p-4 text-center">
           <div className="w-10 h-10 mx-auto rounded-full bg-[#FF007F]/10 flex items-center justify-center mb-2">
             <Clock size={18} className="text-[#FF007F]" />
           </div>
-          <p className="text-2xl font-bold">{user.stats.studyHours}h</p>
+          <p className="text-2xl font-bold">{userDetails.stats.totalStudyTime}h</p>
           <p className="text-xs text-[#F5F5F5]/60">Study Hours</p>
         </div>
       </div>
@@ -364,51 +383,46 @@ import {
         <div className="flex overflow-x-auto hide-scrollbar">
           <button
             onClick={() => setActiveTab("overview")}
-            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${
-              activeTab === "overview"
+            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${activeTab === "overview"
                 ? "border-b-2 border-[#FF007F] text-[#FF007F]"
                 : "text-[#F5F5F5]/60 hover:text-[#F5F5F5]"
-            }`}
+              }`}
           >
             Overview
           </button>
           <button
             onClick={() => setActiveTab("notes")}
-            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${
-              activeTab === "notes"
+            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${activeTab === "notes"
                 ? "border-b-2 border-[#FF007F] text-[#FF007F]"
                 : "text-[#F5F5F5]/60 hover:text-[#F5F5F5]"
-            }`}
+              }`}
           >
             Notes
           </button>
           <button
             onClick={() => setActiveTab("quizzes")}
-            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${
-              activeTab === "quizzes"
+            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${activeTab === "quizzes"
                 ? "border-b-2 border-[#FF007F] text-[#FF007F]"
                 : "text-[#F5F5F5]/60 hover:text-[#F5F5F5]"
-            }`}
+              }`}
           >
             Quizzes
           </button>
           <button
             onClick={() => setActiveTab("activity")}
-            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${
-              activeTab === "activity"
+            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${activeTab === "activity"
                 ? "border-b-2 border-[#FF007F] text-[#FF007F]"
                 : "text-[#F5F5F5]/60 hover:text-[#F5F5F5]"
-            }`}
+              }`}
           >
             Activity
           </button>
           <button
             onClick={() => setActiveTab("achievements")}
-            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${
-              activeTab === "achievements"
+            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${activeTab === "achievements"
                 ? "border-b-2 border-[#FF007F] text-[#FF007F]"
                 : "text-[#F5F5F5]/60 hover:text-[#F5F5F5]"
-            }`}
+              }`}
           >
             Achievements
           </button>
@@ -439,6 +453,8 @@ import {
                   <textarea
                     value={newBio}
                     onChange={(e) => setNewBio(e.target.value)}
+
+
                     className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F] min-h-[100px]"
                   ></textarea>
                   <div className="flex justify-end gap-2">
@@ -450,7 +466,11 @@ import {
                     </button>
                     <button
                       onClick={handleBioSave}
-                      className="px-3 py-1 rounded-lg bg-[#FF007F] hover:bg-[#FF007F]/90 text-white text-sm"
+                      disabled={newBio === bio}
+                      className={`px-3 py-1 rounded-lg text-white text-sm ${newBio === bio
+                          ? "bg-gray-500 cursor-not-allowed"
+                          : "bg-[#FF007F] hover:bg-[#FF007F]/90"
+                        }`}
                     >
                       Save
                     </button>
@@ -467,9 +487,8 @@ import {
                 {recentActivity.slice(0, 3).map((activity) => (
                   <div key={activity.id} className="flex items-center gap-3 p-3 rounded-lg bg-[#0D0D0D]">
                     <div
-                      className={`w-10 h-10 rounded-lg ${
-                        activity.type === "note" ? "bg-[#FF007F]/10" : "bg-[#00E5FF]/10"
-                      } flex items-center justify-center`}
+                      className={`w-10 h-10 rounded-lg ${activity.type === "note" ? "bg-[#FF007F]/10" : "bg-[#00E5FF]/10"
+                        } flex items-center justify-center`}
                     >
                       {activity.type === "note" ? (
                         <FileText size={20} className="text-[#FF007F]" />
@@ -585,9 +604,8 @@ import {
               {recentActivity.map((activity) => (
                 <div key={activity.id} className="flex items-center gap-3 p-3 rounded-lg bg-[#1A1A1A]">
                   <div
-                    className={`w-10 h-10 rounded-lg ${
-                      activity.type === "note" ? "bg-[#FF007F]/10" : "bg-[#00E5FF]/10"
-                    } flex items-center justify-center`}
+                    className={`w-10 h-10 rounded-lg ${activity.type === "note" ? "bg-[#FF007F]/10" : "bg-[#00E5FF]/10"
+                      } flex items-center justify-center`}
                   >
                     {activity.type === "note" ? (
                       <FileText size={20} className="text-[#FF007F]" />
