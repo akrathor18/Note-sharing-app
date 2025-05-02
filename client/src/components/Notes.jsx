@@ -122,41 +122,41 @@ export default function Notes() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-  
+
     setNewNote((prevNote) => {
       let updatedNote = {
         ...prevNote,
         [name]: value,
       };
-  
+
       if (name === "subject") {
         const selectedSubject = subjects.find((s) => s.name === value);
         if (selectedSubject && selectedSubject.id !== "all") {
           updatedNote.subjectId = selectedSubject.id;
         }
       }
-  
+
       return updatedNote;
     });
   };
-  
+
 
   const handleFileUpload = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
-  
+
 
   const handleSaveNote = () => {
     if (!newNote.title || !newNote.subject || !newNote.content) {
       alert("Please fill in all required fields")
       return
     }
-    
-    
+
+
   }
-  
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -174,7 +174,7 @@ export default function Notes() {
         day: "numeric",
         year: "numeric",
       });
-  
+
       const newNoteObj = {
         title: data.title,
         subject: data.subject,
@@ -183,37 +183,37 @@ export default function Notes() {
         downloads: 0,
         content: data.content,
       };
-  
+
       console.log(newNoteObj);
       console.log(selectedFile);
-  
+
       const formData = new FormData();
-      formData.append("file", selectedFile); // Make sure `selectedFile` is a valid File object
+      formData.append("file", selectedFile);
       formData.append("title", newNoteObj.title);
       formData.append("description", newNoteObj.content);
       formData.append("subject", newNoteObj.subject);
-  
+
       const response = await API.post("/notes/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-  
+
       console.log(response);
-  
+      setIsAddNoteModalOpen(false)
       setNotes([newNoteObj, ...notes]);
-      
+
       toast.success("Note uploaded successfully")
     } catch (error) {
       console.log(error);
       toast.error(error.message)
-    }finally {
+    } finally {
       setIsUploading(false); // Hide "Uploading..." after request finishes
-      
+
     }
   };
-  
-  
+
+
   return (
     <div className="space-y-4 md:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -262,8 +262,8 @@ export default function Notes() {
               key={subject.id}
               onClick={() => setActiveSubject(subject.id)}
               className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${activeSubject === subject.id
-                  ? "bg-[#FF007F] text-white"
-                  : "bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-[#F5F5F5]"
+                ? "bg-[#FF007F] text-white"
+                : "bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-[#F5F5F5]"
                 }`}
             >
               {subject.name}
@@ -393,23 +393,20 @@ export default function Notes() {
               <div>
                 <label className="block text-sm font-medium mb-1">Attachments</label>
                 <div className="flex items-center gap-2">
-                <button
-  onClick={handleFileUpload}
-  type="button"
-  className="flex items-center gap-2 bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 border border-[#F5F5F5]/10 px-3 py-2 rounded-lg"
->
-  <Image size={16} />
-  Upload File
-</button>
-<input
-  type="file"
-  ref={fileInputRef}
-  onChange={handleFileChange}
-  className="hidden"
-/>
-
-
-
+                  <button
+                    onClick={handleFileUpload}
+                    type="button"
+                    className="flex items-center gap-2 bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 border border-[#F5F5F5]/10 px-3 py-2 rounded-lg"
+                  >
+                    <Image size={16} />
+                    Upload File
+                  </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
                   <span className="text-xs text-[#F5F5F5]/60">Supported formats: PDF, DOC, DOCX, JPG, PNG</span>
                   {errors.file && <p className="text-xs text-red-500 mt-1">{errors.file.message}</p>}
                 </div>
@@ -437,14 +434,14 @@ export default function Notes() {
                 <button
                   type="submit"
                   disabled={isUploading}
-                  className={`flex items-center gap-2 ${isUploading?`bg-gray-500`:`bg-[#FF007F] hover:bg-[#FF007F]`}/90 text-white px-4 py-2 rounded-lg`}
+                  className={`flex items-center gap-2 ${isUploading ? `bg-gray-500` : `bg-[#FF007F] hover:bg-[#FF007F]`}/90 text-white px-4 py-2 rounded-lg`}
                 >
                   <Save size={16} />
-                  {isUploading ?"Uploading...":"Save Note"}
+                  {isUploading ? "Uploading..." : "Save Note"}
                 </button>
               </div>
             </form>
-            
+
 
           </div>
         </div>
