@@ -24,27 +24,14 @@ import {
 } from "lucide-react"
 
 function Profile() {
-  const user = {
-    id: "user123",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatar: null, // Will use initial instead
-    role: "Student",
-    joinDate: "January 2023",
-    stats: {
-      notesCreated: 12,
-      notesViewed: 45,
-      quizzesTaken: 8,
-      quizzesPassed: 7,
-      studyHours: 24,
-    },
-  }
+
 
   const [userDetails, setUserDetails] = useState()
 
   const fetchUserDetail = async () => {
     setTimeout(async () => {
     try {
+  
       const response = await API.get("/users/profile")
       console.log(response.data);
       setUserDetails(response.data);
@@ -53,7 +40,7 @@ function Profile() {
     } catch (error) {
       console.log(error)
     }
-  }, 5000);
+  }, 1000);
 }
 
   useEffect(() => {
@@ -63,7 +50,7 @@ function Profile() {
 
 
   const [isEditing, setIsEditing] = useState(false)
-  const [editedUser, setEditedUser] = useState({ ...user })
+  const [editedUser, setEditedUser] = useState()
   const [activeTab, setActiveTab] = useState("overview") // overview, notes, quizzes, activity, achievements
   const [bio, setBio] = useState("")
   const [editingBio, setEditingBio] = useState(false)

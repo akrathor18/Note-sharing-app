@@ -1,9 +1,43 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Lock, Mail, Bell, Moon, Sun, Globe, Shield, Save, ChevronDown } from "lucide-react"
+import API from "../config/axios"
+
+// skelleton loadder
+const SettingsSkeleton = () => {
+  return (
+    <div className="max-w-4xl mx-auto animate-pulse">
+      <div className="h-6 w-32 bg-gray-700 rounded mb-6"></div>
+
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Sidebar skeleton */}
+        <div className="w-full md:w-64 bg-[#1A1A1A] rounded-xl p-4 space-y-3">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="h-10 bg-gray-800 rounded"></div>
+          ))}
+        </div>
+
+        {/* Content skeleton */}
+        <div className="flex-1 bg-[#1A1A1A] rounded-xl p-6 space-y-4">
+          <div className="h-5 w-40 bg-gray-700 rounded"></div>
+
+          {[...Array(3)].map((_, i) => (
+            <div key={i}>
+              <div className="h-4 w-24 bg-gray-600 rounded mb-2"></div>
+              <div className="h-10 w-full bg-gray-800 rounded"></div>
+            </div>
+          ))}
+
+          <div className="h-10 w-32 bg-gray-700 rounded mt-6"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Settings({ user, setUser }) {
+  const [loading, setLoading] = useState(true)
   const [activeSection, setActiveSection] = useState("account")
-  const userData = {
+  const [userData, setUserData] =useState( {
     id: "user123",
     name: "John Doe",
     email: "john.doe@example.com",
@@ -17,7 +51,36 @@ export default function Settings({ user, setUser }) {
       quizzesPassed: 7,
       studyHours: 24,
     },
+  })
+ const fetchUserDetail = async () => {
+    setTimeout(async () => {
+    try {
+  
+      const response = await API.get("/users/profile")
+      console.log(response.data);
+      setUserData(response.data);
+    } catch (error) {
+      console.log(error)
+    }finally{
+      setLoading(false)
+    }
+  }, 1000);
+}
+
+ useEffect(() => {
+    fetchUserDetail()
+    console.log(userData)
+  }, [])
+
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    return date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
   }
+
   const [formData, setFormData] = useState({
     email: userData.email,
     currentPassword: "",
@@ -62,6 +125,12 @@ export default function Settings({ user, setUser }) {
     }, 3000)
   }
 
+if(loading){
+  return(<SettingsSkeleton/>)
+}  
+  
+
+
   return (
     <div className="max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Settings</h1>
@@ -77,9 +146,8 @@ export default function Settings({ user, setUser }) {
               <li>
                 <button
                   onClick={() => setActiveSection("account")}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${
-                    activeSection === "account" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${activeSection === "account" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
+                    }`}
                 >
                   <Mail size={18} />
                   <span>Account</span>
@@ -88,9 +156,8 @@ export default function Settings({ user, setUser }) {
               <li>
                 <button
                   onClick={() => setActiveSection("security")}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${
-                    activeSection === "security" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${activeSection === "security" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
+                    }`}
                 >
                   <Lock size={18} />
                   <span>Security</span>
@@ -99,9 +166,8 @@ export default function Settings({ user, setUser }) {
               <li>
                 <button
                   onClick={() => setActiveSection("notifications")}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${
-                    activeSection === "notifications" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${activeSection === "notifications" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
+                    }`}
                 >
                   <Bell size={18} />
                   <span>Notifications</span>
@@ -110,9 +176,8 @@ export default function Settings({ user, setUser }) {
               <li>
                 <button
                   onClick={() => setActiveSection("appearance")}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${
-                    activeSection === "appearance" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${activeSection === "appearance" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
+                    }`}
                 >
                   <Sun size={18} />
                   <span>Appearance</span>
@@ -121,9 +186,8 @@ export default function Settings({ user, setUser }) {
               <li>
                 <button
                   onClick={() => setActiveSection("language")}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${
-                    activeSection === "language" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${activeSection === "language" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
+                    }`}
                 >
                   <Globe size={18} />
                   <span>Language</span>
@@ -132,9 +196,8 @@ export default function Settings({ user, setUser }) {
               <li>
                 <button
                   onClick={() => setActiveSection("privacy")}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${
-                    activeSection === "privacy" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${activeSection === "privacy" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
+                    }`}
                 >
                   <Shield size={18} />
                   <span>Privacy</span>
@@ -160,7 +223,7 @@ export default function Settings({ user, setUser }) {
                       id="email"
                       name="email"
                       type="email"
-                      value={formData.email}
+                      value={userData.email}
                       onChange={handleInputChange}
                       className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
                     />
@@ -170,8 +233,17 @@ export default function Settings({ user, setUser }) {
                       Account Type: <span className="text-[#F5F5F5]">{userData.role}</span>
                     </p>
                     <p className="text-sm text-[#F5F5F5]/60">
-                      Member Since: <span className="text-[#F5F5F5]">{userData.joinDate}</span>
+                      Member Since: <span className="text-[#F5F5F5]">{formatDate(userData.createdAt)}</span>
                     </p>
+                  </div>
+                  <div className="mt-6">
+                    <button
+                      type="submit"
+                      className="flex items-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      <Save size={16} />
+                      Save Changes
+                    </button>
                   </div>
                 </div>
               </div>
@@ -230,6 +302,15 @@ export default function Settings({ user, setUser }) {
                       <li>Include at least one special character</li>
                     </ul>
                   </div>
+                  <div className="mt-6">
+                    <button
+                      type="submit"
+                      className="flex items-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      <Save size={16} />
+                      Save Changes
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -287,6 +368,15 @@ export default function Settings({ user, setUser }) {
                       <div className="w-11 h-6 bg-[#0D0D0D] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF007F]"></div>
                     </label>
                   </div>
+                  <div className="mt-6">
+                    <button
+                      type="submit"
+                      className="flex items-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      <Save size={16} />
+                      Save Changes
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -329,6 +419,15 @@ export default function Settings({ user, setUser }) {
                       <button type="button" className="w-full aspect-square rounded-full bg-[#FF9800]"></button>
                     </div>
                   </div>
+                  <div className="mt-6">
+                    <button
+                      type="submit"
+                      className="flex items-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      <Save size={16} />
+                      Save Changes
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -362,6 +461,15 @@ export default function Settings({ user, setUser }) {
                         size={16}
                       />
                     </div>
+                  </div>
+                  <div className="mt-6">
+                    <button
+                      type="submit"
+                      className="flex items-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      <Save size={16} />
+                      Save Changes
+                    </button>
                   </div>
                 </div>
               </div>
@@ -416,20 +524,21 @@ export default function Settings({ user, setUser }) {
                       />
                     </div>
                   </div>
+                  <div className="mt-6">
+                    <button
+                      type="submit"
+                      className="flex items-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      <Save size={16} />
+                      Save Changes
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
 
             {/* Save Button */}
-            <div className="mt-6">
-              <button
-                type="submit"
-                className="flex items-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                <Save size={16} />
-                Save Changes
-              </button>
-            </div>
+
           </form>
         </div>
       </div>
