@@ -66,18 +66,13 @@ router.post('/changepassword', authMiddleware, VerifyJwtMiddleware, async (req, 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json('User not found');
 
-    // 2. Compare old password
+    // // 2. Compare old password
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json('Incorrect current password');
+    if (!isMatch) return res.status(400).json('Incorrect current password!');
 
-    // 3. Hash new password
-    const salt = await bcrypt.genSalt(10);
-    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
-
-    // 4. Save new password
-    user.password = hashedNewPassword;
-    await user.save();
-
+    // 3. Save new password
+    user.password = newPassword;
+    await user.save();    
     res.status(200).json('Password changed successfully');
   } catch (error) {
     console.error(error);

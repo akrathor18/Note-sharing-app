@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react"
-import { Lock, Mail, Bell, Moon, Sun, Globe, Shield, Save, ChevronDown } from "lucide-react"
+import { Eye, EyeOff, Lock, Mail, Bell, Moon, Sun, Globe, Shield, Save, ChevronDown } from "lucide-react"
 import API from "../config/axios"
-
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 // skelleton loadder
 const SettingsSkeleton = () => {
   return (
@@ -36,8 +37,9 @@ const SettingsSkeleton = () => {
 
 export default function Settings({ user, setUser }) {
   const [loading, setLoading] = useState(true)
+  const [showPassword, setShowPassword] = useState(false);
   const [activeSection, setActiveSection] = useState("account")
-  const [userData, setUserData] =useState( {
+  const [userData, setUserData] = useState({
     id: "user123",
     name: "John Doe",
     email: "john.doe@example.com",
@@ -52,22 +54,53 @@ export default function Settings({ user, setUser }) {
       studyHours: 24,
     },
   })
- const fetchUserDetail = async () => {
-    setTimeout(async () => {
-    try {
-  
-      const response = await API.get("/users/profile")
-      console.log(response.data);
-      setUserData(response.data);
-    } catch (error) {
-      console.log(error)
-    }finally{
-      setLoading(false)
-    }
-  }, 1000);
-}
 
- useEffect(() => {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting, isSubmitSuccessful, },
+  } = useForm();
+
+  const newPassword = watch("newPassword");
+
+  const onSubmit = async (data) => {
+    console.log(data.currentPassword);  // ✅ should log the right value
+    console.log(data.newPassword);      // ✅ should log the right value
+  
+    try {
+      const response = await API.post('/users/changepassword', {
+        password: data.currentPassword,
+        newPassword: data.newPassword
+      });
+      console.log(response);
+      toast.success(response.data)
+    } catch (error) {
+      console.error(error.response?.data); // ✅ this will give exact backend error
+      toast.error(error.response?.data)
+    }
+  };
+  
+
+    const showalter=()=>alert('We are still working on this feature!');
+
+
+  const fetchUserDetail = async () => {
+    setTimeout(async () => {
+      try {
+
+        const response = await API.get("/users/profile")
+        console.log(response.data);
+        setUserData(response.data);
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setLoading(false)
+      }
+    }, 1000);
+  }
+
+  useEffect(() => {
     fetchUserDetail()
     console.log(userData)
   }, [])
@@ -105,30 +138,20 @@ export default function Settings({ user, setUser }) {
     })
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // In a real app, you would send this data to your backend
-    console.log("Saving settings:", formData)
+  const handleFormChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value
+    }));
+    handleInputChange(e); // Sync with parent handler if needed
+  };
 
-    // Update user email if changed
-    if (formData.email !== user.email) {
-      setUser({
-        ...user,
-        email: formData.email,
-      })
-    }
 
-    // Show success message
-    setSuccessMessage("Settings saved successfully!")
-    setTimeout(() => {
-      setSuccessMessage("")
-    }, 3000)
+  if (loading) {
+    return (<SettingsSkeleton />)
   }
 
-if(loading){
-  return(<SettingsSkeleton/>)
-}  
-  
 
 
   return (
@@ -136,80 +159,42 @@ if(loading){
       <h1 className="text-2xl font-bold mb-6">Settings</h1>
 
       {/* Success Message */}
-      {successMessage && <div className="bg-green-500/20 text-green-500 p-3 rounded-lg mb-6">{successMessage}</div>}
+      {successMessage && (
+        <div className="bg-green-500/20 text-green-500 p-3 rounded-lg mb-6">
+          {successMessage}
+        </div>
+      )}
 
       <div className="flex flex-col md:flex-row gap-6">
         {/* Settings Navigation */}
         <div className="w-full md:w-64 bg-[#1A1A1A] rounded-xl p-4 h-fit">
           <nav>
             <ul className="space-y-1">
-              <li>
-                <button
-                  onClick={() => setActiveSection("account")}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${activeSection === "account" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
-                    }`}
-                >
-                  <Mail size={18} />
-                  <span>Account</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setActiveSection("security")}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${activeSection === "security" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
-                    }`}
-                >
-                  <Lock size={18} />
-                  <span>Security</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setActiveSection("notifications")}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${activeSection === "notifications" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
-                    }`}
-                >
-                  <Bell size={18} />
-                  <span>Notifications</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setActiveSection("appearance")}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${activeSection === "appearance" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
-                    }`}
-                >
-                  <Sun size={18} />
-                  <span>Appearance</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setActiveSection("language")}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${activeSection === "language" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
-                    }`}
-                >
-                  <Globe size={18} />
-                  <span>Language</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setActiveSection("privacy")}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${activeSection === "privacy" ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"
-                    }`}
-                >
-                  <Shield size={18} />
-                  <span>Privacy</span>
-                </button>
-              </li>
+              {[
+                { key: "account", icon: <Mail size={18} />, label: "Account" },
+                { key: "security", icon: <Lock size={18} />, label: "Security" },
+                { key: "notifications", icon: <Bell size={18} />, label: "Notifications" },
+                { key: "appearance", icon: <Sun size={18} />, label: "Appearance" },
+                { key: "language", icon: <Globe size={18} />, label: "Language" },
+                { key: "privacy", icon: <Shield size={18} />, label: "Privacy" },
+              ].map(({ key, icon, label }) => (
+                <li key={key}>
+                  <button
+                    onClick={() => setActiveSection(key)}
+                    className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 ${activeSection === key ? "bg-[#FF007F]/10 text-[#FF007F]" : "hover:bg-[#F5F5F5]/5"}`}
+                  >
+                    {icon}
+                    <span>{label}</span>
+                  </button>
+                </li>
+              ))}
             </ul>
           </nav>
         </div>
 
         {/* Settings Content */}
         <div className="flex-1 bg-[#1A1A1A] rounded-xl p-6">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(showalter)}>
             {/* Account Settings */}
             {activeSection === "account" && (
               <div>
@@ -224,7 +209,7 @@ if(loading){
                       name="email"
                       type="email"
                       value={userData.email}
-                      onChange={handleInputChange}
+                      onChange={handleFormChange}
                       className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
                     />
                   </div>
@@ -249,134 +234,45 @@ if(loading){
               </div>
             )}
 
-            {/* Security Settings */}
-            {activeSection === "security" && (
-              <div>
-                <h2 className="text-lg font-bold mb-4">Security Settings</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="currentPassword" className="block text-sm font-medium mb-1">
-                      Current Password
-                    </label>
-                    <input
-                      id="currentPassword"
-                      name="currentPassword"
-                      type="password"
-                      value={formData.currentPassword}
-                      onChange={handleInputChange}
-                      className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="newPassword" className="block text-sm font-medium mb-1">
-                      New Password
-                    </label>
-                    <input
-                      id="newPassword"
-                      name="newPassword"
-                      type="password"
-                      value={formData.newPassword}
-                      onChange={handleInputChange}
-                      className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1">
-                      Confirm New Password
-                    </label>
-                    <input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
-                      className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
-                    />
-                  </div>
-                  <div className="pt-2">
-                    <p className="text-sm text-[#F5F5F5]/60 mb-2">Password Requirements:</p>
-                    <ul className="text-xs text-[#F5F5F5]/60 space-y-1 list-disc pl-5">
-                      <li>At least 8 characters long</li>
-                      <li>Include at least one uppercase letter</li>
-                      <li>Include at least one number</li>
-                      <li>Include at least one special character</li>
-                    </ul>
-                  </div>
-                  <div className="mt-6">
-                    <button
-                      type="submit"
-                      className="flex items-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors"
-                    >
-                      <Save size={16} />
-                      Save Changes
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+           
 
             {/* Notification Settings */}
             {activeSection === "notifications" && (
               <div>
                 <h2 className="text-lg font-bold mb-4">Notification Settings</h2>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Email Notifications</p>
-                      <p className="text-sm text-[#F5F5F5]/60">Receive notifications via email</p>
+                  {[
+                    { name: "emailNotifications", label: "Email Notifications", desc: "Receive notifications via email" },
+                    { name: "quizReminders", label: "Quiz Reminders", desc: "Get reminders for upcoming quizzes" },
+                    { name: "studyReminders", label: "Study Reminders", desc: "Never miss your daily study sessions" },
+                  ].map(({ name, label, desc }) => (
+                    <div key={name} className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">{label}</p>
+                        <p className="text-sm text-[#F5F5F5]/60">{desc}</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          name={name}
+                          checked={formData[name]}
+                          onChange={handleFormChange}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-[#0D0D0D] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF007F]"></div>
+                      </label>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="emailNotifications"
-                        checked={formData.emailNotifications}
-                        onChange={handleInputChange}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-[#0D0D0D] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF007F]"></div>
-                    </label>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Quiz Reminders</p>
-                      <p className="text-sm text-[#F5F5F5]/60">Get reminders for upcoming quizzes</p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="quizReminders"
-                        checked={formData.quizReminders}
-                        onChange={handleInputChange}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-[#0D0D0D] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF007F]"></div>
-                    </label>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Study Reminders</p>
-                      <p className="text-sm text-[#F5F5F5]/60">Get daily reminders to study</p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="studyReminders"
-                        checked={formData.studyReminders}
-                        onChange={handleInputChange}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-[#0D0D0D] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF007F]"></div>
-                    </label>
-                  </div>
-                  <div className="mt-6">
-                    <button
-                      type="submit"
-                      className="flex items-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors"
-                    >
-                      <Save size={16} />
-                      Save Changes
-                    </button>
-                  </div>
+                  ))}
+                </div>
+
+                <div className="mt-6">
+                  <button
+                    type="submit"
+                    className="flex items-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    <Save size={16} />
+                    Save Changes
+                  </button>
                 </div>
               </div>
             )}
@@ -536,10 +432,100 @@ if(loading){
                 </div>
               </div>
             )}
-
-            {/* Save Button */}
-
           </form>
+           {/* Security Settings */}
+           {activeSection === "security" && (
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div>
+                <h2 className="text-lg font-bold mb-4">Security Settings</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="currentPassword" className="block text-sm font-medium mb-1">
+                      Current Password
+                    </label>
+                    <input
+                      {...register("currentPassword", { required: "This field is Required *" })}
+                      id="currentPassword"
+                      type="password"
+                      className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
+                    />
+
+                    {errors.currentPassword && (
+                      <span className="text-red-500 text-sm">{errors.currentPassword.message}</span>
+                    )}
+                  </div>
+
+                  {/* New Password */}
+                    <label htmlFor="newPassword" className="block text-sm font-medium mb-1">
+                      New Password
+                    </label>
+                  <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40" size={18} />
+                    <input
+                      id="newPassword"
+                      type={showPassword ? "text" : "password"}
+                      {...register("newPassword", {
+                        required: "Password is required",
+                        minLength: { value: 8, message: "Password must be at least 6 characters" },
+                      })}
+                      className={`w-full bg-[#0D0D0D] border ${errors.newPassword ? "border-red-500" : "border-[#F5F5F5]/10"} rounded-lg py-2 pl-10 pr-10 focus:outline-none focus:border-[#FF007F]`}
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40 hover:text-[#F5F5F5]"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  {errors.newPassword && <p className="text-red-500 text-xs mt-1">{errors.newPassword.message}</p>}
+                  </div>
+
+                  {/* Confirm Password */}
+                  <div>
+                    <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1">
+                      Confirm Password
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40" size={18} />
+                      <input
+                        id="confirmPassword"
+                        type={showPassword ? "text" : "password"}
+                        {...register("confirmPassword", {
+                          required: "Please confirm your password",
+                          validate: (value) => value === newPassword || "Passwords do not match",
+                        })}
+                        className={`w-full bg-[#0D0D0D] border ${errors.confirmPassword ? "border-red-500" : "border-[#F5F5F5]/10"} rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:border-[#FF007F] transition-colors`}
+                        placeholder="••••••••"
+                      />
+                    </div>
+                    {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
+                  </div>
+
+                  <div className="pt-2">
+                    <p className="text-sm text-[#F5F5F5]/60 mb-2">Password Requirements:</p>
+                    <ul className="text-xs text-[#F5F5F5]/60 space-y-1 list-disc pl-5">
+                      <li>At least 8 characters long</li>
+                      <li>Include at least one uppercase letter</li>
+                      <li>Include at least one number</li>
+                      <li>Include at least one special character</li>
+                    </ul>
+                  </div>
+
+                  <div className="mt-6">
+                    <button
+                    type="submit"
+                      className="flex items-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      <Save size={16} />
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            )}
         </div>
       </div>
     </div>
