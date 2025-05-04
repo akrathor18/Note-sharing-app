@@ -65,9 +65,6 @@ export default function Settings({ user, setUser }) {
   const newPassword = watch("newPassword");
 
   const onSubmit = async (data) => {
-    console.log(data.currentPassword);  // ✅ should log the right value
-    console.log(data.newPassword);      // ✅ should log the right value
-  
     try {
       const response = await API.post('/users/changepassword', {
         password: data.currentPassword,
@@ -80,9 +77,9 @@ export default function Settings({ user, setUser }) {
       toast.error(error.response?.data)
     }
   };
-  
 
-    const showalter=()=>alert('We are still working on this feature!');
+
+  const showalter = () => alert('We are still working on this feature!');
 
 
   const fetchUserDetail = async () => {
@@ -90,7 +87,6 @@ export default function Settings({ user, setUser }) {
       try {
 
         const response = await API.get("/users/profile")
-        console.log(response.data);
         setUserData(response.data);
       } catch (error) {
         console.log(error)
@@ -102,7 +98,6 @@ export default function Settings({ user, setUser }) {
 
   useEffect(() => {
     fetchUserDetail()
-    console.log(userData)
   }, [])
 
   const formatDate = (isoDate) => {
@@ -234,7 +229,7 @@ export default function Settings({ user, setUser }) {
               </div>
             )}
 
-           
+
 
             {/* Notification Settings */}
             {activeSection === "notifications" && (
@@ -433,8 +428,8 @@ export default function Settings({ user, setUser }) {
               </div>
             )}
           </form>
-           {/* Security Settings */}
-           {activeSection === "security" && (
+          {/* Security Settings */}
+          {activeSection === "security" && (
             <form onSubmit={handleSubmit(onSubmit)}>
               <div>
                 <h2 className="text-lg font-bold mb-4">Security Settings</h2>
@@ -456,11 +451,11 @@ export default function Settings({ user, setUser }) {
                   </div>
 
                   {/* New Password */}
-                    <label htmlFor="newPassword" className="block text-sm font-medium mb-1">
-                      New Password
-                    </label>
+                  <label htmlFor="newPassword" className="block text-sm font-medium mb-1">
+                    New Password
+                  </label>
                   <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40" size={18} />
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40" size={18} />
                     <input
                       id="newPassword"
                       type={showPassword ? "text" : "password"}
@@ -478,7 +473,7 @@ export default function Settings({ user, setUser }) {
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
-                  {errors.newPassword && <p className="text-red-500 text-xs mt-1">{errors.newPassword.message}</p>}
+                    {errors.newPassword && <p className="text-red-500 text-xs mt-1">{errors.newPassword.message}</p>}
                   </div>
 
                   {/* Confirm Password */}
@@ -514,18 +509,19 @@ export default function Settings({ user, setUser }) {
 
                   <div className="mt-6">
                     <button
-                    type="submit"
-                      className="flex items-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors"
+                      type="submit"
+                      disabled={isSubmitting}
+                      className={`flex items-center gap-2 ${isSubmitting ? 'bg-gray-500 cursor-not-allowed' : 'bg-[#FF007F] hover:bg-[#FF007F]/90'} text-white px-4 py-2 rounded-lg transition-colors`}
                     >
                       <Save size={16} />
-                      Save Changes
+                      {isSubmitting ? 'Saving...' : "Update Password"}
                     </button>
                   </div>
                 </div>
               </div>
             </form>
 
-            )}
+          )}
         </div>
       </div>
     </div>

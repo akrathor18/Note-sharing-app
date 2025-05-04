@@ -1,64 +1,10 @@
 import { Clock, FileText, CheckCircle2, ChevronRight, Download } from "lucide-react"
 import { useEffect, useState } from "react"
 import API from "../config/axios"
-export default function Dashboard() {
-  // Sample data
-  const recentNotes = [
-    { id: 1, title: "Data Structures & Algorithms", subject: "Computer Science", date: "2 days ago" },
-    { id: 2, title: "Organic Chemistry Reactions", subject: "Chemistry", date: "1 week ago" },
-    { id: 3, title: "Calculus II: Integration", subject: "Mathematics", date: "2 weeks ago" },
-  ]
 
-  const upcomingQuizzes = [
-    { id: 1, title: "Database Systems", date: "Tomorrow, 2:00 PM", questions: 20 },
-    { id: 2, title: "Modern Physics", date: "Friday, 10:00 AM", questions: 15 },
-  ]
-  const [userDetails, setUserDetails] = useState()
-  
-  const fetchUserDetail=async()=>{
-  setTimeout(async () => {
-    try {
-      const response = await API.get("/users/profile")
-      console.log(response.data);
-      setUserDetails(response.data);
-     } catch (error) {
-      console.log(error)
-     }
-  }, 1000);
-  }
-
-  useEffect(() => {
-    fetchUserDetail();
-  }, []);
-  
-  useEffect(() => {
-    console.log("Fetched user details:", userDetails);
-  }, [userDetails]);
-  
-  const activityStats = [
-    {
-      label: "Notes Viewed",
-      value: userDetails?.stats?.totalNoteVisits ?? 10,
-      icon: FileText,
-      color: "#FF007F",
-    },
-    {
-      label: "Quizzes Completed",
-      value: userDetails?.stats?.quizzesTaken ?? 10,
-      icon: CheckCircle2,
-      color: "#00E5FF",
-    },
-    {
-      label: "Study Hours",
-      value: userDetails?.stats?.totalStudyTime ?? 10,
-      icon: Clock,
-      color: "#FF007F",
-    },
-  ];
-  
-  if (!userDetails) {
-    return(
-      <div className="space-y-6 md:space-y-8 animate-pulse">
+function SkeletonLoader() {
+  return(
+    <div className="space-y-6 md:space-y-8 animate-pulse">
   {/* Welcome Section */}
   <div>
     <div className="h-6 w-2/3 bg-[#2A2A2A] rounded mb-2"></div>
@@ -133,7 +79,66 @@ export default function Dashboard() {
     </div>
   </div>
 </div>
+  )
+}
 
+export default function Dashboard() {
+  // Sample data
+  const recentNotes = [
+    { id: 1, title: "Data Structures & Algorithms", subject: "Computer Science", date: "2 days ago" },
+    { id: 2, title: "Organic Chemistry Reactions", subject: "Chemistry", date: "1 week ago" },
+    { id: 3, title: "Calculus II: Integration", subject: "Mathematics", date: "2 weeks ago" },
+  ]
+
+  const upcomingQuizzes = [
+    { id: 1, title: "Database Systems", date: "Tomorrow, 2:00 PM", questions: 20 },
+    { id: 2, title: "Modern Physics", date: "Friday, 10:00 AM", questions: 15 },
+  ]
+  const [userDetails, setUserDetails] = useState()
+  
+  const fetchUserDetail=async()=>{
+  setTimeout(async () => {
+    try {
+      const response = await API.get("/users/profile")
+      setUserDetails(response.data);
+     } catch (error) {
+      console.log(error)
+     }
+  }, 1000);
+  }
+
+  useEffect(() => {
+    fetchUserDetail();
+  }, []);
+  
+  useEffect(() => {
+    console.log("Fetched user details:", userDetails);
+  }, [userDetails]);
+  
+  const activityStats = [
+    {
+      label: "Notes Viewed",
+      value: userDetails?.stats?.totalNoteVisits ?? 10,
+      icon: FileText,
+      color: "#FF007F",
+    },
+    {
+      label: "Quizzes Completed",
+      value: userDetails?.stats?.quizzesTaken ?? 10,
+      icon: CheckCircle2,
+      color: "#00E5FF",
+    },
+    {
+      label: "Study Hours",
+      value: userDetails?.stats?.totalStudyTime ?? 10,
+      icon: Clock,
+      color: "#FF007F",
+    },
+  ];
+  
+  if (!userDetails) {
+    return(
+      <SkeletonLoader />
     )
   }
   return (
