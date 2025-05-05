@@ -12,6 +12,7 @@ const storage = new CloudinaryStorage({
   params: {
     folder: 'notes',
     resource_type: 'raw', // Important for PDFs and Word files
+    type: 'upload', 
     format: async (req, file) => {
       const ext = file.originalname.split('.').pop();
       return ext;
