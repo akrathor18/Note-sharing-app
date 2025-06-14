@@ -22,6 +22,7 @@ import {
   FileText,
   CheckCircle2,
 } from "lucide-react"
+import { toast } from "react-toastify";
 
 function SkeletonLoader(){
   return(
@@ -96,13 +97,14 @@ function Profile() {
       setBio(response.data.bio)
     } catch (error) {
       console.log(error)
+      toast.error(error.response.data.message)
+
     }
   }, 1000);
 }
 
   useEffect(() => {
     fetchUserDetail()
-    // console.log(userDetails)s
   }, [])
 
 

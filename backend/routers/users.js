@@ -2,9 +2,8 @@ import express from "express";
 const router = express.Router();
 import User from '../model/UserSchema.js';
 import jwt from 'jsonwebtoken';
-import VerifyJwtMiddleware from "../Middleware/verifyJWT.js";
+import VerifyJwtMiddleware from "../middleware/verifyJWT.js";
 import authMiddleware from "../Middleware/authMiddleware.js";
-import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 function generateSessionId(user, res) {
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
