@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { FileText, Download, Search, Filter, Plus, X, Save, Image, Tag, Calendar } from "lucide-react"
 import { useForm } from "react-hook-form";
 import API from "../config/axios";
@@ -26,7 +26,22 @@ export default function Notes() {
     { id: "physics", name: "Physics" },
     { id: "chemistry", name: "Chemistry" },
     { id: "biology", name: "Biology" },
+    { id: "CE", name: "civil engineering" },
+    { id: "ME", name: "mechanical engineering" },
   ]
+
+ const formatDate = (date) => {
+  const currentDate = date ? new Date(date) : new Date(" ");
+
+  const formattedDate = currentDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  return formattedDate;
+};
+
 
   const [notes, setNotes] = useState([
     {
@@ -91,6 +106,22 @@ export default function Notes() {
     },
   ])
 
+  const getNotes= async()=>{
+    try {
+      const response= await API.get("/notes/getnotes");
+      setNotes(response.data)
+      console.log(response.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+  
+  getNotes()
+  }, [])
+  
+
   // Filter notes based on active subject and search term
   const filteredNotes = notes
     .filter((note) => activeSubject === "all" || note.subjectId === activeSubject)
@@ -99,7 +130,7 @@ export default function Notes() {
         searchTerm === "" ||
         note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         note.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        note.content.toLowerCase().includes(searchTerm.toLowerCase()),
+        note.description.toLowerCase().includes(searchTerm.toLowerCase()),
     )
 
   const handleSearchChange = (e) => {
@@ -116,7 +147,7 @@ export default function Notes() {
       title: "",
       subject: "Computer Science",
       subjectId: "cs",
-      content: "",
+      description: "",
     })
   }
 
@@ -149,7 +180,7 @@ export default function Notes() {
 
 
   const handleSaveNote = () => {
-    if (!newNote.title || !newNote.subject || !newNote.content) {
+    if (!newNote.title || !newNote.subject || !newNote.description) {
       alert("Please fill in all required fields")
       return
     }
@@ -169,11 +200,7 @@ export default function Notes() {
     try {
       setIsUploading(true);
       const currentDate = new Date();
-      const formattedDate = currentDate.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
+      const formattedDate = formatDate(currentDate);
 
       const newNoteObj = {
         title: data.title,
@@ -202,7 +229,7 @@ export default function Notes() {
       console.log(response);
       setIsAddNoteModalOpen(false)
       setNotes([newNoteObj, ...notes]);
-
+      getNotes()
       toast.success("Note uploaded successfully")
     } catch (error) {
       console.log(error);
@@ -255,13 +282,20 @@ export default function Notes() {
       </div>
 
       {/* Subject Tabs */}
-      <div className="flex overflow-x-auto pb-2 hide-scrollbar">
+      <div className="flex overflow-x-auto pb-2 [&::-webkit-scrollbar]:w-2
+        [&::-webkit-scrollbar-track]:rounded-full
+      [&::-webkit-scrollbar-track]:bg-none
+        [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-thumb]:bg-gray-500
+      dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+      dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
         <div className="flex gap-2">
           {subjects.map((subject) => (
             <button
               key={subject.id}
               onClick={() => setActiveSubject(subject.id)}
-              className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${activeSubject === subject.id
+              className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors 
+                ${activeSubject === subject.id
                 ? "bg-[#FF007F] text-white"
                 : "bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-[#F5F5F5]"
                 }`}
@@ -291,20 +325,21 @@ export default function Notes() {
                 </div>
 
                 <h3 className="font-medium mb-2 line-clamp-2">{note.title}</h3>
-                <p className="text-xs text-[#F5F5F5]/70 mb-3 line-clamp-2">{note.content}</p>
+                <p className="text-xs text-[#F5F5F5]/70 mb-3 line-clamp-2">{note.description}</p>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#F5F5F5]/60">{note.date}</span>
+                  <span className="text-xs text-[#F5F5F5]/60">{formatDate(note.createdAt)}</span>
                   <div className="flex items-center gap-1 text-xs text-[#F5F5F5]/60">
                     <Download size={14} />
-                    {note.downloads}
+                    {note.totalDownloads}
                   </div>
                 </div>
-
+              <a href={note.fileUrl} target="_blank">
                 <button className="w-full mt-3 py-2 rounded-lg bg-[#0D0D0D] hover:bg-[#00E5FF] hover:text-[#0D0D0D] transition-colors flex items-center justify-center gap-2 font-medium">
                   <Download size={16} />
                   Download
                 </button>
+              </a>
               </div>
             </div>
           ))}
