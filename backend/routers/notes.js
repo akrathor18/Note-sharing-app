@@ -32,27 +32,31 @@ router.get("/getnotes", authMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Failed to retrieve notes', error: error.message });
   }
 })
-
 router.get('/search', async (req, res) => {
-  const { search } = req.query;
+  const { query } = req.query;
 
-  const query = search
-    ? {
-      $or: [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { subject: { $regex: search, $options: 'i' } }
-      ]
-    }
-    : {};
+if (!query || query.trim() === '') {
+  return res.status(400).json({ error: 'Search term is required' });
+}
 
-  try {
-    const notes = await Note.find(query);
-    res.status(200).json(notes);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch notes' });
-  }
+const searchQuery = {
+  $or: [
+    { title: { $regex: query, $options: 'i' } },
+    { description: { $regex: query, $options: 'i' } },
+    { subject: { $regex: query, $options: 'i' } }
+  ]
+};
+
+try {
+  const notes = await Note.find(searchQuery);
+  res.status(200).json(notes);
+} catch (err) {
+  console.error(err);
+  res.status(500).json({ error: 'Failed to fetch notes' });
+}
+
 });
+
 
 
 export default router;

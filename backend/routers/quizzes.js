@@ -1,7 +1,6 @@
 import express from "express";
 const router = express.Router();
 import Quiz from '../model/quizSchema.js';
-import jwt from 'jsonwebtoken'
 
 router.post("/createQuiz", async (req, res) => {
     try {
@@ -27,5 +26,27 @@ router.get("/getQuiz", async (req, res) => {
 
     }
 })
+
+// Search Quizzes
+router.get('/search', async (req, res) => {
+    const { search } = req.query;
+
+    const query = search
+        ? {
+            $or: [
+                { title: { $regex: search, $options: 'i' } },
+                { category: { $regex: search, $options: 'i' } }
+            ]
+        }
+        : {};
+
+    try {
+        const quizzes = await Quiz.find(query);
+        res.status(200).json(quizzes);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch quizzes' });
+    }
+});
+
 
 export default router;
