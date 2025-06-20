@@ -1,15 +1,25 @@
 import mongoose from "mongoose";
 
 const quizSchema = new mongoose.Schema({
-  title: { type: String, required: true }, 
-  category: { type: String, required: true }, 
-  timeLimit: { type: Number, default: 10 }, 
-  difficulty: { type: String, enum: ["Easy", "Medium", "Hard"], default: "Medium" }, 
+  title: { type: String, required: true },
+  category: { type: String, required: true },
+  timeLimit: { type: Number, default: 10 },
+  difficulty: {
+    type: String,
+    enum: ["Easy", "Medium", "Hard"],
+    default: "Medium",
+  },
   questions: [
     {
-      questionText: { type: String, required: true }, 
-      options: [{ type: String, required: true }],
-      correctAnswer: { type: String, required: true },
+      
+      text:  { type: String, required: true },
+      options: [
+        {
+          id: { type: String, required: true }, // "a", "b", "c", "d"
+          text: { type: String, required: true },
+        },
+      ],
+      correctAnswer: { type: String, required: true }, // e.g., "a"
     },
   ],
   createdAt: { type: Date, default: Date.now },

@@ -1,6 +1,4 @@
-"use client"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   BrainCircuit,
   Clock,
@@ -11,6 +9,8 @@ import {
   ArrowRight,
   RotateCcw,
 } from "lucide-react"
+import API from "../config/axios"
+
 
 export default function Quiz() {
   const [activeView, setActiveView] = useState("list") // list, quiz, result
@@ -19,46 +19,26 @@ export default function Quiz() {
   const [selectedAnswers, setSelectedAnswers] = useState({})
   const [quizResult, setQuizResult] = useState(null)
 
-  // Sample data
-  const quizzes = [
-    {
-      id: 1,
-      title: "Data Structures Fundamentals",
-      subject: "Computer Science",
-      questions: 10,
-      time: "15 min",
-      difficulty: "Medium",
-      image: "data-structures",
-    },
-    {
-      id: 2,
-      title: "Calculus: Derivatives & Integrals",
-      subject: "Mathematics",
-      questions: 15,
-      time: "20 min",
-      difficulty: "Hard",
-      image: "calculus",
-    },
-    {
-      id: 3,
-      title: "Quantum Physics Basics",
-      subject: "Physics",
-      questions: 8,
-      time: "12 min",
-      difficulty: "Medium",
-      image: "quantum-physics",
-    },
-    {
-      id: 4,
-      title: "Organic Chemistry Reactions",
-      subject: "Chemistry",
-      questions: 12,
-      time: "18 min",
-      difficulty: "Hard",
-      image: "organic-chemistry",
-    },
-  ]
 
+  // Sample data
+  const [quizzes, setQuizzes] = useState([])
+
+
+  const getQuizzes=async()=>{
+    try {
+    const response = await API.get("quiz/getQuiz");
+    setQuizzes(response.data)
+      console.log((response.data))
+      console.log(typeof(response.data))
+    } catch (error) {
+      console.log(error)
+    }    
+  }
+
+  useEffect(() => {
+getQuizzes();
+  }, [])
+  
   // Sample quiz data
   const sampleQuizData = {
     id: 1,
@@ -189,7 +169,7 @@ export default function Quiz() {
 
               <div className="p-4">
                 <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-                  <span className="text-xs bg-[#00E5FF]/10 text-[#00E5FF] px-2 py-1 rounded-full">{quiz.subject}</span>
+                  <span className="text-xs bg-[#00E5FF]/10 text-[#00E5FF] px-2 py-1 rounded-full">{quiz.category}</span>
                   <span
                     className={`text-xs px-2 py-1 rounded-full ${
                       quiz.difficulty === "Easy"
@@ -208,11 +188,11 @@ export default function Quiz() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-1 text-xs text-[#F5F5F5]/60">
                     <AlertCircle size={14} />
-                    {quiz.questions} Questions
+                    {quiz.questions.length} Questions
                   </div>
                   <div className="flex items-center gap-1 text-xs text-[#F5F5F5]/60">
                     <Clock size={14} />
-                    {quiz.time}
+                    {quiz.timeLimit}min
                   </div>
                 </div>
 
@@ -266,6 +246,7 @@ export default function Quiz() {
 
           <div className="space-y-3">
             {currentQ.options.map((option) => (
+              
               <button
                 key={option.id}
                 onClick={() => handleAnswerSelect(currentQ.id, option.id)}
@@ -404,4 +385,3 @@ export default function Quiz() {
 
   return null
 }
-
