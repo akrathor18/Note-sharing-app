@@ -13,6 +13,7 @@ import SearchResults from "./components/SearchResults.jsx";
 import SignIn from "./components/SignIn.jsx";
 import SignUp from "./components/SignUp.jsx";
 import NotFound from "./components/NotFound.jsx";
+import CreateQuiz from "./components/CreateQuiz.jsx";
 function App() {
   const router = createBrowserRouter([
     {
@@ -28,6 +29,7 @@ function App() {
             { path: "profile", element: <Profile /> },
             { path: "settings", element: <Settings /> },
             { path: "search", element: <SearchResults /> },
+            { path: "createquiz", element: <CreateQuiz /> },
           ],
         },
       ],
