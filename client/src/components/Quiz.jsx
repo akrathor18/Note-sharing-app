@@ -10,17 +10,14 @@ import {
   RotateCcw,
   Plus
 } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link,useNavigate  } from "react-router-dom"
 import API from "../config/axios"
 
 
 export default function Quiz() {
-  const [activeView, setActiveView] = useState("list") // list, quiz, result
-  const [activeQuiz, setActiveQuiz] = useState(null)
-  const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [selectedAnswers, setSelectedAnswers] = useState({})
-  const [quizResult, setQuizResult] = useState(null)
+  const [activeView, setActiveView] = useState("list") 
 
+const navigate = useNavigate();
 
   // Sample data
   const [quizzes, setQuizzes] = useState([])
@@ -30,8 +27,6 @@ export default function Quiz() {
     try {
     const response = await API.get("quiz/getQuiz");
     setQuizzes(response.data)
-      console.log((response.data))
-      console.log(typeof(response.data))
     } catch (error) {
       console.log(error)
     }    
@@ -41,76 +36,11 @@ export default function Quiz() {
 getQuizzes();
   }, [])
   
-  // Sample quiz data
-  const sampleQuizData = {
-    id: 1,
-    title: "Data Structures Fundamentals",
-    subject: "Computer Science",
-    questions: [
-      {
-        id: 1,
-        text: "Which data structure uses LIFO (Last In First Out) principle?",
-        options: [
-          { id: "a", text: "Queue" },
-          { id: "b", text: "Stack" },
-          { id: "c", text: "Linked List" },
-          { id: "d", text: "Tree" },
-        ],
-        correctAnswer: "b",
-      },
-      {
-        id: 2,
-        text: "What is the time complexity of searching an element in a binary search tree in the worst case?",
-        options: [
-          { id: "a", text: "O(1)" },
-          { id: "b", text: "O(log n)" },
-          { id: "c", text: "O(n)" },
-          { id: "d", text: "O(n²)" },
-        ],
-        correctAnswer: "c",
-      },
-      {
-        id: 3,
-        text: "Which of the following is not a linear data structure?",
-        options: [
-          { id: "a", text: "Array" },
-          { id: "b", text: "Queue" },
-          { id: "c", text: "Stack" },
-          { id: "d", text: "Tree" },
-        ],
-        correctAnswer: "d",
-      },
-      {
-        id: 4,
-        text: "What data structure would you use for implementing undo functionality in a text editor?",
-        options: [
-          { id: "a", text: "Stack" },
-          { id: "b", text: "Queue" },
-          { id: "c", text: "Linked List" },
-          { id: "d", text: "Hash Table" },
-        ],
-        correctAnswer: "a",
-      },
-      {
-        id: 5,
-        text: "Which sorting algorithm has the best average-case time complexity?",
-        options: [
-          { id: "a", text: "Bubble Sort" },
-          { id: "b", text: "Insertion Sort" },
-          { id: "c", text: "Quick Sort" },
-          { id: "d", text: "Selection Sort" },
-        ],
-        correctAnswer: "c",
-      },
-    ],
-  }
-
   const startQuiz = (quiz) => {
     console.log(quiz._id)
-    setActiveQuiz(sampleQuizData)
-    setCurrentQuestion(0)
-    setSelectedAnswers({})
-    setActiveView("quiz")
+    const quizId= quiz._id
+    navigate(`/quiz/${quizId}`);
+
   }
 
   // Quiz List View

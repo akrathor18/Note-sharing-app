@@ -1,171 +1,34 @@
 import { useState, useEffect } from "react";
 import {
-  BrainCircuit,
-  Clock,
-  ChevronRight,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
-  ArrowRight,
-  RotateCcw,
-  Plus
+    Clock,
+    CheckCircle2,
+    XCircle,
+    ArrowRight,
+    RotateCcw,
 } from "lucide-react"
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate  } from "react-router-dom";
+import API from "../config/axios";
 export default function QuizScreen() {
+    const navigate = useNavigate();
 
-
-    const { id } = useParams();
-    console.log(id)
     const [activeView, setActiveView] = useState("quiz") // list, quiz, result
-    const [activeQuiz, setActiveQuiz] = useState({
-    "_id": "685564441587880c3e5e0bb2",
-    "title": "Data Structures Fundamentals",
-    "category": "Data Structures",
-    "timeLimit": 10,
-    "difficulty": "Medium",
-    "questions": [
-        {
-            "text": "Which data structure uses LIFO (Last In First Out) principle?",
-            "options": [
-                {
-                    "id": "a",
-                    "text": "Queue",
-                    "_id": "685564441587880c3e5e0bb4"
-                },
-                {
-                    "id": "b",
-                    "text": "Stack",
-                    "_id": "685564441587880c3e5e0bb5"
-                },
-                {
-                    "id": "c",
-                    "text": "Linked List",
-                    "_id": "685564441587880c3e5e0bb6"
-                },
-                {
-                    "id": "d",
-                    "text": "Tree",
-                    "_id": "685564441587880c3e5e0bb7"
-                }
-            ],
-            "correctAnswer": "b",
-            "_id": "685564441587880c3e5e0bb3"
-        },
-        {
-            "text": "What is the time complexity of searching an element in a binary search tree in the worst case?",
-            "options": [
-                {
-                    "id": "a",
-                    "text": "O(1)",
-                    "_id": "685564441587880c3e5e0bb9"
-                },
-                {
-                    "id": "b",
-                    "text": "O(log n)",
-                    "_id": "685564441587880c3e5e0bba"
-                },
-                {
-                    "id": "c",
-                    "text": "O(n)",
-                    "_id": "685564441587880c3e5e0bbb"
-                },
-                {
-                    "id": "d",
-                    "text": "O(n²)",
-                    "_id": "685564441587880c3e5e0bbc"
-                }
-            ],
-            "correctAnswer": "c",
-            "_id": "685564441587880c3e5e0bb8"
-        },
-        {
-            "text": "Which of the following is not a linear data structure?",
-            "options": [
-                {
-                    "id": "a",
-                    "text": "Array",
-                    "_id": "685564441587880c3e5e0bbe"
-                },
-                {
-                    "id": "b",
-                    "text": "Queue",
-                    "_id": "685564441587880c3e5e0bbf"
-                },
-                {
-                    "id": "c",
-                    "text": "Stack",
-                    "_id": "685564441587880c3e5e0bc0"
-                },
-                {
-                    "id": "d",
-                    "text": "Tree",
-                    "_id": "685564441587880c3e5e0bc1"
-                }
-            ],
-            "correctAnswer": "d",
-            "_id": "685564441587880c3e5e0bbd"
-        },
-        {
-            "text": "What data structure would you use for implementing undo functionality in a text editor?",
-            "options": [
-                {
-                    "id": "a",
-                    "text": "Stack",
-                    "_id": "685564441587880c3e5e0bc3"
-                },
-                {
-                    "id": "b",
-                    "text": "Queue",
-                    "_id": "685564441587880c3e5e0bc4"
-                },
-                {
-                    "id": "c",
-                    "text": "Linked List",
-                    "_id": "685564441587880c3e5e0bc5"
-                },
-                {
-                    "id": "d",
-                    "text": "Hash Table",
-                    "_id": "685564441587880c3e5e0bc6"
-                }
-            ],
-            "correctAnswer": "a",
-            "_id": "685564441587880c3e5e0bc2"
-        },
-        {
-            "text": "Which sorting algorithm has the best average-case time complexity?",
-            "options": [
-                {
-                    "id": "a",
-                    "text": "Bubble Sort",
-                    "_id": "685564441587880c3e5e0bc8"
-                },
-                {
-                    "id": "b",
-                    "text": "Insertion Sort",
-                    "_id": "685564441587880c3e5e0bc9"
-                },
-                {
-                    "id": "c",
-                    "text": "Quick Sort",
-                    "_id": "685564441587880c3e5e0bca"
-                },
-                {
-                    "id": "d",
-                    "text": "Selection Sort",
-                    "_id": "685564441587880c3e5e0bcb"
-                }
-            ],
-            "correctAnswer": "c",
-            "_id": "685564441587880c3e5e0bc7"
-        }
-    ],
-    "createdAt": "2025-06-20T13:38:12.239Z",
-    "__v": 0
-})
+    const [activeQuiz, setActiveQuiz] = useState()
     const [currentQuestion, setCurrentQuestion] = useState(0)
     const [selectedAnswers, setSelectedAnswers] = useState({})
     const [quizResult, setQuizResult] = useState(null)
+
+
+    // fetching the quiz --
+    const { id } = useParams();
+    const getQuizData = async () => {
+        const response = await API.get(`/quiz/${id}`)
+        console.log(response)
+        setActiveQuiz(response.data)
+    }
+    useEffect(() => {
+        getQuizData()
+    }, [])
+
 
     const handleAnswerSelect = (questionId, answerId) => {
         setSelectedAnswers({
@@ -197,11 +60,8 @@ export default function QuizScreen() {
     }
 
     const resetQuiz = () => {
-        setActiveView("list")
-        setActiveQuiz(null)
-        setCurrentQuestion(0)
-        setSelectedAnswers({})
-        setQuizResult(null)
+        navigate("/quizzes");
+
     }
 
     // Quiz Taking View
@@ -238,16 +98,15 @@ export default function QuizScreen() {
                     <h3 className="text-base md:text-lg font-medium mb-4 md:mb-6">{currentQ.text}</h3>
 
                     <div className="space-y-3">
-                        {console.log(currentQ)}
                         {currentQ.options.map((option) => (
                             <button
-                            key={option.id}
-                            
-                            onClick={() => handleAnswerSelect(currentQ._id, option.id)}
-                            className={`w-full text-left p-3 md:p-4 rounded-lg flex items-center transition-all duration-200 ${selectedAnswers[currentQ._id] === option.id
-                                ? "bg-[#FF007F]/20 border border-[#FF007F]"
-                                : "bg-[#0D0D0D] border border-[#F5F5F5]/10 hover:border-[#F5F5F5]/30"
-                            }`}
+                                key={option.id}
+
+                                onClick={() => handleAnswerSelect(currentQ._id, option.id)}
+                                className={`w-full text-left p-3 md:p-4 rounded-lg flex items-center transition-all duration-200 ${selectedAnswers[currentQ._id] === option.id
+                                    ? "bg-[#FF007F]/20 border border-[#FF007F]"
+                                    : "bg-[#0D0D0D] border border-[#F5F5F5]/10 hover:border-[#F5F5F5]/30"
+                                    }`}
                             >
                                 <span
                                     className={`w-6 h-6 rounded-full mr-3 flex items-center justify-center ${selectedAnswers[currentQ._id] === option.id
@@ -255,7 +114,6 @@ export default function QuizScreen() {
                                         : "bg-[#1A1A1A] text-[#F5F5F5]/60"
                                         }`}
                                 >
-                                    {console.log(selectedAnswers[currentQ._id] +option.id)}
                                     {option.id.toUpperCase()}
                                 </span>
                                 {option.text}
