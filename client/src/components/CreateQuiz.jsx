@@ -1,55 +1,83 @@
 import { useState } from "react"
 import { X, Plus, Trash2, Save, Clock, AlertCircle, BrainCircuit } from "lucide-react"
-import { Link } from "react-router-dom";
+import { Link,useNavigate  } from "react-router-dom";
+import { toast } from "react-toastify";
+import API from "../config/axios";
+
 export default function CreateQuiz() {
+    const navigate = useNavigate();
+
+    const [uploading, setuploading] = useState(false)
     const [quizData, setQuizData] = useState({
-        title: "",
-        subject: "Computer Science",
-        description: "",
+        title: "JavaScript Fundamentals",
+        category: "Computer programming",
         timeLimit: 15,
         difficulty: "Medium",
         questions: [
             {
                 id: 1,
-                text: "",
+                text: "Which of the following is a valid way to declare a variable in JavaScript?",
                 options: [
-                    { id: "a", text: "" },
-                    { id: "b", text: "" },
-                    { id: "c", text: "" },
-                    { id: "d", text: "" },
+                    { id: "a", text: "var myVar;" },
+                    { id: "b", text: "let myVar;" },
+                    { id: "c", text: "const myVar = 10;" },
+                    { id: "d", text: "All of the above" },
                 ],
-                correctAnswer: "a",
+                correctAnswer: "d",
             },
         ],
     })
 
     const [userCreatedQuizzes, setUserCreatedQuizzes] = useState([]);
 
- const handleSaveQuiz = (newQuizData) => {
+     const handleSave = () => {
+        // Validation
+        if (!quizData.title.trim()) {
+            alert("Please enter a quiz title")
+            return
+        }
+
+        // Check if all questions have text and all options are filled
+        for (const question of quizData.questions) {
+            if (!question.text.trim()) {
+                alert("Please fill in all question texts")
+                return
+            }
+            for (const option of question.options) {
+                if (!option.text.trim()) {
+                    alert("Please fill in all answer options")
+                    return
+                }
+            }
+        }
+
+    }
+
+ const handleSaveQuiz = async(newQuizData) => {
+    handleSave()
+    setuploading(true)
   const newQuiz = {
-    id: Date.now(),
     ...newQuizData,
     // Keep the questions array intact
     questions: newQuizData?.questions || [],
-    // Store formatted time
-    time: `${newQuizData?.timeLimit || 0} min`,
-    createdAt: new Date().toISOString(),
   };
   
   setUserCreatedQuizzes([newQuiz, ...userCreatedQuizzes]);
-  console.log("New quiz created:", newQuiz);
+
+  try {
+    const response = await API.post("quiz/createQuiz",newQuiz);
+    
+    toast.success("Success! Your quiz is ready to use.")
+    navigate("/quizzes");
+  } catch (error) {
+    console.log(error)
+    toast.error("Server error. Quiz could not be created.")
+  }finally{
+    setuploading(false)
+  }
+
 };
 
-    const subjects = [
-        "Computer Science",
-        "Mathematics",
-        "Physics",
-        "Chemistry",
-        "Biology",
-        "History",
-        "Literature",
-        "Economics",
-    ]
 
     const difficulties = ["Easy", "Medium", "Hard"]
 
@@ -88,7 +116,6 @@ export default function CreateQuiz() {
 
     const addQuestion = () => {
         const newQuestion = {
-            id: Date.now(),
             text: "",
             options: [
                 { id: "a", text: "" },
@@ -113,62 +140,11 @@ export default function CreateQuiz() {
         }
     }
 
-    const handleSave = () => {
-        // Validation
-        if (!quizData.title.trim()) {
-            alert("Please enter a quiz title")
-            return
-        }
-
-        if (!quizData.description.trim()) {
-            alert("Please enter a quiz description")
-            return
-        }
-
-        // Check if all questions have text and all options are filled
-        for (const question of quizData.questions) {
-            if (!question.text.trim()) {
-                alert("Please fill in all question texts")
-                return
-            }
-            for (const option of question.options) {
-                if (!option.text.trim()) {
-                    alert("Please fill in all answer options")
-                    return
-                }
-            }
-        }
-
-        // Save the quiz
-        onSave(quizData)
-        handleClose()
-    }
 
     const handleClose = () => {
-        setQuizData({
-            title: "",
-            subject: "Computer Science",
-            description: "",
-            timeLimit: 15,
-            difficulty: "Medium",
-            questions: [
-                {
-                    id: 1,
-                    text: "",
-                    options: [
-                        { id: "a", text: "" },
-                        { id: "b", text: "" },
-                        { id: "c", text: "" },
-                        { id: "d", text: "" },
-                    ],
-                    correctAnswer: "a",
-                },
-            ],
-        })
-        onClose()
-    }
+        navigate("/quizzes");
 
-    // if (!isOpen) return null
+    }
 
     return (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
@@ -208,39 +184,19 @@ export default function CreateQuiz() {
                         </div>
 
                         <div>
-                            <label htmlFor="subject" className="block text-sm font-medium mb-2">
+                            <label htmlFor="category" className="block text-sm font-medium mb-2">
                                 Subject <span className="text-[#FF007F]">*</span>
                             </label>
-                            <select
-                                id="subject"
-                                name="subject"
-                                value={quizData.subject}
+                            <input
+                                id="category"
+                                name="category"
+                                value={quizData.category}
                                 onChange={handleInputChange}
                                 className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
                                 required
                             >
-                                {subjects.map((subject) => (
-                                    <option key={subject} value={subject}>
-                                        {subject}
-                                    </option>
-                                ))}
-                            </select>
+                            </input>
                         </div>
-                    </div>
-
-                    <div>
-                        <label htmlFor="description" className="block text-sm font-medium mb-2">
-                            Description <span className="text-[#FF007F]">*</span>
-                        </label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            value={quizData.description}
-                            onChange={handleInputChange}
-                            placeholder="Enter quiz description"
-                            className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F] min-h-[80px]"
-                            required
-                        ></textarea>
                     </div>
 
                     {/* Quiz Settings */}
@@ -379,10 +335,11 @@ export default function CreateQuiz() {
                     </button>
                     <button
                           onClick={() => handleSaveQuiz(quizData)}
-                        className="flex items-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-6 py-2 rounded-lg transition-colors"
+                          disabled={uploading}
+                        className={`flex items-center gap-2 ${!uploading? "bg-[#FF007F] hover:bg-[#FF007F]/90": "bg-gray-700 cursor-not-allowed"}text-white px-6 py-2 rounded-lg transition-colors`}
                     >
                         <Save size={16} />
-                        Create Quiz
+                       {!uploading?"Create Quiz":"Uploading..."} 
                     </button>
                 </div>
             </div>
