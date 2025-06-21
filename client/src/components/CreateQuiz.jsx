@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { X, Plus, Trash2, Save, Clock, AlertCircle, BrainCircuit } from "lucide-react"
 import { Link } from "react-router-dom";
-export default function CreateQuiz({ isOpen, onClose, onSave }) {
+export default function CreateQuiz() {
     const [quizData, setQuizData] = useState({
         title: "",
         subject: "Computer Science",
