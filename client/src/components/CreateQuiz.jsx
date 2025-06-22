@@ -9,21 +9,21 @@ export default function CreateQuiz() {
 
     const [uploading, setuploading] = useState(false)
     const [quizData, setQuizData] = useState({
-        title: "JavaScript Fundamentals",
-        category: "Computer programming",
-        timeLimit: 15,
+        title: "",
+        category: "",
+        timeLimit: 10,
         difficulty: "Medium",
         questions: [
             {
-                id: 1,
-                text: "Which of the following is a valid way to declare a variable in JavaScript?",
+                id:1,
+                text: "",
                 options: [
-                    { id: "a", text: "var myVar;" },
-                    { id: "b", text: "let myVar;" },
-                    { id: "c", text: "const myVar = 10;" },
-                    { id: "d", text: "All of the above" },
+                    { id: "a", text: "" },
+                    { id: "b", text: "" },
+                    { id: "c", text: "" },
+                    { id: "d", text: "" },
                 ],
-                correctAnswer: "d",
+                correctAnswer: "",
             },
         ],
     })
@@ -116,6 +116,7 @@ export default function CreateQuiz() {
 
     const addQuestion = () => {
         const newQuestion = {
+            id:  Date.now(),
             text: "",
             options: [
                 { id: "a", text: "" },
@@ -123,7 +124,7 @@ export default function CreateQuiz() {
                 { id: "c", text: "" },
                 { id: "d", text: "" },
             ],
-            correctAnswer: "a",
+            correctAnswer: "",
         }
         setQuizData({
             ...quizData,
