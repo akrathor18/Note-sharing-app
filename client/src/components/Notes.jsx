@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import API from "../config/axios";
 import { toast } from "react-toastify";
 export default function Notes() {
-  const [activeSubject, setActiveSubject] = useState("all")
+  const [activeSubject, setActiveSubject] = useState("All Subjects")
   const [searchTerm, setSearchTerm] = useState("")
   const [isAddNoteModalOpen, setIsAddNoteModalOpen] = useState(false)
   const [newNote, setNewNote] = useState({
@@ -30,101 +30,39 @@ export default function Notes() {
     { id: "ME", name: "mechanical engineering" },
   ]
 
- const formatDate = (date) => {
-  const currentDate = date ? new Date(date) : new Date(" ");
+  const formatDate = (date) => {
+    const currentDate = date ? new Date(date) : new Date(" ");
 
-  const formattedDate = currentDate.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+    const formattedDate = currentDate.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
 
-  return formattedDate;
-};
+    return formattedDate;
+  };
 
 
-  const [notes, setNotes] = useState([
-    {
-      id: 1,
-      title: "Data Structures & Algorithms",
-      subject: "Computer Science",
-      subjectId: "cs",
-      date: "Oct 15, 2023",
-      pages: 24,
-      downloads: 128,
-      content: "This note covers basic data structures like arrays, linked lists, stacks, and queues.",
-    },
-    {
-      id: 2,
-      title: "Calculus II: Integration Techniques",
-      subject: "Mathematics",
-      subjectId: "math",
-      date: "Sep 28, 2023",
-      pages: 18,
-      downloads: 95,
-      content: "Learn about integration by parts, substitution, and partial fractions.",
-    },
-    {
-      id: 3,
-      title: "Quantum Mechanics Fundamentals",
-      subject: "Physics",
-      subjectId: "physics",
-      date: "Nov 5, 2023",
-      pages: 32,
-      downloads: 76,
-      content: "Introduction to quantum mechanics, wave functions, and Schrödinger's equation.",
-    },
-    {
-      id: 4,
-      title: "Organic Chemistry Reactions",
-      subject: "Chemistry",
-      subjectId: "chemistry",
-      date: "Oct 22, 2023",
-      pages: 15,
-      downloads: 112,
-      content: "Common organic chemistry reactions including substitution and elimination.",
-    },
-    {
-      id: 5,
-      title: "Cell Biology & Genetics",
-      subject: "Biology",
-      subjectId: "biology",
-      date: "Nov 12, 2023",
-      pages: 28,
-      downloads: 64,
-      content: "Cell structure, function, and basic principles of genetics and inheritance.",
-    },
-    {
-      id: 6,
-      title: "Database Systems",
-      subject: "Computer Science",
-      subjectId: "cs",
-      date: "Sep 18, 2023",
-      pages: 22,
-      downloads: 143,
-      content: "Relational database design, SQL queries, and normalization techniques.",
-    },
-  ])
+  const [notes, setNotes] = useState([])
 
-  const getNotes= async()=>{
+  const getNotes = async () => {
     try {
-      const response= await API.get("/notes/getnotes");
+      const response = await API.get("/notes/getnotes");
       setNotes(response.data)
-      console.log(response.data)
     } catch (error) {
       console.log(error)
     }
   }
 
   useEffect(() => {
-  
-  getNotes()
+
+    getNotes()
   }, [])
-  
+
 
   // Filter notes based on active subject and search term
   const filteredNotes = notes
-    .filter((note) => activeSubject === "all" || note.subjectId === activeSubject)
+    .filter((note) => activeSubject === "All Subjects" || note.subject === activeSubject)
     .filter(
       (note) =>
         searchTerm === "" ||
@@ -192,8 +130,6 @@ export default function Notes() {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(e.target.files[0]);
-      console.log("File selected:", file.name);
-      // Optional: store in state if needed
     }
   };
   const onSubmit = async (data) => {
@@ -211,9 +147,6 @@ export default function Notes() {
         content: data.content,
       };
 
-      console.log(newNoteObj);
-      console.log(selectedFile);
-
       const formData = new FormData();
       formData.append("file", selectedFile);
       formData.append("title", newNoteObj.title);
@@ -225,8 +158,6 @@ export default function Notes() {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      console.log(response);
       setIsAddNoteModalOpen(false)
       setNotes([newNoteObj, ...notes]);
       getNotes()
@@ -293,11 +224,11 @@ export default function Notes() {
           {subjects.map((subject) => (
             <button
               key={subject.id}
-              onClick={() => setActiveSubject(subject.id)}
+              onClick={() => setActiveSubject(subject.name)}
               className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors 
-                ${activeSubject === subject.id
-                ? "bg-[#FF007F] text-white"
-                : "bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-[#F5F5F5]"
+                ${activeSubject === subject.name
+                  ? "bg-[#FF007F] text-white"
+                  : "bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-[#F5F5F5]"
                 }`}
             >
               {subject.name}
@@ -311,7 +242,7 @@ export default function Notes() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredNotes.map((note) => (
             <div
-              key={note.id}
+              key={note._id}
               className="bg-[#1A1A1A] rounded-xl overflow-hidden border border-[#F5F5F5]/5 hover:border-[#F5F5F5]/20 transition-all duration-300 group"
             >
               <div className="h-32 bg-gradient-to-r from-[#FF007F]/20 to-[#00E5FF]/20 flex items-center justify-center">
@@ -334,12 +265,12 @@ export default function Notes() {
                     {note.totalDownloads}
                   </div>
                 </div>
-              <a href={note.fileUrl} target="_blank">
-                <button className="w-full mt-3 py-2 rounded-lg bg-[#0D0D0D] hover:bg-[#00E5FF] hover:text-[#0D0D0D] transition-colors flex items-center justify-center gap-2 font-medium">
-                  <Download size={16} />
-                  Download
-                </button>
-              </a>
+                <a href={note.fileUrl} target="_blank">
+                  <button className="w-full mt-3 py-2 rounded-lg bg-[#0D0D0D] hover:bg-[#00E5FF] hover:text-[#0D0D0D] transition-colors flex items-center justify-center gap-2 font-medium">
+                    <Download size={16} />
+                    Download
+                  </button>
+                </a>
               </div>
             </div>
           ))}
@@ -364,7 +295,7 @@ export default function Notes() {
       )}
 
       {/* Add Note Modal */}
-      {isAddNoteModalOpen && (
+      {!!isAddNoteModalOpen && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <div className="bg-[#1A1A1A] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-4 border-b border-[#F5F5F5]/10">
