@@ -15,8 +15,8 @@ import {
   UserCircle,
 } from "lucide-react"
 import { NavLink, Outlet,useNavigate  } from "react-router-dom";
-import SignIn from "./SignIn"
-import SignUp from "./SignUp"
+import SignIn from "../pages/SignIn"
+import SignUp from "../pages/SignUp"
 import API from "../config/axios";
 // Sample notes and quizzes for search
 const allNotes = [

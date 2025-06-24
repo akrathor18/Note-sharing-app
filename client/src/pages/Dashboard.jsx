@@ -3,43 +3,14 @@ import { useEffect, useState } from "react";
 import API from "../config/axios";
 
 // Components
-import SkeletonLoader from "../common/components/dashboard/skeletonLoader";
-import ActivityStats from "../common/components/dashboard/activityStats";
-import RecentNotes from "../common/components/dashboard/recentNotes";
-import UpcomingQuizzes from "../common/components/dashboard/upcomingQuiz";
-import StudyActivityChart from "../common/components/dashboard/studyActivityChart";
+import SkeletonLoader from "../components/dashboard/skeletonLoader";
+import ActivityStats from "../components/dashboard/activityStats";
+import RecentNotes from "../components/dashboard/recentNotes";
+import UpcomingQuizzes from "../components/dashboard/upcomingQuiz";
+import StudyActivityChart from "../components/dashboard/studyActivityChart";
 
-// Sample data
-const recentNotes = [
-  {
-    id: 1,
-    title: "Data Structures & Algorithms",
-    subject: "Computer Science",
-    date: "2 days ago",
-  },
-  {
-    id: 2,
-    title: "Organic Chemistry Reactions",
-    subject: "Chemistry",
-    date: "1 week ago",
-  },
-  {
-    id: 3,
-    title: "Calculus II: Integration",
-    subject: "Mathematics",
-    date: "2 weeks ago",
-  },
-];
-
-const upcomingQuizzes = [
-  {
-    id: 1,
-    title: "Database Systems",
-    date: "Tomorrow, 2:00 PM",
-    questions: 20,
-  },
-  { id: 2, title: "Modern Physics", date: "Friday, 10:00 AM", questions: 15 },
-];
+// Sample Data
+import { recentNotes, upcomingQuizzes } from "../config/data";
 
 export default function Dashboard() {
   const [userDetails, setUserDetails] = useState();

@@ -1,5 +1,4 @@
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
-import Navbar from "./pages/navBar.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Notes from "./pages/Notes.jsx";
 import Quiz from "./pages/Quiz.jsx";
@@ -11,6 +10,8 @@ import SignUp from "./pages/SignUp.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import CreateQuiz from "./pages/CreateQuiz.jsx";
 import QuizScreen from "./pages/QuizScreen.jsx";
+
+import Navbar from "./components/NavBar.jsx";
 
 const routes = [
   {

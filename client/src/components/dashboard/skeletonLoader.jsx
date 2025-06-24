@@ -1,5 +1,3 @@
-import { ChevronRight, Download } from "lucide-react";
-
 export default function SkeletonLoader() {
   return (
     <div className="space-y-6 md:space-y-8 animate-pulse">
