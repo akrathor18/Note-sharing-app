@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BookOpen, Eye, EyeOff, Mail, Lock, User } from "lucide-react";
-import { Link,useNavigate  } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 import API from "../config/axios";
+
+
 export default function SignUp() {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -12,29 +16,30 @@ export default function SignUp() {
     watch,
   } = useForm();
 
+  // States 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+
+  // Form
   const onSubmit = async (data) => {
     if (loading) return;
     setLoading(true);
     try {
       const response = await API.post("users/register", {
-          email: data.email,
-          password: data.password,
-          name: data.name,
+        email: data.email,
+        password: data.password,
+        name: data.name,
       });
-    console.log(response)
+      console.log(response);
       localStorage.setItem("token", response.data.token);
       navigate("/");
       toast.success("resgister successfully!");
-
-  } catch (error) {
-    console.log(error)
+    } catch (error) {
+      console.log(error);
       toast.error(error.response?.data);
-  }finally {
-    setLoading(false);
-  }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const password = watch("password");
@@ -49,7 +54,9 @@ export default function SignUp() {
           </div>
         </div>
 
-        <h2 className="text-xl font-bold mb-6 text-center">Create your account</h2>
+        <h2 className="text-xl font-bold mb-6 text-center">
+          Create your account
+        </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Name */}
@@ -58,7 +65,10 @@ export default function SignUp() {
               Full Name
             </label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40" size={18} />
+              <User
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40"
+                size={18}
+              />
               <input
                 id="name"
                 type="text"
@@ -69,7 +79,9 @@ export default function SignUp() {
                 placeholder="John Doe"
               />
             </div>
-            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+            {errors.name && (
+              <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
+            )}
           </div>
 
           {/* Email */}
@@ -78,13 +90,19 @@ export default function SignUp() {
               Email
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40" size={18} />
+              <Mail
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40"
+                size={18}
+              />
               <input
                 id="email"
                 type="email"
                 {...register("email", {
                   required: "Email is required",
-                  pattern: { value: /\S+@\S+\.\S+/, message: "Email is invalid" },
+                  pattern: {
+                    value: /\S+@\S+\.\S+/,
+                    message: "Email is invalid",
+                  },
                 })}
                 className={`w-full bg-[#0D0D0D] border ${
                   errors.email ? "border-red-500" : "border-[#F5F5F5]/10"
@@ -92,22 +110,35 @@ export default function SignUp() {
                 placeholder="your.email@example.com"
               />
             </div>
-            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           {/* Password */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-1"
+            >
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40" size={18} />
+              <Lock
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40"
+                size={18}
+              />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 {...register("password", {
                   required: "Password is required",
-                  minLength: { value: 6, message: "Password must be at least 6 characters" },
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
                 })}
                 className={`w-full bg-[#0D0D0D] border ${
                   errors.password ? "border-red-500" : "border-[#F5F5F5]/10"
@@ -122,31 +153,46 @@ export default function SignUp() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           {/* Confirm Password */}
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium mb-1"
+            >
               Confirm Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40" size={18} />
+              <Lock
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40"
+                size={18}
+              />
               <input
                 id="confirmPassword"
                 type={showPassword ? "text" : "password"}
                 {...register("confirmPassword", {
                   required: "Please confirm your password",
-                  validate: (value) => value === password || "Passwords do not match",
+                  validate: (value) =>
+                    value === password || "Passwords do not match",
                 })}
                 className={`w-full bg-[#0D0D0D] border ${
-                  errors.confirmPassword ? "border-red-500" : "border-[#F5F5F5]/10"
+                  errors.confirmPassword
+                    ? "border-red-500"
+                    : "border-[#F5F5F5]/10"
                 } rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:border-[#FF007F] transition-colors`}
                 placeholder="••••••••"
               />
             </div>
             {errors.confirmPassword && (
-              <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>
+              <p className="text-red-500 text-xs mt-1">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
@@ -169,22 +215,24 @@ export default function SignUp() {
               </a>
             </label>
           </div>
-          {errors.terms && <p className="text-red-500 text-xs mt-1">{errors.terms.message}</p>}
+          {errors.terms && (
+            <p className="text-red-500 text-xs mt-1">{errors.terms.message}</p>
+          )}
 
           {/* Submit Button */}
           <button
-          disabled={loading}
+            disabled={loading}
             type="submit"
             className="w-full bg-[#FF007F] hover:bg-[#FF007F]/90 text-white py-2 rounded-lg transition-colors font-medium"
           >
-             {loading ? "Signing Up..." : "Sign Up"}
+            {loading ? "Signing Up..." : "Sign Up"}
           </button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-[#F5F5F5]/60">
             Already have an account?{" "}
-            <Link to={'/signin'} className="text-[#00E5FF] hover:underline">
+            <Link to={"/signin"} className="text-[#00E5FF] hover:underline">
               Sign in
             </Link>
           </p>
