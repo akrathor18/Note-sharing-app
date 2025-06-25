@@ -9,5 +9,8 @@
   ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   }
 }

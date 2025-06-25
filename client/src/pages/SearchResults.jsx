@@ -1,82 +1,12 @@
 import { useState, useEffect } from 'react';
 import { FileText, BrainCircuit, Search, Filter, Download, ChevronRight } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
-
-const allNotes = [
-    {
-        id: 1,
-        title: 'Data Structures & Algorithms',
-        subject: 'Computer Science',
-        subjectId: 'cs',
-        content:
-            'This note covers basic data structures like arrays, linked lists, stacks, and queues.',
-    },
-    {
-        id: 2,
-        title: 'Calculus II: Integration Techniques',
-        subject: 'Mathematics',
-        subjectId: 'math',
-        content: 'Learn about integration by parts, substitution, and partial fractions.',
-    },
-    {
-        id: 3,
-        title: 'Quantum Mechanics Fundamentals',
-        subject: 'Physics',
-        subjectId: 'physics',
-        content: "Introduction to quantum mechanics, wave functions, and Schrödinger's equation.",
-    },
-    {
-        id: 4,
-        title: 'Organic Chemistry Reactions',
-        subject: 'Chemistry',
-        subjectId: 'chemistry',
-        content: 'Common organic chemistry reactions including substitution and elimination.',
-    },
-    {
-        id: 5,
-        title: 'Cell Biology & Genetics',
-        subject: 'Biology',
-        subjectId: 'biology',
-        content: 'Cell structure, function, and basic principles of genetics and inheritance.',
-    },
-    {
-        id: 6,
-        title: 'Database Systems',
-        subject: 'Computer Science',
-        subjectId: 'cs',
-        content: 'Relational database design, SQL queries, and normalization techniques.',
-    },
-];
-
-const allQuizzes = [
-    {
-        id: 1,
-        title: 'Data Structures Fundamentals',
-        subject: 'Computer Science',
-        description: 'Test your knowledge of basic data structures and algorithms.',
-    },
-    {
-        id: 2,
-        title: 'Calculus: Derivatives & Integrals',
-        subject: 'Mathematics',
-        description:
-            'Challenge yourself with calculus problems involving derivatives and integrals.',
-    },
-    {
-        id: 3,
-        title: 'Quantum Physics Basics',
-        subject: 'Physics',
-        description: 'Explore the fundamental concepts of quantum physics and mechanics.',
-    },
-    {
-        id: 4,
-        title: 'Organic Chemistry Reactions',
-        subject: 'Chemistry',
-        description: 'Test your understanding of organic chemistry reaction mechanisms.',
-    },
-];
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import API from '../config/axios';
 
 export default function SearchResults() {
+
+    const navigate = useNavigate();
+
     const [results, setSearchResults] = useState({ notes: [], quizzes: [], query: '' });
     const [activeTab, setActiveTab] = useState('all');
     const [sortBy, setSortBy] = useState('relevance');
@@ -85,33 +15,36 @@ export default function SearchResults() {
     const searchQuery = searchParams.get('query') || '';
 
     useEffect(() => {
-        if (searchQuery.trim()) {
-            const query = searchQuery.toLowerCase();
+        const query = searchQuery.toLowerCase();
 
-            const matchingNotes = allNotes.filter(
-                (note) =>
-                    note.title.toLowerCase().includes(query) ||
-                    note.subject.toLowerCase().includes(query) ||
-                    note.content.toLowerCase().includes(query),
-            );
+        const fetchResults = async () => {
+            try {
+                const [notesResponse, quizzesResponse] = await Promise.all([
+                    API.get(`/notes/search?query=${query}`),
+                    API.get(`/quiz/search?query=${query}`)
+                ]);
 
-            const matchingQuizzes = allQuizzes.filter(
-                (quiz) =>
-                    quiz.title.toLowerCase().includes(query) ||
-                    quiz.subject.toLowerCase().includes(query) ||
-                    quiz.description.toLowerCase().includes(query),
-            );
+                setSearchResults({
+                    notes: notesResponse.data,
+                    quizzes: quizzesResponse.data,
+                    query
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        };
 
-            setSearchResults({ notes: matchingNotes, quizzes: matchingQuizzes, query });
-        }
+        fetchResults();
+
     }, [searchQuery]);
+
 
     const filteredResults =
         activeTab === 'all'
             ? { notes: results.notes, quizzes: results.quizzes }
             : activeTab === 'notes'
-              ? { notes: results.notes, quizzes: [] }
-              : { notes: [], quizzes: results.quizzes };
+                ? { notes: results.notes, quizzes: [] }
+                : { notes: [], quizzes: results.quizzes };
 
     const sortResults = (items) => {
         if (sortBy === 'newest') {
@@ -146,31 +79,28 @@ export default function SearchResults() {
                     <div className="flex gap-2">
                         <button
                             onClick={() => setActiveTab('all')}
-                            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-                                activeTab === 'all'
-                                    ? 'bg-[#FF007F] text-white'
-                                    : 'bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-[#F5F5F5]'
-                            }`}
+                            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${activeTab === 'all'
+                                ? 'bg-[#FF007F] text-white'
+                                : 'bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-[#F5F5F5]'
+                                }`}
                         >
                             All Results ({totalResults})
                         </button>
                         <button
                             onClick={() => setActiveTab('notes')}
-                            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-                                activeTab === 'notes'
-                                    ? 'bg-[#FF007F] text-white'
-                                    : 'bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-[#F5F5F5]'
-                            }`}
+                            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${activeTab === 'notes'
+                                ? 'bg-[#FF007F] text-white'
+                                : 'bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-[#F5F5F5]'
+                                }`}
                         >
                             Notes ({results.notes.length})
                         </button>
                         <button
                             onClick={() => setActiveTab('quizzes')}
-                            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-                                activeTab === 'quizzes'
-                                    ? 'bg-[#FF007F] text-white'
-                                    : 'bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-[#F5F5F5]'
-                            }`}
+                            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${activeTab === 'quizzes'
+                                ? 'bg-[#FF007F] text-white'
+                                : 'bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-[#F5F5F5]'
+                                }`}
                         >
                             Quizzes ({results.quizzes.length})
                         </button>
@@ -200,7 +130,8 @@ export default function SearchResults() {
                             <div className="flex items-center justify-between mb-3">
                                 <h2 className="text-lg font-bold">Notes</h2>
                                 {activeTab === 'all' && sortedResults.notes.length > 3 && (
-                                    <button className="text-[#00E5FF] text-sm flex items-center hover:underline">
+                                    <button onClick={() => setActiveTab('notes')}
+                                        className="text-[#00E5FF] text-sm flex items-center hover:underline">
                                         View All <ChevronRight size={16} />
                                     </button>
                                 )}
@@ -228,12 +159,14 @@ export default function SearchResults() {
                                                 </span>
                                             </div>
                                             <p className="text-sm text-[#F5F5F5]/60 line-clamp-1">
-                                                {note.content}
+                                                {note.description}
                                             </p>
                                         </div>
-                                        <button className="p-2 rounded-full hover:bg-[#0D0D0D] transition-colors flex-shrink-0">
-                                            <Download size={18} />
-                                        </button>
+                                        <a href={note.fileUrl} target='_blank'>
+                                            <button className="p-2 rounded-full hover:bg-[#0D0D0D] transition-colors flex-shrink-0">
+                                                <Download size={18} />
+                                            </button>
+                                        </a>
                                     </div>
                                 ))}
                             </div>
@@ -247,7 +180,8 @@ export default function SearchResults() {
                             <div className="flex items-center justify-between mb-3">
                                 <h2 className="text-lg font-bold">Quizzes</h2>
                                 {activeTab === 'all' && sortedResults.quizzes.length > 3 && (
-                                    <button className="text-[#00E5FF] text-sm flex items-center hover:underline">
+                                    <button onClick={() => setActiveTab('quizzes')}
+                                        className="text-[#00E5FF] text-sm flex items-center hover:underline">
                                         View All <ChevronRight size={16} />
                                     </button>
                                 )}
@@ -259,7 +193,7 @@ export default function SearchResults() {
                                     : sortedResults.quizzes
                                 ).map((quiz) => (
                                     <div
-                                        key={quiz.id}
+                                        key={quiz._id}
                                         className="flex items-center gap-3 p-4 rounded-lg bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 transition-colors"
                                     >
                                         <div className="w-12 h-12 rounded-lg bg-[#00E5FF]/10 flex items-center justify-center flex-shrink-0">
@@ -270,15 +204,24 @@ export default function SearchResults() {
                                                 <h3 className="font-medium truncate">
                                                     {quiz.title}
                                                 </h3>
-                                                <span className="text-xs bg-[#00E5FF]/10 text-[#00E5FF] px-2 py-0.5 rounded-full whitespace-nowrap">
-                                                    {quiz.subject}
+                                                <span
+                                                    className={`text-xs px-2 py-1 rounded-full ${quiz.difficulty === 'Easy'
+                                                        ? 'bg-green-500/10 text-green-500'
+                                                        : quiz.difficulty === 'Medium'
+                                                            ? 'bg-yellow-500/10 text-yellow-500'
+                                                            : 'bg-red-500/10 text-red-500'
+                                                        }`}
+                                                >
+                                                    {quiz.difficulty}
                                                 </span>
                                             </div>
                                             <p className="text-sm text-[#F5F5F5]/60 line-clamp-1">
-                                                {quiz.description}
+                                                {quiz.category}
                                             </p>
                                         </div>
-                                        <button className="px-3 py-1.5 rounded-lg bg-[#00E5FF] text-[#0D0D0D] text-sm font-medium hover:bg-[#00E5FF]/90 transition-colors flex-shrink-0">
+                                        <button
+                                            onClick={() => navigate(`/quiz/${quiz._id}`)}
+                                            className="px-3 py-1.5 rounded-lg bg-[#00E5FF] text-[#0D0D0D] text-sm font-medium hover:bg-[#00E5FF]/90 transition-colors flex-shrink-0">
                                             Start
                                         </button>
                                     </div>
