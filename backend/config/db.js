@@ -11,8 +11,6 @@ if (!url) {
 
 mongoose.connect(url, {
     dbName: 'StudyHub',
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
 });
 
 console.log('🟢 Connecting to MongoDB');

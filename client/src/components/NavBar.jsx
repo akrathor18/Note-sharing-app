@@ -16,9 +16,9 @@ import {
 } from 'lucide-react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import API from '../config/axios';
+import { removeToken, handleAuthError } from '../utils/auth';
 
 function navBar() {
-    // const [activeTab, setActiveTab] = useState("dashboard")
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -50,7 +50,7 @@ function navBar() {
 
     const fetchUserDetail = async () => {
         try {
-            const response = await API.get('/users/profile');
+            // const response = await API.get('/users/profile');
             setUser(response.data);
         } catch (error) {
             console.log(error);
@@ -119,8 +119,8 @@ function navBar() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Remove token
-        toast.success('Log-out successfully!');
+        removeToken(); // Remove token
+        handleAuthError('logout');
         navigate('/signin');
     };
 

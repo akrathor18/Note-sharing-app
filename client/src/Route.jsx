@@ -1,3 +1,4 @@
+import LandingPage from './pages/LandingPage.jsx';
 import ProtectedRoute from './auth/ProtectedRoute.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Notes from './pages/Notes.jsx';
@@ -14,36 +15,43 @@ import QuizScreen from './pages/QuizScreen.jsx';
 import Navbar from './components/NavBar.jsx';
 
 const routes = [
+    // Public routes
     {
         path: '/',
-        element: <Navbar />,
-        children: [
-            {
-                element: <ProtectedRoute />,
-                children: [
-                    { index: true, element: <Dashboard /> },
-                    { path: 'notes', element: <Notes /> },
-                    { path: 'quizzes', element: <Quiz /> },
-                    { path: 'profile', element: <Profile /> },
-                    { path: 'settings', element: <Settings /> },
-                    { path: 'search', element: <SearchResults /> },
-                    { path: 'createquiz', element: <CreateQuiz /> },
-                    { path: '/quiz/:id', element: <QuizScreen /> },
-                ],
-            },
-        ],
+        element: <LandingPage />,
     },
     {
-        path: '*',
-        element: <NotFound />,
+        path: '/signin',
+        element: <SignIn />,
     },
     {
         path: '/signup',
         element: <SignUp />,
     },
     {
-        path: '/signin',
-        element: <SignIn />,
+        path: '*',
+        element: <NotFound />,
+    },
+
+    // Protected routes
+    {
+        element: (
+            <Navbar />
+        ),
+        children: [
+            {
+                element: <ProtectedRoute />,
+                children: [
+                    { path: 'dashboard', element: <Dashboard /> },
+                    { path: 'notes', element: <Notes /> },
+                    { path: 'quizzes', element: <Quiz /> },
+                    { path: 'profile', element: <Profile /> },
+                    { path: 'settings', element: <Settings /> },
+                    { path: 'search', element: <SearchResults /> },
+                    { path: 'createquiz', element: <CreateQuiz /> },
+                    { path: 'quiz/:id', element: <QuizScreen /> },
+                ],
+            }]
     },
 ];
 

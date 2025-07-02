@@ -4,6 +4,8 @@ import { BookOpen, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import API from '../config/axios';
+import { setToken, handleAuthError } from '../utils/auth';
+
 export default function SignIn() {
     const {
         register,
@@ -22,9 +24,9 @@ export default function SignIn() {
                 email: data.email,
                 password: data.password,
             });
-            localStorage.setItem('token', response.data.token);
+            setToken(response.data.token);
             navigate('/');
-            toast.success('resgister successfully!');
+            handleAuthError('signin-success');
         } catch (error) {
             toast.error(error.response?.data || 'Login failed');
         } finally {
@@ -64,9 +66,8 @@ export default function SignIn() {
                                         message: 'Email is invalid',
                                     },
                                 })}
-                                className={`w-full bg-[#0D0D0D] border ${
-                                    errors.email ? 'border-red-500' : 'border-[#F5F5F5]/10'
-                                } rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:border-[#FF007F] transition-colors`}
+                                className={`w-full bg-[#0D0D0D] border ${errors.email ? 'border-red-500' : 'border-[#F5F5F5]/10'
+                                    } rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:border-[#FF007F] transition-colors`}
                                 placeholder="your.email@example.com"
                             />
                         </div>
@@ -95,9 +96,8 @@ export default function SignIn() {
                                         message: 'Password must be at least 6 characters',
                                     },
                                 })}
-                                className={`w-full bg-[#0D0D0D] border ${
-                                    errors.password ? 'border-red-500' : 'border-[#F5F5F5]/10'
-                                } rounded-lg py-2 pl-10 pr-10 focus:outline-none focus:border-[#FF007F] transition-colors`}
+                                className={`w-full bg-[#0D0D0D] border ${errors.password ? 'border-red-500' : 'border-[#F5F5F5]/10'
+                                    } rounded-lg py-2 pl-10 pr-10 focus:outline-none focus:border-[#FF007F] transition-colors`}
                                 placeholder="••••••••"
                             />
                             <button
