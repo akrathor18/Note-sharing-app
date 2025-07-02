@@ -11,6 +11,7 @@ import SignUp from './pages/SignUp.jsx';
 import NotFound from './pages/NotFound.jsx';
 import CreateQuiz from './pages/CreateQuiz.jsx';
 import QuizScreen from './pages/QuizScreen.jsx';
+import Feedback from './pages/Feedback.jsx';
 
 import Navbar from './components/NavBar.jsx';
 
@@ -50,6 +51,7 @@ const routes = [
                     { path: 'search', element: <SearchResults /> },
                     { path: 'createquiz', element: <CreateQuiz /> },
                     { path: 'quiz/:id', element: <QuizScreen /> },
+                    { path: 'feedback', element: <Feedback /> },
                 ],
             }]
     },

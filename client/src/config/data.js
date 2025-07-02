@@ -88,3 +88,72 @@ export const achievements = [
     { id: 4, title: 'Knowledge Sharer', description: 'Shared notes with 10 other students', icon: Bookmark, progress: 40, color: '#4CAF50' },
     { id: 5, title: 'Perfect Score', description: 'Achieved 100% on 3 quizzes', icon: Star, progress: 33, color: '#FF9800' },
 ];
+
+import { MessageSquare, Bug, Lightbulb, Heart, Smile, Meh, Frown } from 'lucide-react';
+
+export const feedbackTypes = [
+    {
+        id: "general",
+        label: "General Feedback",
+        icon: MessageSquare,
+        color: "#00E5FF",
+        description: "Share your overall thoughts about StudyHub",
+    },
+    {
+        id: "bug",
+        label: "Bug Report",
+        icon: Bug,
+        color: "#FF6B6B",
+        description: "Report issues or problems you've encountered",
+    },
+    {
+        id: "feature",
+        label: "Feature Request",
+        icon: Lightbulb,
+        color: "#FFD93D",
+        description: "Suggest new features or improvements",
+    },
+    {
+        id: "praise",
+        label: "Praise & Thanks",
+        icon: Heart,
+        color: "#FF007F",
+        description: "Share what you love about StudyHub",
+    },
+];
+
+export const experienceOptions = [
+    { value: "excellent", label: "Excellent", icon: Smile, color: "#4CAF50" },
+    { value: "good", label: "Good", icon: Smile, color: "#8BC34A" },
+    { value: "average", label: "Average", icon: Meh, color: "#FFC107" },
+    { value: "poor", label: "Poor", icon: Frown, color: "#FF9800" },
+    { value: "terrible", label: "Terrible", icon: Frown, color: "#F44336" },
+];
+
+export const faqs = [
+    {
+        question: "How do you use our feedback?",
+        answer:
+            "We carefully review every piece of feedback to improve StudyHub. Your suggestions directly influence our development roadmap and help us prioritize new features.",
+    },
+    {
+        question: "Will I get a response to my feedback?",
+        answer:
+            "Yes! Since we now require contact information, we'll respond to all feedback within 48 hours. For bug reports, we'll keep you updated on the fix progress.",
+    },
+    {
+        question: "Is my personal information secure?",
+        answer:
+            "We use industry-standard encryption to protect your data. Your information is only used to respond to your feedback and will never be shared with third parties.",
+    },
+    {
+        question: "How long does it take to implement suggestions?",
+        answer:
+            "Implementation time varies based on complexity and priority. Simple fixes might be deployed within days, while major features could take several weeks or months. We'll keep you informed of progress.",
+    },
+    {
+        question: "Can I submit multiple feedback items?",
+        answer:
+            "Yes! Feel free to submit feedback as often as you'd like. Each submission helps us understand your needs better and improve the platform continuously.",
+    },
+];
