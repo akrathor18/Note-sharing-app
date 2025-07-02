@@ -15,83 +15,7 @@ import {
     UserCircle,
 } from 'lucide-react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import SignIn from '../pages/SignIn';
-import SignUp from '../pages/SignUp';
 import API from '../config/axios';
-// Sample notes and quizzes for search
-const allNotes = [
-    {
-        id: 1,
-        title: 'Data Structures & Algorithms',
-        subject: 'Computer Science',
-        subjectId: 'cs',
-        content:
-            'This note covers basic data structures like arrays, linked lists, stacks, and queues.',
-    },
-    {
-        id: 2,
-        title: 'Calculus II: Integration Techniques',
-        subject: 'Mathematics',
-        subjectId: 'math',
-        content: 'Learn about integration by parts, substitution, and partial fractions.',
-    },
-    {
-        id: 3,
-        title: 'Quantum Mechanics Fundamentals',
-        subject: 'Physics',
-        subjectId: 'physics',
-        content: "Introduction to quantum mechanics, wave functions, and Schrödinger's equation.",
-    },
-    {
-        id: 4,
-        title: 'Organic Chemistry Reactions',
-        subject: 'Chemistry',
-        subjectId: 'chemistry',
-        content: 'Common organic chemistry reactions including substitution and elimination.',
-    },
-    {
-        id: 5,
-        title: 'Cell Biology & Genetics',
-        subject: 'Biology',
-        subjectId: 'biology',
-        content: 'Cell structure, function, and basic principles of genetics and inheritance.',
-    },
-    {
-        id: 6,
-        title: 'Database Systems',
-        subject: 'Computer Science',
-        subjectId: 'cs',
-        content: 'Relational database design, SQL queries, and normalization techniques.',
-    },
-];
-
-const allQuizzes = [
-    {
-        id: 1,
-        title: 'Data Structures Fundamentals',
-        subject: 'Computer Science',
-        description: 'Test your knowledge of basic data structures and algorithms.',
-    },
-    {
-        id: 2,
-        title: 'Calculus: Derivatives & Integrals',
-        subject: 'Mathematics',
-        description:
-            'Challenge yourself with calculus problems involving derivatives and integrals.',
-    },
-    {
-        id: 3,
-        title: 'Quantum Physics Basics',
-        subject: 'Physics',
-        description: 'Explore the fundamental concepts of quantum physics and mechanics.',
-    },
-    {
-        id: 4,
-        title: 'Organic Chemistry Reactions',
-        subject: 'Chemistry',
-        description: 'Test your understanding of organic chemistry reaction mechanisms.',
-    },
-];
 
 function navBar() {
     // const [activeTab, setActiveTab] = useState("dashboard")
@@ -240,9 +164,8 @@ function navBar() {
 
             {/* Sidebar - Desktop always visible, Mobile as overlay */}
             <div
-                className={`${
-                    isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-                } md:translate-x-0 fixed md:static inset-y-0 left-0 z-20 w-64 bg-[#1A1A1A] p-4 flex flex-col transition-transform duration-300 ease-in-out overflow-y-auto`}
+                className={`${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+                    } md:translate-x-0 fixed md:static inset-y-0 left-0 z-20 w-64 bg-[#1A1A1A] p-4 flex flex-col transition-transform duration-300 ease-in-out overflow-y-auto`}
             >
                 <NavLink to={'/'} className="flex items-center gap-2 mb-8">
                     <BookOpen className="text-[#FF007F]" />
@@ -255,10 +178,9 @@ function navBar() {
                             <NavLink
                                 to={'/'}
                                 className={({ isActive }) =>
-                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                                        isActive
-                                            ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                            : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                                        ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
+                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
                                     }`
                                 }
                             >
@@ -270,10 +192,9 @@ function navBar() {
                             <NavLink
                                 to={'/notes'}
                                 className={({ isActive }) =>
-                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                                        isActive
-                                            ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                            : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                                        ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
+                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
                                     }`
                                 }
                             >
@@ -285,10 +206,9 @@ function navBar() {
                             <NavLink
                                 to={'/quizzes'}
                                 className={({ isActive }) =>
-                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                                        isActive
-                                            ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                            : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                                        ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
+                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
                                     }`
                                 }
                             >
@@ -300,10 +220,9 @@ function navBar() {
                             <NavLink
                                 to={'/profile'}
                                 className={({ isActive }) =>
-                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                                        isActive
-                                            ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                            : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                                        ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
+                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
                                     }`
                                 }
                             >
@@ -315,10 +234,9 @@ function navBar() {
                             <NavLink
                                 to={'/settings'}
                                 className={({ isActive }) =>
-                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                                        isActive
-                                            ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                            : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                                        ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
+                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
                                     }`
                                 }
                             >
@@ -432,10 +350,9 @@ function navBar() {
                                     <NavLink
                                         to={'/profile'}
                                         className={({ isActive }) =>
-                                            `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                                                isActive
-                                                    ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                                    : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                            `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                                                ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
+                                                : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
                                             }`
                                         }
                                     >
@@ -445,10 +362,9 @@ function navBar() {
                                     <NavLink
                                         to={'/settings'}
                                         className={({ isActive }) =>
-                                            `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                                                isActive
-                                                    ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                                    : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                            `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                                                ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
+                                                : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
                                             }`
                                         }
                                     >

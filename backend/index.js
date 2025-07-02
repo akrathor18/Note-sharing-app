@@ -1,4 +1,7 @@
 import express from 'express';
+import db from './config/db.js';
+
+
 import users from './routes/users.js';
 import quiz from './routes/quizzes.js';
 import notes from './routes/notes.js';
@@ -6,23 +9,23 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
-const { default: rateLimit } = require('express-rate-limit');
-const swaggerUi = require('swagger-ui-express');
-const { generateSwaggerJSONFromRouter } = require('./config/swagger');
+// import rateLimit from 'express-rate-limit';
+import swaggerUi from 'swagger-ui-express';
+import generateSwaggerJSONFromRouter from './config/swagger.js';
 import helmet from 'helmet';
 
-setupSwagger(app);
 dotenv.config();
 
 const port = process.env.BACKEND_PORT || 3000;
 const app = express();
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 1000, // limit each IP to 100 requests per windowMs
-});
+// setupSwagger(app);
+// const limiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, // 15 minutes
+//     max: 1000, // limit each IP to 100 requests per windowMs
+// });
 // Middle wares
 
-app.use(limiter);
+// app.use(limiter);
 app.use(helmet());
 app.use(cookieParser());
 app.use(
@@ -37,11 +40,11 @@ app.use(bodyParser.json());
 app.get('/', (_, res) => {
     res.send('Hello World!');
 });
-app.use(
-    '/api-docs',
-    swaggerUi.serve,
-    swaggerUi.setup(generateSwaggerJSONFromRouter(routes, fields)),
-);
+// app.use(
+//     '/api-docs',
+//     swaggerUi.serve,
+//     swaggerUi.setup(generateSwaggerJSONFromRouter(routes, fields)),
+// );
 app.use('/api/users', users);
 app.use('/api/quiz', quiz);
 app.use('/api/notes', notes);

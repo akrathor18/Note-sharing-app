@@ -10,6 +10,7 @@ if (!url) {
 }
 
 mongoose.connect(url, {
+    dbName: 'StudyHub',
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });

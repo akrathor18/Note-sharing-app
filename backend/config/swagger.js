@@ -61,10 +61,10 @@ const generateSwaggerJSONFromRouter = (router, fields, parentPath = '') => {
                     security:
                         parameters && parameters.authRequired
                             ? [
-                                  {
-                                      bearerAuth: [],
-                                  },
-                              ]
+                                {
+                                    bearerAuth: [],
+                                },
+                            ]
                             : false,
                     responses: {
                         200: {
@@ -120,6 +120,4 @@ const generateSwaggerJSONFromRouter = (router, fields, parentPath = '') => {
     return swaggerData;
 };
 
-module.exports = {
-    generateSwaggerJSONFromRouter,
-};
+export default generateSwaggerJSONFromRouter

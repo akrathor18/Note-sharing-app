@@ -8,7 +8,6 @@ export default function Quiz() {
 
     const navigate = useNavigate();
 
-    // Sample data
     const [quizzes, setQuizzes] = useState([]);
 
     const getQuizzes = async () => {
@@ -65,13 +64,12 @@ export default function Quiz() {
                                         {quiz.category}
                                     </span>
                                     <span
-                                        className={`text-xs px-2 py-1 rounded-full ${
-                                            quiz.difficulty === 'Easy'
+                                        className={`text-xs px-2 py-1 rounded-full ${quiz.difficulty === 'Easy'
                                                 ? 'bg-green-500/10 text-green-500'
                                                 : quiz.difficulty === 'Medium'
-                                                  ? 'bg-yellow-500/10 text-yellow-500'
-                                                  : 'bg-red-500/10 text-red-500'
-                                        }`}
+                                                    ? 'bg-yellow-500/10 text-yellow-500'
+                                                    : 'bg-red-500/10 text-red-500'
+                                            }`}
                                     >
                                         {quiz.difficulty}
                                     </span>

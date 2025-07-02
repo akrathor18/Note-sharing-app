@@ -95,18 +95,16 @@ export default function QuizScreen() {
                             <button
                                 key={option.id}
                                 onClick={() => handleAnswerSelect(currentQ._id, option.id)}
-                                className={`w-full text-left p-3 md:p-4 rounded-lg flex items-center transition-all duration-200 ${
-                                    selectedAnswers[currentQ._id] === option.id
-                                        ? 'bg-[#FF007F]/20 border border-[#FF007F]'
-                                        : 'bg-[#0D0D0D] border border-[#F5F5F5]/10 hover:border-[#F5F5F5]/30'
-                                }`}
+                                className={`w-full text-left p-3 md:p-4 rounded-lg flex items-center transition-all duration-200 ${selectedAnswers[currentQ._id] === option.id
+                                    ? 'bg-[#FF007F]/20 border border-[#FF007F]'
+                                    : 'bg-[#0D0D0D] border border-[#F5F5F5]/10 hover:border-[#F5F5F5]/30'
+                                    }`}
                             >
                                 <span
-                                    className={`w-6 h-6 rounded-full mr-3 flex items-center justify-center ${
-                                        selectedAnswers[currentQ._id] === option.id
-                                            ? 'bg-[#FF007F] text-white'
-                                            : 'bg-[#1A1A1A] text-[#F5F5F5]/60'
-                                    }`}
+                                    className={`w-6 h-6 rounded-full mr-3 flex items-center justify-center ${selectedAnswers[currentQ._id] === option.id
+                                        ? 'bg-[#FF007F] text-white'
+                                        : 'bg-[#1A1A1A] text-[#F5F5F5]/60'
+                                        }`}
                                 >
                                     {option.id.toUpperCase()}
                                 </span>
@@ -129,11 +127,10 @@ export default function QuizScreen() {
                     <button
                         onClick={goToNextQuestion}
                         disabled={!selectedAnswers[currentQ._id]}
-                        className={`px-6 py-2 rounded-lg flex items-center gap-2 transition-colors ${
-                            selectedAnswers[currentQ._id]
-                                ? 'bg-[#FF007F] hover:bg-[#FF007F]/90 text-white'
-                                : 'bg-[#1A1A1A]/50 text-[#F5F5F5]/30 cursor-not-allowed'
-                        }`}
+                        className={`px-6 py-2 rounded-lg flex items-center gap-2 transition-colors ${selectedAnswers[currentQ._id]
+                            ? 'bg-[#FF007F] hover:bg-[#FF007F]/90 text-white'
+                            : 'bg-[#1A1A1A]/50 text-[#F5F5F5]/30 cursor-not-allowed'
+                            }`}
                     >
                         {currentQuestion < activeQuiz.questions.length - 1 ? 'Next' : 'Finish'}
                         <ArrowRight size={16} />
@@ -211,7 +208,6 @@ export default function QuizScreen() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button
                         onClick={() => {
-                            setActiveQuiz(sampleQuizData);
                             setCurrentQuestion(0);
                             setSelectedAnswers({});
                             setActiveView('quiz');

@@ -8,7 +8,7 @@ const ProtectedRoute = () => {
     const alertShown = useRef(false); // Prevent multiple toasts
 
     useEffect(() => {
-        if (!token && !alertShown.current) {
+        if (!token && !alertShown.current && window.location.pathname !== '/signin') {
             alertShown.current = true;
             toast.error('You need to log-in to access this page!');
         }
