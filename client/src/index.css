@@ -19,3 +19,21 @@ body {
   scrollbar-width: none; /* Firefox */
 }
 
+/* Apply to entire website */
+::-webkit-scrollbar {
+  width: 5px; /* Width of the vertical scrollbar */
+  height: 7px; /* Height of the horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #000000; /* Track background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6b7280; /* Scrollbar color */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b7280; /* Color on hover */
+}
