@@ -3,20 +3,21 @@
 @tailwind utilities;
 
 body {
-  font-family: "Inter", sans-serif;
-  overflow-x: hidden;
-  background-color: #0D0D0D;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    background-color: #0d0d0d;
+    scrollbar-width: none; /* Firefox */
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 .hide-scrollbar::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .hide-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
 /* Apply to entire website */
