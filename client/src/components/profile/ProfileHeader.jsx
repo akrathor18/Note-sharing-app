@@ -1,6 +1,6 @@
 import React from 'react';
-import { Camera, Edit2 } from 'lucide-react';
-
+import { Camera, Edit2, Mail, Calendar, Github as GitHub, Twitter, Linkedin, Link } from 'lucide-react';
+import { formatDate } from '../../utils/formatDate';
 function ProfileHeader({
     userDetails,
     isEditing,
@@ -104,9 +104,27 @@ function ProfileHeader({
                             </div>
                             <div className="mt-4 space-y-2">
                                 <div className="flex items-center gap-2 text-sm">
+                                    <Mail size={16} className="text-[#F5F5F5]/60" />
                                     <span>{userDetails.email}</span>
                                 </div>
-                                {/* Add more info if needed */}
+                                <div className="flex items-center gap-2 text-sm">
+                                    <Calendar size={16} className="text-[#F5F5F5]/60" />
+                                    <span>Joined {formatDate(userDetails.createdAt)}</span>
+                                </div>
+                                <div className="flex flex-wrap gap-3 mt-3">
+                                    <a href="#" className="p-2 rounded-full bg-[#0D0D0D] hover:bg-[#F5F5F5]/10 transition-colors">
+                                        <GitHub size={18} />
+                                    </a>
+                                    <a href="#" className="p-2 rounded-full bg-[#0D0D0D] hover:bg-[#F5F5F5]/10 transition-colors">
+                                        <Twitter size={18} />
+                                    </a>
+                                    <a href="#" className="p-2 rounded-full bg-[#0D0D0D] hover:bg-[#F5F5F5]/10 transition-colors">
+                                        <Linkedin size={18} />
+                                    </a>
+                                    <a href="#" className="p-2 rounded-full bg-[#0D0D0D] hover:bg-[#F5F5F5]/10 transition-colors">
+                                        <Link size={18} />
+                                    </a>
+                                </div>
                             </div>
                         </>
                     )}

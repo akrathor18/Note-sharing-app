@@ -23,10 +23,8 @@ function navBar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(true);
-    const [authView, setAuthView] = useState('signin'); // signin, signup
     const [user, setUser] = useState();
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState(null);
     const [notifications, setNotifications] = useState([
         {
             id: 1,
@@ -50,7 +48,7 @@ function navBar() {
 
     const fetchUserDetail = async () => {
         try {
-            // const response = await API.get('/users/profile');
+            const response = await API.get('/users/profile');
             setUser(response.data);
         } catch (error) {
             console.log(error);
@@ -102,20 +100,6 @@ function navBar() {
         console.log('Logging in with:', email, password);
         setIsAuthenticated(true);
         setUser(userData);
-    };
-
-    const handleSignup = (name, email, password) => {
-        // In a real app, you would send this data to your backend
-        console.log('Signing up:', name, email, password);
-        setIsAuthenticated(true);
-        // Create a new user object based on the signup data
-        const newUser = {
-            ...userData,
-            name,
-            email,
-            stats: { ...userData.stats }, // Copy the sample stats
-        };
-        setUser(newUser);
     };
 
     const handleLogout = () => {
