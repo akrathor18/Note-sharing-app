@@ -94,14 +94,6 @@ function navBar() {
         );
     };
 
-    // Handle authentication
-    const handleLogin = (email, password) => {
-        // In a real app, you would validate credentials against a backend
-        console.log('Logging in with:', email, password);
-        setIsAuthenticated(true);
-        setUser(userData);
-    };
-
     const handleLogout = () => {
         removeToken(); // Remove token
         handleAuthError('logout');
@@ -134,7 +126,13 @@ function navBar() {
         };
     }, [isUserMenuOpen, isNotificationMenuOpen]);
 
-    // If not authenticated, show auth screens
+    const navLinks = [
+        { to: '/dashboard', icon: <Home size={20} />, label: 'Dashboard' },
+        { to: '/notes', icon: <FileText size={20} />, label: 'Notes' },
+        { to: '/quizzes', icon: <BrainCircuit size={20} />, label: 'Quizzes' },
+        { to: '/profile', icon: <UserCircle size={20} />, label: 'Profile' },
+        { to: '/settings', icon: <SettingsIcon size={20} />, label: 'Settings' },
+    ];
 
     return (
         <div className="flex h-screen bg-[#0D0D0D] text-[#F5F5F5] relative">
@@ -158,9 +156,10 @@ function navBar() {
 
                 <nav className="flex-1">
                     <ul className="space-y-2">
-                        <li>
+                    { navLinks.map((link) => (
+                        <li key={link.to}>
                             <NavLink
-                                to={'/'}
+                                to={link.to}
                                 className={({ isActive }) =>
                                     `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
                                         ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
@@ -168,66 +167,11 @@ function navBar() {
                                     }`
                                 }
                             >
-                                <Home size={20} />
-                                <span>Dashboard</span>
+                                {link.icon}
+                                <span>{link.label}</span>
                             </NavLink>
                         </li>
-                        <li>
-                            <NavLink
-                                to={'/notes'}
-                                className={({ isActive }) =>
-                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
-                                        ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
-                                    }`
-                                }
-                            >
-                                <FileText size={20} />
-                                <span>Notes</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink
-                                to={'/quizzes'}
-                                className={({ isActive }) =>
-                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
-                                        ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
-                                    }`
-                                }
-                            >
-                                <BrainCircuit size={20} />
-                                <span>Quizzes</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink
-                                to={'/profile'}
-                                className={({ isActive }) =>
-                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
-                                        ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
-                                    }`
-                                }
-                            >
-                                <UserCircle size={20} />
-                                <span>Profile</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink
-                                to={'/settings'}
-                                className={({ isActive }) =>
-                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
-                                        ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
-                                    }`
-                                }
-                            >
-                                <SettingsIcon size={20} />
-                                <span>Settings</span>
-                            </NavLink>
-                        </li>
+                        ))}
                     </ul>
                 </nav>
 
