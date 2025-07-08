@@ -1,17 +1,4 @@
 import { useState, useEffect } from 'react';
-import {
-    Eye,
-    EyeOff,
-    Lock,
-    Mail,
-    Bell,
-    Moon,
-    Sun,
-    Globe,
-    Shield,
-    Save,
-    ChevronDown,
-} from 'lucide-react';
 import API from '../config/axios';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -25,15 +12,19 @@ import SettingsLanguage from '../components/settings/SettingsLanguage';
 import SettingsPrivacy from '../components/settings/SettingsPrivacy';
 import SettingsSecurity from '../components/settings/SettingsSecurity';
 
-export default function Settings({ user, setUser }) {
-    const [loading, setLoading] = useState(true);
-    const [showPassword, setShowPassword] = useState(false);
-    const [activeSection, setActiveSection] = useState('account');
-    const [userData, setUserData] = useState({
+import { User, SettingsFormData } from '../../../types/common';
+import { ChangePasswordRequest, UserProfileResponse } from '../../../types/api/user';
+
+// export default function Settings({ user, setUser }) {
+export default function Settings() {
+    const [loading, setLoading] = useState<boolean>(true);
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [activeSection, setActiveSection] = useState<string>('account');
+    const [userData, setUserData] = useState<User>({
         id: 'user123',
         name: 'John Doe',
         email: 'john.doe@example.com',
-        avatar: null, // Will use initial instead
+        avatar: null,
         role: 'Student',
         joinDate: 'January 2023',
         stats: {
@@ -50,21 +41,26 @@ export default function Settings({ user, setUser }) {
         handleSubmit,
         watch,
         formState: { errors, isSubmitting, isSubmitSuccessful },
-    } = useForm();
+    } = useForm<SettingsFormData>();
 
     const newPassword = watch('newPassword');
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: SettingsFormData) => {
         try {
-            const response = await API.post('/users/changepassword', {
+            const payload: ChangePasswordRequest = {
                 password: data.currentPassword,
                 newPassword: data.newPassword,
-            });
-            console.log(response);
+            };
+            const response = await API.post<string>('/users/changepassword', payload);
             toast.success(response.data);
-        } catch (error) {
-            console.error(error.response?.data); // ✅ this will give exact backend error
-            toast.error(error.response?.data);
+        } catch (error: unknown) {
+            if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response) {
+                toast.error((error as any).response.data);
+                console.error((error as any).response.data);
+            } else {
+                toast.error('An unexpected error occurred.');
+                console.error(error);
+            }
         }
     };
 
@@ -73,7 +69,7 @@ export default function Settings({ user, setUser }) {
     const fetchUserDetail = async () => {
         setTimeout(async () => {
             try {
-                const response = await API.get('/users/profile');
+                const response = await API.get<UserProfileResponse>('/users/profile');
                 setUserData(response.data);
             } catch (error) {
                 console.log(error);
@@ -87,7 +83,7 @@ export default function Settings({ user, setUser }) {
         fetchUserDetail();
     }, []);
 
-    const formatDate = (isoDate) => {
+    const formatDate = (isoDate: string): string => {
         const date = new Date(isoDate);
         return date.toLocaleDateString('en-GB', {
             day: 'numeric',
@@ -96,7 +92,7 @@ export default function Settings({ user, setUser }) {
         });
     };
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<SettingsFormData>({
         email: userData.email,
         currentPassword: '',
         newPassword: '',
@@ -110,23 +106,37 @@ export default function Settings({ user, setUser }) {
         privacyProfile: 'public',
         privacyActivity: 'friends',
     });
-    const [successMessage, setSuccessMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState<string>('');
 
-    const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
+    const handleInputChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value, type } = e.target;
+        let checked = false;
+        if (type === 'checkbox' && 'checked' in e.target) {
+            checked = (e.target as HTMLInputElement).checked;
+        }
         setFormData({
             ...formData,
             [name]: type === 'checkbox' ? checked : value,
         });
     };
 
-    const handleFormChange = (e) => {
-        const { name, value, type, checked } = e.target;
+    const handleFormChange = (
+        e: React.FormEvent<HTMLFormElement>
+    ) => {
+        const target = e.target as typeof e.target & (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement);
+        const { name, value, type } = target;
+        let checked = false;
+        if (type === 'checkbox' && 'checked' in target) {
+            checked = (target as HTMLInputElement).checked;
+        }
         setFormData((prev) => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value,
         }));
-        handleInputChange(e); // Sync with parent handler if needed
+        // Optionally, you can call handleInputChange if you want to sync
+        // handleInputChange(e as any); // Not needed if logic is duplicated here
     };
 
     if (loading) {

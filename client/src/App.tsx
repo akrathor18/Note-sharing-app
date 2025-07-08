@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
-import routes from './Route.jsx';
+import routes from './Route.js';
 import './index.css';
 
 function App() {
