@@ -6,6 +6,8 @@ import { toast } from 'react-toastify';
 import { setToken, handleAuthError } from '../utils/auth';
 
 import API from '../config/axios';
+import { SignUpFormData } from '../../../types/common';
+import { SignUpRequest, SignUpResponse } from '../../../types/api/user';
 
 export default function SignUp() {
     const navigate = useNavigate();
@@ -14,29 +16,32 @@ export default function SignUp() {
         handleSubmit,
         formState: { errors },
         watch,
-    } = useForm();
+    } = useForm<SignUpFormData>();
 
     // States
-    const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     // Form
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: SignUpFormData) => {
         if (loading) return;
         setLoading(true);
         try {
-            const response = await API.post('users/register', {
+            const payload: SignUpRequest = {
                 email: data.email,
                 password: data.password,
                 name: data.name,
-            });
-            console.log(response);
+            };
+            const response = await API.post<SignUpResponse>('users/register', payload);
             setToken(response.data.token);
             navigate('/');
             handleAuthError('signup-success');
-        } catch (error) {
-            console.log(error);
-            toast.error(error.response?.data);
+        } catch (error: unknown) {
+            if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response) {
+                toast.error((error as any).response.data);
+            } else {
+                toast.error('Sign up failed');
+            }
         } finally {
             setLoading(false);
         }

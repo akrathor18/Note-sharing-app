@@ -14,20 +14,29 @@ import {
     SettingsIcon,
     UserCircle,
 } from 'lucide-react';
+
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import API from '../config/axios';
 import { removeToken, handleAuthError } from '../utils/auth';
+import type { User as UserType } from '../../../types/common';
 
-function navBar() {
+interface Notification {
+    id: number;
+    title: string;
+    message: string;
+    read: boolean;
+}
+
+function NavBar() {
     const navigate = useNavigate();
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(true);
-    const [authView, setAuthView] = useState('signin'); // signin, signup
-    const [user, setUser] = useState();
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState(null);
-    const [notifications, setNotifications] = useState([
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState<boolean>(false);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+    const [authView, setAuthView] = useState<'signin' | 'signup'>('signin');
+    const [user, setUser] = useState<UserType | null>(null);
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [searchResults, setSearchResults] = useState<any>(null);
+    const [notifications, setNotifications] = useState<Notification[]>([
         {
             id: 1,
             title: 'Quiz reminder',
@@ -48,10 +57,10 @@ function navBar() {
         },
     ]);
 
-    const fetchUserDetail = async () => {
+    const fetchUserDetail = async (): Promise<void> => {
         try {
             // const response = await API.get('/users/profile');
-            setUser(response.data);
+            // setUser(response.data);
         } catch (error) {
             console.log(error);
         }
@@ -62,12 +71,12 @@ function navBar() {
     }, []);
 
     // Toggle mobile menu
-    const toggleMobileMenu = () => {
+    const toggleMobileMenu = (): void => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
     };
 
     // Toggle user menu
-    const toggleUserMenu = () => {
+    const toggleUserMenu = (): void => {
         setIsUserMenuOpen(!isUserMenuOpen);
         // Close other menus when user menu is opened
         if (!isUserMenuOpen) {
@@ -76,10 +85,10 @@ function navBar() {
     };
 
     // Notification menu state
-    const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState(false);
+    const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState<boolean>(false);
 
     // Toggle notification menu
-    const toggleNotificationMenu = () => {
+    const toggleNotificationMenu = (): void => {
         setIsNotificationMenuOpen(!isNotificationMenuOpen);
         // Close other menus when notification menu is opened
         if (!isNotificationMenuOpen) {
@@ -88,7 +97,7 @@ function navBar() {
     };
 
     // Mark notification as read
-    const markAsRead = (id) => {
+    const markAsRead = (id: number): void => {
         setNotifications(
             notifications.map((notification) =>
                 notification.id === id ? { ...notification, read: true } : notification,
@@ -97,37 +106,31 @@ function navBar() {
     };
 
     // Handle authentication
-    const handleLogin = (email, password) => {
+    const handleLogin = (email: string, password: string): void => {
         // In a real app, you would validate credentials against a backend
         console.log('Logging in with:', email, password);
         setIsAuthenticated(true);
-        setUser(userData);
+        // setUser(userData); // Uncomment and type userData if needed
     };
 
-    const handleSignup = (name, email, password) => {
+    const handleSignup = (name: string, email: string, password: string): void => {
         // In a real app, you would send this data to your backend
         console.log('Signing up:', name, email, password);
         setIsAuthenticated(true);
         // Create a new user object based on the signup data
-        const newUser = {
-            ...userData,
-            name,
-            email,
-            stats: { ...userData.stats }, // Copy the sample stats
-        };
-        setUser(newUser);
+        // const newUser: User = { ...userData, name, email, stats: { ...userData.stats } };
+        // setUser(newUser); // Uncomment and type userData if needed
     };
 
-    const handleLogout = () => {
+    const handleLogout = (): void => {
         removeToken(); // Remove token
         handleAuthError('logout');
         navigate('/signin');
     };
 
     // Handle search
-    const handleSearch = (e) => {
+    const handleSearch = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
-        console.log('clicked');
         if (searchQuery.trim() !== '') {
             navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
         }
@@ -135,11 +138,12 @@ function navBar() {
 
     // Close menus when clicking outside
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (isUserMenuOpen && !event.target.closest('.user-menu-container')) {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (isUserMenuOpen && !target.closest('.user-menu-container')) {
                 setIsUserMenuOpen(false);
             }
-            if (isNotificationMenuOpen && !event.target.closest('.notification-menu-container')) {
+            if (isNotificationMenuOpen && !target.closest('.notification-menu-container')) {
                 setIsNotificationMenuOpen(false);
             }
         };
@@ -402,4 +406,4 @@ function navBar() {
     );
 }
 
-export default navBar;
+export default NavBar;

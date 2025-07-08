@@ -5,30 +5,36 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import API from '../config/axios';
 import { setToken, handleAuthError } from '../utils/auth';
+import { SignInFormData } from '../../../types/common';
+import { SignInRequest, SignInResponse } from '../../../types/api/user';
 
 export default function SignIn() {
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm();
-    const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
+    } = useForm<SignInFormData>();
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
-    const onSubmit = async (data) => {
-        if (loading) return; // Prevent multiple clicks
-
+    const onSubmit = async (data: SignInFormData) => {
+        if (loading) return;
         setLoading(true);
         try {
-            const response = await API.post('/users/login', {
+            const payload: SignInRequest = {
                 email: data.email,
                 password: data.password,
-            });
+            };
+            const response = await API.post<SignInResponse>('/users/login', payload);
             setToken(response.data.token);
             navigate('/');
             handleAuthError('signin-success');
-        } catch (error) {
-            toast.error(error.response?.data || 'Login failed');
+        } catch (error: unknown) {
+            if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response) {
+                toast.error((error as any).response.data || 'Login failed');
+            } else {
+                toast.error('Login failed');
+            }
         } finally {
             setLoading(false);
         }

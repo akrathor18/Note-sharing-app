@@ -2,17 +2,19 @@ import { useState, useEffect } from 'react';
 import { BrainCircuit, Clock, ChevronRight, AlertCircle, Plus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import API from '../config/axios';
+import type { Quiz } from '../../../types/common';
+import { QuizResponse } from '../../../types/api/quiz';
 
 export default function Quiz() {
-    const [activeView, setActiveView] = useState('list');
+    const [activeView, setActiveView] = useState<string>('list');
 
     const navigate = useNavigate();
 
-    const [quizzes, setQuizzes] = useState([]);
+    const [quizzes, setQuizzes] = useState<Quiz[]>([]);
 
     const getQuizzes = async () => {
         try {
-            const response = await API.get('quiz/getQuiz');
+            const response = await API.get<QuizResponse>('quiz/getQuiz');
             setQuizzes(response.data);
         } catch (error) {
             console.log(error);
@@ -23,7 +25,7 @@ export default function Quiz() {
         getQuizzes();
     }, []);
 
-    const startQuiz = (quiz) => {
+    const startQuiz = (quiz: Quiz) => {
         console.log(quiz._id);
         const quizId = quiz._id;
         navigate(`/quiz/${quizId}`);
