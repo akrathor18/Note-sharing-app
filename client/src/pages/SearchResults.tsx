@@ -2,12 +2,35 @@ import { useState, useEffect } from 'react';
 import { FileText, BrainCircuit, Search, Filter, Download, ChevronRight } from 'lucide-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import API from '../config/axios';
+import { Quiz } from '../../../types/common';
+
+// Define Note type based on backend schema and usage in components
+interface Note {
+    _id: string;
+    title: string;
+    description?: string;
+    subject: string;
+    uploadedBy: string;
+    fileUrl: string;
+    fileType: string;
+    createdAt: string;
+    totalDownloads: number;
+    totalViews: number;
+}
+
+// Extend Quiz type locally to include createdAt for sorting
+
+type QuizWithCreatedAt = Quiz & { createdAt?: string };
 
 export default function SearchResults() {
 
     const navigate = useNavigate();
 
-    const [results, setSearchResults] = useState({ notes: [], quizzes: [], query: '' });
+    const [results, setSearchResults] = useState<{
+        notes: Note[];
+        quizzes: Quiz[];
+        query: string;
+    }>({ notes: [], quizzes: [], query: '' });
     const [activeTab, setActiveTab] = useState('all');
     const [sortBy, setSortBy] = useState('relevance');
 
@@ -39,25 +62,25 @@ export default function SearchResults() {
     }, [searchQuery]);
 
 
-    const filteredResults =
+    const filteredResults: { notes: Note[]; quizzes: Quiz[] } =
         activeTab === 'all'
             ? { notes: results.notes, quizzes: results.quizzes }
             : activeTab === 'notes'
                 ? { notes: results.notes, quizzes: [] }
                 : { notes: [], quizzes: results.quizzes };
 
-    const sortResults = (items) => {
+    function sortResults<T extends { createdAt?: string; date?: string }>(items: T[]): T[] {
         if (sortBy === 'newest') {
-            return [...items].sort((a, b) => new Date(b.date) - new Date(a.date));
+            return [...items].sort((a, b) => new Date((b.createdAt ?? b.date ?? 0)).getTime() - new Date((a.createdAt ?? a.date ?? 0)).getTime());
         } else if (sortBy === 'oldest') {
-            return [...items].sort((a, b) => new Date(a.date) - new Date(b.date));
+            return [...items].sort((a, b) => new Date((a.createdAt ?? a.date ?? 0)).getTime() - new Date((b.createdAt ?? b.date ?? 0)).getTime());
         }
         return items;
-    };
+    }
 
-    const sortedResults = {
-        notes: sortResults(filteredResults.notes),
-        quizzes: sortResults(filteredResults.quizzes),
+    const sortedResults: { notes: Note[]; quizzes: QuizWithCreatedAt[] } = {
+        notes: sortResults<Note>(filteredResults.notes),
+        quizzes: sortResults<QuizWithCreatedAt>(filteredResults.quizzes as QuizWithCreatedAt[]),
     };
 
     const totalResults = (results?.notes?.length || 0) + (results?.quizzes?.length || 0);
@@ -141,9 +164,9 @@ export default function SearchResults() {
                                 {(activeTab === 'all'
                                     ? sortedResults.notes.slice(0, 3)
                                     : sortedResults.notes
-                                ).map((note) => (
+                                ).map((note: Note) => (
                                     <div
-                                        key={note.id}
+                                        key={note._id}
                                         className="flex items-center gap-3 p-4 rounded-lg bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 transition-colors"
                                     >
                                         <div className="w-12 h-12 rounded-lg bg-[#FF007F]/10 flex items-center justify-center flex-shrink-0">
@@ -191,7 +214,7 @@ export default function SearchResults() {
                                 {(activeTab === 'all'
                                     ? sortedResults.quizzes.slice(0, 3)
                                     : sortedResults.quizzes
-                                ).map((quiz) => (
+                                ).map((quiz: QuizWithCreatedAt) => (
                                     <div
                                         key={quiz._id}
                                         className="flex items-center gap-3 p-4 rounded-lg bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 transition-colors"

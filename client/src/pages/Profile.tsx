@@ -14,14 +14,31 @@ import ActivityHistory from '../components/profile/ActivityHistory';
 import { toast } from 'react-toastify';
 import { recentActivity, userNotes, userQuizzes, achievements } from '../config/data';
 
+// Type definitions
+// Adjust these as needed to match your actual data structures
+
+type UserStats = {
+    notesCount: number;
+    quizzesCount: number;
+    achievementsCount: number;
+    // Add more fields as needed
+};
+
+type UserDetails = {
+    bio: string;
+    stats: UserStats;
+    // Add more fields as needed for ProfileHeader
+    [key: string]: any;
+};
+
 function Profile() {
-    const [userDetails, setUserDetails] = useState();
-    const [isEditing, setIsEditing] = useState(false);
-    const [activeTab, setActiveTab] = useState('overview');
-    const [bio, setBio] = useState('');
-    const [editingBio, setEditingBio] = useState(false);
-    const [newBio, setNewBio] = useState();
-    const fileInputRef = useRef(null);
+    const [userDetails, setUserDetails] = useState<UserDetails | undefined>(undefined);
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [activeTab, setActiveTab] = useState<string>('overview');
+    const [bio, setBio] = useState<string>('');
+    const [editingBio, setEditingBio] = useState<boolean>(false);
+    const [newBio, setNewBio] = useState<string>('');
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const fetchUserDetail = async () => {
         setTimeout(async () => {
@@ -30,9 +47,18 @@ function Profile() {
                 setUserDetails(response.data);
                 setNewBio(response.data.bio);
                 setBio(response.data.bio);
-            } catch (error) {
+            } catch (error: unknown) {
                 console.log(error);
-                toast.error(error.response.data.message);
+                if (
+                    typeof error === 'object' &&
+                    error !== null &&
+                    'response' in error &&
+                    (error as any).response?.data?.message
+                ) {
+                    toast.error((error as any).response.data.message);
+                } else {
+                    toast.error('An error occurred while fetching user details.');
+                }
             }
         }, 1000);
     };
@@ -41,9 +67,11 @@ function Profile() {
         fetchUserDetail();
     }, []);
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setUserDetails({ ...userDetails, [name]: value });
+        if (userDetails) {
+            setUserDetails({ ...userDetails, [name]: value });
+        }
     };
 
     const handleSave = () => {
@@ -75,11 +103,13 @@ function Profile() {
     };
 
     const handleFileUpload = () => {
-        fileInputRef.current.click();
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
     };
 
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files && e.target.files[0];
         if (file) {
             // Simulate profile picture change
             const reader = new FileReader();

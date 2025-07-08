@@ -2,17 +2,43 @@ import { useState, useEffect } from 'react';
 import { Clock, CheckCircle2, XCircle, ArrowRight, RotateCcw } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../config/axios';
+
+// Types
+interface QuizOption {
+    id: string;
+    text: string;
+}
+
+interface QuizQuestion {
+    _id: string;
+    correctAnswer: string;
+    title: string;
+    text: string;
+    options: QuizOption[];
+}
+
+interface QuizData {
+    title: string;
+    questions: QuizQuestion[];
+}
+
+interface QuizResult {
+    totalQuestions: number;
+    correctAnswers: number;
+    score: number;
+}
+
 export default function QuizScreen() {
     const navigate = useNavigate();
 
-    const [activeView, setActiveView] = useState('quiz'); // list, quiz, result
-    const [activeQuiz, setActiveQuiz] = useState();
-    const [currentQuestion, setCurrentQuestion] = useState(0);
-    const [selectedAnswers, setSelectedAnswers] = useState({});
-    const [quizResult, setQuizResult] = useState(null);
+    const [activeView, setActiveView] = useState<'quiz' | 'result'>('quiz');
+    const [activeQuiz, setActiveQuiz] = useState<QuizData | undefined>();
+    const [currentQuestion, setCurrentQuestion] = useState<number>(0);
+    const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: string }>({});
+    const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
 
     // fetching the quiz --
-    const { id } = useParams();
+    const { id } = useParams<{ id: string }>();
     const getQuizData = async () => {
         const response = await API.get(`/quiz/${id}`);
         console.log(response);
@@ -20,22 +46,23 @@ export default function QuizScreen() {
     };
     useEffect(() => {
         getQuizData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleAnswerSelect = (questionId, answerId) => {
-        setSelectedAnswers({
-            ...selectedAnswers,
+    const handleAnswerSelect = (questionId: string, answerId: string) => {
+        setSelectedAnswers((prev) => ({
+            ...prev,
             [questionId]: answerId,
-        });
+        }));
     };
 
     const goToNextQuestion = () => {
-        if (currentQuestion < activeQuiz.questions.length - 1) {
+        if (activeQuiz && currentQuestion < activeQuiz.questions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
-        } else {
+        } else if (activeQuiz) {
             // Calculate results
             let correctAnswers = 0;
-            activeQuiz.questions.forEach((question) => {
+            activeQuiz.questions.forEach((question: QuizQuestion) => {
                 if (selectedAnswers[question._id] === question.correctAnswer) {
                     correctAnswers++;
                 }
@@ -141,7 +168,7 @@ export default function QuizScreen() {
     }
 
     // Quiz Result View
-    if (activeView === 'result' && quizResult) {
+    if (activeView === 'result' && quizResult && activeQuiz) {
         return (
             <div className="max-w-2xl mx-auto text-center">
                 <div className="mb-6 md:mb-8">

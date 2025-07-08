@@ -2,9 +2,32 @@ import { useState } from "react"
 import { faqs } from "../config/data"
 import FeedbackForm from "../components/feedback/FeedbackForm"
 import FeedbackSidebar from "../components/feedback/FeedbackSidebar"
+import { ChangeEvent, FormEvent } from "react"
+
+type FeedbackData = {
+    name: string
+    email: string
+    feedbackType: string
+    rating: number
+    experience: string
+    liked: string
+    improvements: string
+    newFeatures: string
+    wouldRecommend: boolean | null
+    additionalComments: string
+}
+
+type FeedbackErrors = {
+    name?: string
+    email?: string
+    rating?: string
+    experience?: string
+    feedback?: string
+    wouldRecommend?: string
+}
 
 export default function Feedback() {
-    const [feedbackData, setFeedbackData] = useState({
+    const [feedbackData, setFeedbackData] = useState<FeedbackData>({
         name: "",
         email: "",
         feedbackType: "general",
@@ -17,13 +40,13 @@ export default function Feedback() {
         additionalComments: "",
     })
 
-    const [errors, setErrors] = useState({})
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const [isSubmitted, setIsSubmitted] = useState(false)
-    const [expandedFaq, setExpandedFaq] = useState(null)
+    const [errors, setErrors] = useState<FeedbackErrors>({})
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+    const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
 
     const validateForm = () => {
-        const newErrors = {}
+        const newErrors: FeedbackErrors = {}
 
         // Name validation
         if (!feedbackData.name.trim()) {
@@ -71,15 +94,19 @@ export default function Feedback() {
         return Object.keys(newErrors).length === 0
     }
 
-    const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value, type } = e.target
+        let newValue: string | boolean = value
+        if (type === "checkbox" && e.target instanceof HTMLInputElement) {
+            newValue = e.target.checked
+        }
         setFeedbackData({
             ...feedbackData,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: newValue,
         })
 
         // Clear error when user starts typing
-        if (errors[name]) {
+        if (errors[name as keyof FeedbackErrors]) {
             setErrors({
                 ...errors,
                 [name]: undefined,
@@ -95,28 +122,28 @@ export default function Feedback() {
         }
     }
 
-    const handleRatingClick = (rating) => {
+    const handleRatingClick = (rating: number) => {
         setFeedbackData({ ...feedbackData, rating })
         if (errors.rating) {
             setErrors({ ...errors, rating: undefined })
         }
     }
 
-    const handleExperienceSelect = (experience) => {
+    const handleExperienceSelect = (experience: string) => {
         setFeedbackData({ ...feedbackData, experience })
         if (errors.experience) {
             setErrors({ ...errors, experience: undefined })
         }
     }
 
-    const handleRecommendationSelect = (wouldRecommend) => {
+    const handleRecommendationSelect = (wouldRecommend: boolean) => {
         setFeedbackData({ ...feedbackData, wouldRecommend })
         if (errors.wouldRecommend) {
             setErrors({ ...errors, wouldRecommend: undefined })
         }
     }
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         if (!validateForm()) {
@@ -156,7 +183,7 @@ export default function Feedback() {
         }, 3000)
     }
 
-    const toggleFaq = (index) => {
+    const toggleFaq = (index: number) => {
         setExpandedFaq(expandedFaq === index ? null : index)
     }
 

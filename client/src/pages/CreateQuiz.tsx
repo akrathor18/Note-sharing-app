@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, ChangeEvent, MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import API from '../config/axios';
@@ -8,7 +8,22 @@ import QuizMetadataForm from '../components/quiz/QuizMetadataForm';
 import QuestionList from '../components/quiz/QuestionList';
 import CreateQuizFooter from '../components/quiz/CreateQuizFooter';
 
-const initialQuestionState = {
+interface Question {
+    id: number;
+    text: string;
+    options: { id: string; text: string }[];
+    correctAnswer: string;
+}
+
+interface Quiz {
+    title: string;
+    category: string;
+    timeLimit: number;
+    difficulty: string;
+    questions: Question[];
+}
+
+const initialQuestionState: Question = {
     id: 1,
     text: '',
     options: [
@@ -20,7 +35,7 @@ const initialQuestionState = {
     correctAnswer: '',
 };
 
-const initialQuizState = {
+const initialQuizState: Quiz = {
     title: '',
     category: '',
     timeLimit: 10,
@@ -33,16 +48,16 @@ export default function CreateQuiz() {
     const navigate = useNavigate();
 
     // State
-    const [quizData, setQuizData] = useState(initialQuizState);
+    const [quizData, setQuizData] = useState<Quiz>(initialQuizState);
     const [isUploading, setIsUploading] = useState(false);
 
     // Handlers
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setQuizData({ ...quizData, [name]: value });
     };
 
-    const handleQuestionChange = (questionId, field, value) => {
+    const handleQuestionChange = (questionId: number, field: string, value: string) => {
         setQuizData({
             ...quizData,
             questions: quizData.questions.map((q) =>
@@ -51,7 +66,7 @@ export default function CreateQuiz() {
         });
     };
 
-    const handleOptionChange = (questionId, optionId, value) => {
+    const handleOptionChange = (questionId: number, optionId: string, value: string) => {
         setQuizData({
             ...quizData,
             questions: quizData.questions.map((q) =>
@@ -67,7 +82,7 @@ export default function CreateQuiz() {
         });
     };
 
-    const handleCorrectAnswerChange = (questionId, correctAnswer) => {
+    const handleCorrectAnswerChange = (questionId: number, correctAnswer: string) => {
         setQuizData({
             ...quizData,
             questions: quizData.questions.map((q) =>
@@ -77,7 +92,7 @@ export default function CreateQuiz() {
     };
 
     const addQuestion = () => {
-        const newQuestion = {
+        const newQuestion: Question = {
             id: Date.now(),
             text: '',
             options: [
@@ -94,7 +109,7 @@ export default function CreateQuiz() {
         });
     };
 
-    const removeQuestion = (questionId) => {
+    const removeQuestion = (questionId: number) => {
         if (quizData.questions.length > 1) {
             setQuizData({
                 ...quizData,
@@ -143,7 +158,7 @@ export default function CreateQuiz() {
             await API.post('quiz/createQuiz', quizData);
             toast.success('Success! Your quiz is ready to use.');
             navigate('/quizzes');
-        } catch (error) {
+        } catch (error:any) {
             console.log(error);
             toast.error(
                 error?.response?.data?.message || 'Server error. Quiz could not be created.',

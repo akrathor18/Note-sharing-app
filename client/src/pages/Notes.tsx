@@ -6,9 +6,23 @@ import SubjectTabs from '../components/notes/SubjectTabs';
 import NotesGrid from '../components/notes/NotesGrid';
 import AddNoteModal from '../components/notes/AddNoteModal';
 
+// Define Note type based on backend schema and usage in components
+interface Note {
+    _id: string;
+    title: string;
+    description?: string;
+    subject: string;
+    uploadedBy: string;
+    fileUrl: string;
+    fileType: string;
+    createdAt: string;
+    totalDownloads: number;
+    totalViews: number;
+}
+
 export default function Notes() {
     // States
-    const [notes, setNotes] = useState([]);
+    const [notes, setNotes] = useState<Note[]>([]);
     const [activeSubject, setActiveSubject] = useState('All Subjects');
     const [searchTerm, setSearchTerm] = useState('');
     const [isAddNoteModalOpen, setIsAddNoteModalOpen] = useState(false);
@@ -29,7 +43,7 @@ export default function Notes() {
     }, []);
 
     // Handlers
-    const handleSearchChange = (e) => {
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
     };
 

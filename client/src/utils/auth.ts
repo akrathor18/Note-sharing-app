@@ -2,20 +2,20 @@ import { jwtDecode } from 'jwt-decode';
 import { toast } from 'react-toastify';
 
 // Token management
-export const getToken = () => localStorage.getItem('token');
-export const setToken = (token) => localStorage.setItem('token', token);
-export const removeToken = () => localStorage.removeItem('token');
+export const getToken = (): string | null => localStorage.getItem('token');
+export const setToken = (token: string): void => localStorage.setItem('token', token);
+export const removeToken = (): void => localStorage.removeItem('token');
 
 // JWT decoding and validation
-export const decodeToken = (token) => {
+export const decodeToken = (token: string | null): any => {
     try {
-        return jwtDecode(token);
+        return token ? jwtDecode(token) : null;
     } catch {
         return null;
     }
 };
 
-export const isTokenExpired = () => {
+export const isTokenExpired = (): boolean => {
     const token = getToken();
     const decoded = decodeToken(token);
     if (!decoded || !decoded.exp) return true;
@@ -24,7 +24,7 @@ export const isTokenExpired = () => {
 };
 
 // Auth-related toast notifications
-export const handleAuthError = (type) => {
+export const handleAuthError = (type: string): void => {
     switch (type) {
         case 'no-token':
             toast.error('You need to log-in to access this page!');
@@ -49,7 +49,7 @@ export const handleAuthError = (type) => {
     }
 };
 
-export const isAuthenticated = () => {
+export const isAuthenticated = (): boolean => {
     const token = getToken();
-    return token && !isTokenExpired(token);
+    return !!token && !isTokenExpired();
 };

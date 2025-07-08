@@ -11,9 +11,10 @@ import StudyActivityChart from '../components/dashboard/studyActivityChart';
 
 // Sample Data
 import { recentNotes, upcomingQuizzes } from '../config/data';
+import { User } from '../../../types/common';
 
 export default function Dashboard() {
-    const [userDetails, setUserDetails] = useState();
+    const [userDetails, setUserDetails] = useState<User | undefined>();
 
     const fetchUserDetail = async () => {
         setTimeout(async () => {
@@ -37,7 +38,7 @@ export default function Dashboard() {
     const activityStats = [
         {
             label: 'Notes Viewed',
-            value: userDetails?.stats?.totalNoteVisits ?? 10,
+            value: userDetails?.stats?.notesViewed ?? 10,
             icon: FileText,
             color: '#FF007F',
         },
@@ -49,7 +50,7 @@ export default function Dashboard() {
         },
         {
             label: 'Study Hours',
-            value: userDetails?.stats?.totalStudyTime ?? 10,
+            value: userDetails?.stats?.studyHours ?? 10,
             icon: Clock,
             color: '#FF007F',
         },
