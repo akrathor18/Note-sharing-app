@@ -69,7 +69,7 @@ export default function Dashboard() {
             </div>
             <ActivityStats stats={activityStats} />
             <RecentNotes notes={recentNotes} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <UpcomingQuizzes quizzes={upcomingQuizzes} />
                 <StudyActivityChart />
             </div>

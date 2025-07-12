@@ -132,7 +132,7 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
 
                     <div>
                         <label className="block text-sm font-medium mb-1">Attachments</label>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                             <button
                                 onClick={handleFileUpload}
                                 type="button"
@@ -178,7 +178,7 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
                         <button
                             type="submit"
                             disabled={isUploading}
-                            className={`flex items-center gap-2 ${isUploading ? `bg-gray-500` : `bg-[#FF007F] hover:bg-[#FF007F]`}/90 text-white px-4 py-2 rounded-lg`}
+                            className={`flex items-center gap-2 ${isUploading ? `bg-gray-500` : `bg-[#FF007F] hover:bg-[#FF007F]`}/90 text-white sm:px-4 sm:py-2 px-2 rounded-lg`}
                         >
                             <Save size={16} />
                             {isUploading ? 'Uploading...' : 'Save Note'}
