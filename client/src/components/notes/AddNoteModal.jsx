@@ -148,7 +148,7 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
                                 className="hidden"
                             />
                             <span className="text-xs text-[#F5F5F5]/60">
-                                Supported formats: PDF, DOC, DOCX, JPG, PNG
+                                Supported formats: PDF, DOC, DOCX,
                             </span>
                             {errors.file && (
                                 <p className="text-xs text-red-500 mt-1">{errors.file.message}</p>

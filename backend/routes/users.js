@@ -1,10 +1,12 @@
 import express from 'express';
 const router = express.Router();
 import User from '../models/UserSchema.js';
+import Role from '../models/Roles.js';
 import jwt from 'jsonwebtoken';
 import VerifyJwtMiddleware from '../middlewares/verifyJWT.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import bcrypt from 'bcryptjs';
+
 function generateSessionId(user, res) {
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
         expiresIn: '7d',
@@ -20,38 +22,67 @@ function generateSessionId(user, res) {
     return token;
 }
 
+
 router.post('/register', async (req, res) => {
     try {
-        const userData = req.body;
-        console.log(userData);
-        const userExist = await User.findOne({ email: userData.email });
+        const { email, role_name, ...rest } = req.body;
+
+        const userExist = await User.findOne({ email });
         if (userExist) {
             return res.status(400).json('Email already registered');
         }
-        const newUser = new User(userData);
-        const resp = await newUser.save();
-        const token = generateSessionId(newUser, res);
-        res.status(201).json({ message: 'User registered successfully!', token });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json(`Internal server error`);
-    }
-});
-router.post('/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const userLogin = await User.findOne({ email });
 
-        if (!userLogin) return res.status(404).json('User not found');
-        const isMatch = await userLogin.comparePassword(password);
-        if (!isMatch) return res.status(400).json('Invalid credentials');
-        const token = generateSessionId(userLogin, res);
-        res.status(201).json({ message: 'User logged in successfully!', token });
+        // Fetch role ObjectId
+        const role = await Role.findOne({ role_name: role_name || 'student' });
+        if (!role) {
+            return res.status(400).json('Invalid role');
+        }
+
+        const newUser = new User({
+            ...rest,
+            email,
+            role: role._id
+        });
+
+        const savedUser = await newUser.save();
+        const token = generateSessionId(savedUser, res);
+
+        res.status(201).json({ message: 'User registered successfully!', token });
     } catch (error) {
         console.log(error);
         res.status(500).json('Internal server error');
     }
 });
+
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Populate role so we can access role_name
+    const userLogin = await User.findOne({ email }).populate('role');
+
+    if (!userLogin) return res.status(404).json('User not found');
+
+    const isMatch = await userLogin.comparePassword(password);
+    if (!isMatch) return res.status(400).json('Invalid credentials');
+
+    const token = generateSessionId(userLogin, res);
+
+    res.status(200).json({
+      message: 'User logged in successfully!',
+      token,
+      user: {
+        name: userLogin.name,
+        email: userLogin.email,
+        role: userLogin.role.role_name 
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json('Internal server error');
+  }
+});
+
 
 router.post('/changepassword', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
     try {
@@ -77,15 +108,22 @@ router.post('/changepassword', authMiddleware, VerifyJwtMiddleware, async (req, 
 });
 
 router.get('/profile', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
-    try {
-        res.status(200).json(req.user);
-    } catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
-    }
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).populate('role').select('-password');
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.status(200).json({user});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 router.patch('/bio', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
-    const userId = req.user.id; // Extracted from the token
+    const userId = req.user.id; 
     const { bio } = req.body;
 
     try {
