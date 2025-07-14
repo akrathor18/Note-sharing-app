@@ -24,15 +24,20 @@ const noteSchema = new mongoose.Schema({
         enum: ['pdf', 'doc', 'docx'],
         required: true,
     },
+    pages: {
+        type: Number,
+        required: true,
+    },
+    visibility: {
+        type: String,
+        enum: ['public', 'private'],
+        default: 'public',
+    },
     createdAt: {
         type: Date,
         default: Date.now,
     },
     totalDownloads: {
-        type: Number,
-        default: 0,
-    },
-    totalViews: {
         type: Number,
         default: 0,
     },
