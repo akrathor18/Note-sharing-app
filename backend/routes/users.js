@@ -135,4 +135,18 @@ router.patch('/bio', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
     }
 });
 
+router.post('/activity', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
+  const { type, refId } = req.body;
+
+  try {
+    await User.findByIdAndUpdate(req.user.id, {
+      $push: { recentActivity: { type, refId } }
+    });
+
+    res.status(200).json({ message: 'Activity recorded' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to log activity' });
+  }
+});
 export default router;

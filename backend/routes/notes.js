@@ -6,32 +6,40 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 const router = express.Router();
 
 router.post('/upload', verifyJWT, upload.single('file'), async (req, res) => {
-    try {
-        const { title, description, subject } = req.body;
+  try {
+    const { title, description, subject } = req.body;
 
-        const note = await Note.create({
-            title,
-            description,
-            subject,
-            uploadedBy: req.user.id,
-            fileUrl: req.file.path,
-            fileType: req.file.originalname.split('.').pop(),
-        });
+    const note = await Note.create({
+      title,
+      description,
+      subject,
+      uploadedBy: req.user.id,
+      fileUrl: req.file.path,
+      fileType: req.file.originalname.split('.').pop(),
+    });
 
-        res.status(201).json({ success: true, note });
-    } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
-    }
+    // Link note to user
+    await User.findByIdAndUpdate(req.user.id, {
+      $push: { notesUploaded: note._id }
+    });
+
+    res.status(201).json({ success: true, note });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 router.get('/getnotes', authMiddleware, async (req, res) => {
-    try {
-        const notes = await Note.find();
-        res.status(200).json(notes);
-    } catch (error) {
-        res.status(500).json({ message: 'Failed to retrieve notes', error: error.message });
-    }
+  try {
+    const notes = await Note.find()
+      .populate('uploadedBy', 'name email')
+      .populate('subject', 'name');
+    res.status(200).json(notes);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to retrieve notes', error: error.message });
+  }
 });
+
 
 router.get('/search', async (req, res) => {
     const { query } = req.query;

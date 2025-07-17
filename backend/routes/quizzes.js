@@ -1,28 +1,40 @@
 import express from 'express';
 const router = express.Router();
 import Quiz from '../models/quizSchema.js';
+import verifyJWT from '../middlewares/verifyJWT.js';
+import User from '../models/UserSchema.js';
 
-router.post('/createQuiz', async (req, res) => {
-    try {
-        const quizData = req.body;
 
-        const newQuiz = new Quiz(quizData);
-        const resp = await newQuiz.save();
-        res.status(201).json(resp);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json('Internal server error');
-    }
+router.post('/createQuiz', verifyJWT, async (req, res) => {
+  try {
+    const quizData = {
+      ...req.body,
+      createdBy: req.user.id // if you track it in the schema
+    };
+
+    const newQuiz = new Quiz(quizData);
+    const resp = await newQuiz.save();
+
+    // Optionally link to user
+    await User.findByIdAndUpdate(req.user.id, {
+      $push: { quizzesTaken: resp._id } // only if needed
+    });
+
+    res.status(201).json(resp);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json('Internal server error');
+  }
 });
 
 router.get('/getQuiz', async (req, res) => {
-    try {
-        const quiz = await Quiz.find();
-        res.status(200).json(quiz);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json('Internal server error');
-    }
+  try {
+    const quiz = await Quiz.find().populate('createdBy', 'name email'); // optional
+    res.status(200).json(quiz);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json('Internal server error');
+  }
 });
 
 // Search Quizzes
