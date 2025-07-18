@@ -11,6 +11,7 @@ const userStateSchema = new mongoose.Schema({
     totalQuizCreated: { type: Number, default: 0 },
     totalQuizzesTaken: { type: Number, default: 0 },
     streak: { type: Number, default: 0 },
+    highestStreak: { type: Number, default: 0 },
     lastActive: { type: Date, default: Date.now }
 });
 

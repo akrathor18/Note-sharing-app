@@ -23,6 +23,7 @@ router.post('/upload', verifyJWT, upload.single('file'), async (req, res) => {
       $push: { notesUploaded: note._id }
     });
 
+    await trackActivityAndStreak(userId, { totalQuizCreated: 1 });
     res.status(201).json({ success: true, note });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -42,27 +43,27 @@ router.get('/getnotes', authMiddleware, async (req, res) => {
 
 
 router.get('/search', async (req, res) => {
-    const { query } = req.query;
+  const { query } = req.query;
 
-    if (!query || query.trim() === '') {
-        return res.status(400).json({ error: 'Search term is required' });
-    }
+  if (!query || query.trim() === '') {
+    return res.status(400).json({ error: 'Search term is required' });
+  }
 
-    const searchQuery = {
-        $or: [
-            { title: { $regex: query, $options: 'i' } },
-            { description: { $regex: query, $options: 'i' } },
-            { subject: { $regex: query, $options: 'i' } },
-        ],
-    };
+  const searchQuery = {
+    $or: [
+      { title: { $regex: query, $options: 'i' } },
+      { description: { $regex: query, $options: 'i' } },
+      { subject: { $regex: query, $options: 'i' } },
+    ],
+  };
 
-    try {
-        const notes = await Note.find(searchQuery);
-        res.status(200).json(notes);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to fetch notes' });
-    }
+  try {
+    const notes = await Note.find(searchQuery);
+    res.status(200).json(notes);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch notes' });
+  }
 });
 
 export default router;

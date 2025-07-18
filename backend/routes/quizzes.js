@@ -3,23 +3,24 @@ const router = express.Router();
 import Quiz from '../models/quizSchema.js';
 import verifyJWT from '../middlewares/verifyJWT.js';
 import User from '../models/UserSchema.js';
+import QuizAttempt from '../models/QuizAttempt.js';
+import { trackActivityAndStreak } from '../utils/activityTracker.js';
 
 
 router.post('/createQuiz', verifyJWT, async (req, res) => {
   try {
     const quizData = {
       ...req.body,
-      createdBy: req.user.id // if you track it in the schema
+      createdBy: req.user.id 
     };
 
     const newQuiz = new Quiz(quizData);
     const resp = await newQuiz.save();
 
-    // Optionally link to user
     await User.findByIdAndUpdate(req.user.id, {
-      $push: { quizzesTaken: resp._id } // only if needed
+      $push: { quizzesTaken: resp._id } 
     });
-
+    await trackActivityAndStreak(userId, { totalNotes: 1 });
     res.status(201).json(resp);
   } catch (error) {
     console.log(error);
@@ -67,5 +68,27 @@ router.get('/:id', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+
+router.post('/attempt-quiz',verifyJWT, async (req, res) => {
+  try {
+    const { quizId, score } = req.body;
+    const userId = req.user.id;
+
+    const attempt = await QuizAttempt.create({
+      user: userId,
+      quiz: quizId,
+      score,
+    });
+
+    // Update streak + stats
+    await trackActivityAndStreak(userId, { totalQuizzesTaken: 1 });
+
+    res.status(201).json({ message: 'Quiz attempt recorded', attempt });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 export default router;
