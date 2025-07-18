@@ -6,4 +6,4 @@ const linkSchema = new mongoose.Schema({
     url: String,
 });
 
-export default mongoose.model('Link', linkSchema);
+export default mongoose.model('Links', linkSchema);

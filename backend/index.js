@@ -1,9 +1,10 @@
 import express from 'express';
 import db from './config/db.js';
 
-import users from './routes/users.js';
-import quiz from './routes/quizzes.js';
-import notes from './routes/notes.js';
+import usersRoutes from './routes/users.js';
+import quizRoutes from './routes/quizzes.js';
+import notesRoutes from './routes/notes.js';
+import linkRoutes from './routes/links.js';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -44,9 +45,10 @@ app.get('/', (_, res) => {
 //     swaggerUi.serve,
 //     swaggerUi.setup(generateSwaggerJSONFromRouter(routes, fields)),
 // );
-app.use('/api/users', users);
-app.use('/api/quiz', quiz);
-app.use('/api/notes', notes);
+app.use('/api/users', usersRoutes);
+app.use('/api/quiz', quizRoutes);
+app.use('/api/notes', notesRoutes);
+app.use('/api/links', linkRoutes);
 
 app.listen(port, () => {
     console.log(`🚀 Server running on http://localhost:${port}`);
