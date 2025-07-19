@@ -3,6 +3,8 @@ import upload from '../middlewares/upload.js'; // path to multer setup
 import Note from '../models/noteSchema.js';
 import verifyJWT from '../middlewares/verifyJWT.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
+import User from '../models/UserSchema.js';
+import { trackActivityAndStreak } from '../utils/activityTracker.js';
 const router = express.Router();
 
 router.post('/upload', verifyJWT, upload.single('file'), async (req, res) => {
@@ -22,10 +24,12 @@ router.post('/upload', verifyJWT, upload.single('file'), async (req, res) => {
     await User.findByIdAndUpdate(req.user.id, {
       $push: { notesUploaded: note._id }
     });
+    const userId = req.user.id;
 
     await trackActivityAndStreak(userId, { totalQuizCreated: 1 });
     res.status(201).json({ success: true, note });
   } catch (err) {
+    console.log(err)
     res.status(500).json({ success: false, message: err.message });
   }
 });

@@ -26,6 +26,7 @@ const noteSchema = new mongoose.Schema({
     },
     pages: {
         type: Number,
+        default: 0, // Default to 0 if not specified
         required: true,
     },
     visibility: {
