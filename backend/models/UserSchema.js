@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   bio: { type: String, default: '' }, // User's bio section
   profilePic: { type: String, default: '' }, // URL to user's profile picture
-
+  profilePicId: { type: String, default: '' },// save Cloudinary public ID for profile picture
   role: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Role',

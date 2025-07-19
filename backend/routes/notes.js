@@ -1,5 +1,5 @@
 import express from 'express';
-import upload from '../middlewares/upload.js'; // path to multer setup
+import noteUpload from '../middlewares/noteUpload.js'; // path to multer setup
 import Note from '../models/noteSchema.js';
 import verifyJWT from '../middlewares/verifyJWT.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
@@ -7,7 +7,7 @@ import User from '../models/UserSchema.js';
 import { trackActivityAndStreak } from '../utils/activityTracker.js';
 const router = express.Router();
 
-router.post('/upload', verifyJWT, upload.single('file'), async (req, res) => {
+router.post('/upload', verifyJWT, noteUpload.single('file'), async (req, res) => {
   try {
     const { title, description, subject } = req.body;
 
