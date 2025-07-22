@@ -54,3 +54,17 @@ export interface SignUpFormData {
     confirmPassword: string;
     terms: boolean;
 } 
+
+export interface Note {
+    _id: string;
+    title: string;
+    description?: string;
+    subject: string;
+    uploadedBy: string;
+    fileUrl: string;
+    fileType: string;
+    createdAt: string;
+    totalDownloads: number;
+    totalViews: number;
+    pages: number;
+}

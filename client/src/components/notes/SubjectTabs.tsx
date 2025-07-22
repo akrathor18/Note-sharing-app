@@ -1,6 +1,11 @@
 import { subjects } from '../../config/data';
 
-export default function SubjectTabs({ activeSubject, onSubjectClick }) {
+interface SubjectTabsProps {
+    activeSubject: string;
+    onSubjectClick: (subject: string) => void;
+}
+
+export default function SubjectTabs({ activeSubject, onSubjectClick }: SubjectTabsProps) {
     return (
         <div
             className="flex overflow-x-auto pb-2 [&::-webkit-scrollbar]:w-2

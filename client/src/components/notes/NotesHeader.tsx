@@ -1,6 +1,10 @@
 import { Plus } from 'lucide-react';
 
-export default function NotesHeader({ onAddNoteClick }) {
+interface NotesHeaderProps {
+    onAddNoteClick: () => void;
+}
+
+export default function NotesHeader({ onAddNoteClick }: NotesHeaderProps) {
     return (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>

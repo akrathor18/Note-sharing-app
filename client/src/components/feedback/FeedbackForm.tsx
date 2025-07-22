@@ -11,6 +11,47 @@ import {
     AlertCircle,
 } from "lucide-react";
 import { feedbackTypes, experienceOptions } from "../../config/data";
+import type { Dispatch, SetStateAction, FormEvent, ChangeEvent } from "react";
+
+// Types copied from Feedback page for prop typing
+export type FeedbackData = {
+    name: string;
+    email: string;
+    feedbackType: string;
+    rating: number;
+    experience: string;
+    liked: string;
+    improvements: string;
+    newFeatures: string;
+    wouldRecommend: boolean | null;
+    additionalComments: string;
+};
+
+export type FeedbackErrors = {
+    name?: string;
+    email?: string;
+    rating?: string;
+    experience?: string;
+    feedback?: string;
+    wouldRecommend?: string;
+};
+
+interface FeedbackFormProps {
+    feedbackData: FeedbackData;
+    setFeedbackData: Dispatch<SetStateAction<FeedbackData>>;
+    errors: FeedbackErrors;
+    setErrors: Dispatch<SetStateAction<FeedbackErrors>>;
+    isSubmitting: boolean;
+    setIsSubmitting: Dispatch<SetStateAction<boolean>>;
+    isSubmitted: boolean;
+    setIsSubmitted: Dispatch<SetStateAction<boolean>>;
+    validateForm: () => boolean;
+    handleInputChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    handleRatingClick: (rating: number) => void;
+    handleExperienceSelect: (experience: string) => void;
+    handleRecommendationSelect: (wouldRecommend: boolean) => void;
+    handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
+}
 
 export default function FeedbackForm({
     feedbackData,
@@ -27,7 +68,7 @@ export default function FeedbackForm({
     handleExperienceSelect,
     handleRecommendationSelect,
     handleSubmit,
-}) {
+}: FeedbackFormProps) {
     return (
         <div className="bg-[#1A1A1A] rounded-lg md:rounded-xl p-4 md:p-6 border border-[#F5F5F5]/5">
             {/* Success Message */}

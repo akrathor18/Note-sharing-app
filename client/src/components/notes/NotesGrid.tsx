@@ -1,7 +1,14 @@
 import NoteCard from './NoteCard';
 import { FileText, Plus } from 'lucide-react';
+import { Note } from '../../../../types/common'
 
-export default function NotesGrid({ notes, searchTerm, onAddNoteClick }) {
+interface NotesGridProps {
+    notes: Note[];
+    searchTerm: string;
+    onAddNoteClick: () => void;
+}
+
+export default function NotesGrid({ notes, searchTerm, onAddNoteClick }: NotesGridProps) {
     if (notes.length === 0) {
         return (
             <div className="text-center py-12 bg-[#1A1A1A] rounded-xl">

@@ -1,7 +1,18 @@
 import { Target, BookOpen, Users, Award, HelpCircle } from "lucide-react";
 import FAQSection from "./FAQSection";
 
-export default function FeedbackSidebar({ faqs, expandedFaq, toggleFaq }) {
+interface FAQ {
+    question: string;
+    answer: string;
+}
+
+interface FeedbackSidebarProps {
+    faqs: FAQ[];
+    expandedFaq: number | null;
+    toggleFaq: (index: number) => void;
+}
+
+export default function FeedbackSidebar({ faqs, expandedFaq, toggleFaq }: FeedbackSidebarProps) {
     return (
         <>
             {/* Why Your Feedback Matters */}

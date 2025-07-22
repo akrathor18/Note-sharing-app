@@ -1,6 +1,11 @@
 import { Search, Filter } from 'lucide-react';
 
-export default function SearchAndFilter({ searchTerm, onSearchChange }) {
+interface SearchAndFilterProps {
+    searchTerm: string;
+    onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+export default function SearchAndFilter({ searchTerm, onSearchChange }: SearchAndFilterProps) {
     return (
         <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">

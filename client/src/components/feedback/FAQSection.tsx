@@ -1,7 +1,18 @@
 import React from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-export default function FAQSection({ faqs, expandedFaq, toggleFaq }) {
+interface FAQ {
+    question: string;
+    answer: string;
+}
+
+interface FAQSectionProps {
+    faqs: FAQ[];
+    expandedFaq: number | null;
+    toggleFaq: (index: number) => void;
+}
+
+export default function FAQSection({ faqs, expandedFaq, toggleFaq }: FAQSectionProps) {
     return (
         <div className="space-y-2">
             {faqs.map((faq, index) => (

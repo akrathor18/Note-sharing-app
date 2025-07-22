@@ -1,7 +1,7 @@
 import { FileText, Download } from 'lucide-react';
 import { formatDate } from '../../utils/formatDate';
-
-export default function NoteCard({ note }) {
+import { Note } from '../../../../types/common'
+export default function NoteCard({ note }: {note: Note}) {
     return (
         <div
             key={note._id}
