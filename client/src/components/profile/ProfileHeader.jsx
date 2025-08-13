@@ -1,4 +1,3 @@
-import React from 'react';
 import { Camera, Edit2 } from 'lucide-react';
 
 function ProfileHeader({
@@ -18,7 +17,7 @@ function ProfileHeader({
                 {/* Profile Picture */}
                 <div className="relative group">
                     <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#00E5FF] flex items-center justify-center text-[#0D0D0D] text-4xl font-bold overflow-hidden">
-                        {userDetails.name.toUpperCase().charAt(0)}
+                        {userDetails.name.toUpperCase().charAt(0)||"U"}
                     </div>
                     <button
                         onClick={handleFileUpload}
@@ -92,7 +91,7 @@ function ProfileHeader({
                             <div className="flex justify-between items-start">
                                 <div>
                                     <h1 className="text-2xl font-bold">{userDetails.name}</h1>
-                                    <p className="text-[#F5F5F5]/60">{userDetails.role}</p>
+                                    <p className="text-[#F5F5F5]/60">{userDetails.role.role_name}</p>
                                 </div>
                                 <button
                                     onClick={() => setIsEditing(true)}
