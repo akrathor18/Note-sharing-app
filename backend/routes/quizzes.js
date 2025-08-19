@@ -11,14 +11,14 @@ router.post('/createQuiz', verifyJWT, async (req, res) => {
   try {
     const quizData = {
       ...req.body,
-      createdBy: req.user.id 
+      createdBy: req.user.id
     };
 
     const newQuiz = new Quiz(quizData);
     const resp = await newQuiz.save();
 
     await User.findByIdAndUpdate(req.user.id, {
-      $push: { quizzesTaken: resp._id } 
+      $push: { quizzesTaken: resp._id }
     });
     await trackActivityAndStreak(userId, { totalNotes: 1 });
     res.status(201).json(resp);
@@ -40,55 +40,68 @@ router.get('/getQuiz', async (req, res) => {
 
 // Search Quizzes
 router.get('/search', async (req, res) => {
-    const { search } = req.query;
+  const { search } = req.query;
 
-    const query = search
-        ? {
-              $or: [
-                  { title: { $regex: search, $options: 'i' } },
-                  { category: { $regex: search, $options: 'i' } },
-              ],
-          }
-        : {};
-
-    try {
-        const quizzes = await Quiz.find(query);
-        res.status(200).json(quizzes);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch quizzes' });
+  const query = search
+    ? {
+      $or: [
+        { title: { $regex: search, $options: 'i' } },
+        { category: { $regex: search, $options: 'i' } },
+      ],
     }
+    : {};
+
+  try {
+    const quizzes = await Quiz.find(query);
+    res.status(200).json(quizzes);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch quizzes' });
+  }
 });
 
 router.get('/:id', async (req, res) => {
-    try {
-        const quiz = await Quiz.findById(req.params.id);
-        if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
-        res.json(quiz);
-    } catch (err) {
-        res.status(500).json({ message: 'Server error' });
-    }
-});
-
-router.post('/attempt-quiz',verifyJWT, async (req, res) => {
   try {
-    const { quizId, score } = req.body;
-    const userId = req.user.id;
-
-    const attempt = await QuizAttempt.create({
-      user: userId,
-      quiz: quizId,
-      score,
-    });
-
-    // Update streak + stats
-    await trackActivityAndStreak(userId, { totalQuizzesTaken: 1 });
-
-    res.status(201).json({ message: 'Quiz attempt recorded', attempt });
+    const quiz = await Quiz.findById(req.params.id).select('-questions.correctAnswer');;
+    if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
+    res.json(quiz);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: 'Server error' });
   }
 });
+
+router.post('/:id/attempt', async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.id);
+    if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
+
+    const { answers } = req.body; 
+    // `answers` should be an array of user answers matching the order of quiz.questions
+
+    if (!answers || answers.length !== quiz.questions.length) {
+      return res.status(400).json({ message: 'Invalid number of answers' });
+    }
+
+    let score = 0;
+    const results = quiz.questions.map((q, index) => {
+      const isCorrect = q.correctAnswer === answers[index];
+      if (isCorrect) score++;
+      return {
+        question: q.text,
+        userAnswer: answers[index],
+        correctAnswer: q.answer,
+        isCorrect
+      };
+    });
+    res.json({
+      score,
+      total: quiz.questions.length,
+      results
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 
 export default router;
