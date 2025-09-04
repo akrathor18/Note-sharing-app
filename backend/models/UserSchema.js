@@ -33,7 +33,10 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Link'
   }],
-
+  userstate: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'UserState'
+  }],
 
   recentActivity: [activitySchema],
   notes: [{

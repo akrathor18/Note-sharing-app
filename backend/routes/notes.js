@@ -26,7 +26,7 @@ router.post('/upload', verifyJWT, noteUpload.single('file'), async (req, res) =>
     });
     const userId = req.user.id;
 
-    await trackActivityAndStreak(userId, { totalQuizCreated: 1 });
+    await trackActivityAndStreak(userId, { totalNotes: 1 });
     res.status(201).json({ success: true, note });
   } catch (err) {
     console.log(err)

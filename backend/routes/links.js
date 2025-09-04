@@ -2,7 +2,7 @@ import express from 'express';
 import verifyJWT from '../middlewares/verifyJWT.js';
 const router = express.Router();
 import Link from '../models/Links.js';
-
+import User from '../models/UserSchema.js';
 router.post('/', verifyJWT, async (req, res) => {
     const { label, url } = req.body;
 
@@ -15,6 +15,10 @@ router.post('/', verifyJWT, async (req, res) => {
             user: req.user.id,
             label,
             url
+        });
+
+        await User.findByIdAndUpdate(req.user.id, {
+            $push: { links: newLink._id }
         });
 
         res.status(201).json({ message: 'Link created', link: newLink });
@@ -51,18 +55,18 @@ router.patch('/:id', verifyJWT, async (req, res) => {
 });
 
 router.delete('/:id', verifyJWT, async (req, res) => {
-  try {
-    const deleted = await Link.findOneAndDelete({
-      _id: req.params.id,
-      user: req.user.id
-    });
+    try {
+        const deleted = await Link.findOneAndDelete({
+            _id: req.params.id,
+            user: req.user.id
+        });
 
-    if (!deleted) return res.status(404).json({ message: 'Link not found' });
+        if (!deleted) return res.status(404).json({ message: 'Link not found' });
 
-    res.status(200).json({ message: 'Link deleted' });
-  } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
-  }
+        res.status(200).json({ message: 'Link deleted' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
 });
 
 

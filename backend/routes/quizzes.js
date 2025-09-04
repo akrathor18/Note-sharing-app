@@ -5,7 +5,7 @@ import verifyJWT from '../middlewares/verifyJWT.js';
 import User from '../models/UserSchema.js';
 import QuizAttempt from '../models/QuizAttempt.js';
 import { trackActivityAndStreak } from '../utils/activityTracker.js';
-
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 router.post('/createQuiz', verifyJWT, async (req, res) => {
   try {
@@ -20,7 +20,7 @@ router.post('/createQuiz', verifyJWT, async (req, res) => {
     await User.findByIdAndUpdate(req.user.id, {
       $push: { quizzesTaken: resp._id }
     });
-    await trackActivityAndStreak(userId, { totalNotes: 1 });
+    await trackActivityAndStreak(userId, { totalQuizCreated: 1 });
     res.status(201).json(resp);
   } catch (error) {
     console.log(error);
@@ -69,7 +69,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/:id/attempt', async (req, res) => {
+router.post('/:id/attempt',authMiddleware, verifyJWT,async (req, res) => {
   try {
     const quiz = await Quiz.findById(req.params.id);
     if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
@@ -88,16 +88,20 @@ router.post('/:id/attempt', async (req, res) => {
       return {
         question: q.text,
         userAnswer: answers[index],
-        correctAnswer: q.answer,
+        correctAnswer: q.correctAnswer,
         isCorrect
       };
     });
+  await trackActivityAndStreak(req.user.id, {  totalQuizzesTaken: 1, 
+  correctAnswers: score });
+
     res.json({
       score,
       total: quiz.questions.length,
       results
     });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: 'Server error' });
   }
 });

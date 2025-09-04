@@ -8,7 +8,9 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 import profilePicUpload from '../middlewares/profilePicUpload.js';
 import cloudinary from '../config/cloudinary.js';
 import bcrypt from 'bcryptjs';
+import {trackActivityAndStreak} from '../utils/activityTracker.js';
 
+// Helper function to generate JWT and set cookie 
 function generateSessionId(user, res) {
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: '7d',
@@ -24,7 +26,7 @@ function generateSessionId(user, res) {
   return token;
 }
 
-
+// Auth routes below
 router.post('/register', async (req, res) => {
   try {
     const { email, role_name, ...rest } = req.body;
@@ -95,7 +97,7 @@ router.post("/logout", (req, res) => {
 });
 
 
-
+//user routes below
 router.post('/changepassword', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
   try {
     const { password, newPassword } = req.body;
@@ -119,20 +121,29 @@ router.post('/changepassword', authMiddleware, VerifyJwtMiddleware, async (req, 
   }
 });
 
-router.get('/profile', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
-  try {
-    const userId = req.user._id;
+  router.get('/profile', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
+    try {
+      const userId = req.user._id;
 
-    const user = await User.findById(userId).populate('role').select('-password');
+      // track activity and streak
+      const userState = await trackActivityAndStreak(userId);
 
-    if (!user) return res.status(404).json({ message: 'User not found' });
+      // fetch user with linked state
+      const user = await User.findById(userId)
+        .populate('role')
+        .populate('links').populate('notes')
+        .populate('quizzes')
+        .select('-password -userstate -__v'); // Exclude password, userstate and __v fields
 
-    res.status(200).json({ user });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
+      if (!user) return res.status(404).json({ message: 'User not found' });
+
+      res.status(200).json({ userState, user });
+    } catch (error) { 
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
 
 router.patch('/bio', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
   const userId = req.user.id;
@@ -209,6 +220,5 @@ router.delete('/delete-profile-pic', authMiddleware, VerifyJwtMiddleware, async 
     res.status(500).json({ message: 'Failed to delete profile picture' });
   }
 });
-
 
 export default router;
