@@ -5,10 +5,12 @@ import verifyJWT from '../middlewares/verifyJWT.js';
 import User from '../models/UserSchema.js';
 import QuizAttempt from '../models/QuizAttempt.js';
 import { trackActivityAndStreak } from '../utils/activityTracker.js';
+import { logActivity } from '../utils/logActivity.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
 router.post('/createQuiz', verifyJWT, async (req, res) => {
   try {
+    const userId = req.user.id;
     const quizData = {
       ...req.body,
       createdBy: req.user.id
@@ -21,6 +23,7 @@ router.post('/createQuiz', verifyJWT, async (req, res) => {
       $push: { quizzesTaken: resp._id }
     });
     await trackActivityAndStreak(userId, { totalQuizCreated: 1 });
+    await logActivity(req.user.id, 'Quiz', resp._id, 'Created a quiz');
     res.status(201).json(resp);
   } catch (error) {
     console.log(error);
@@ -69,12 +72,12 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/:id/attempt',authMiddleware, verifyJWT,async (req, res) => {
+router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
   try {
     const quiz = await Quiz.findById(req.params.id);
     if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
 
-    const { answers } = req.body; 
+    const { answers } = req.body;
     // `answers` should be an array of user answers matching the order of quiz.questions
 
     if (!answers || answers.length !== quiz.questions.length) {
@@ -92,8 +95,12 @@ router.post('/:id/attempt',authMiddleware, verifyJWT,async (req, res) => {
         isCorrect
       };
     });
-  await trackActivityAndStreak(req.user.id, {  totalQuizzesTaken: 1, 
-  correctAnswers: score });
+    await trackActivityAndStreak(req.user.id, {
+      totalQuizzesTaken: 1,
+      correctAnswers: score
+    });
+
+    await logActivity(req.user.id, 'Quiz', req.params.id, 'Attempted a quiz');
 
     res.json({
       score,

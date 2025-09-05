@@ -5,6 +5,7 @@ import verifyJWT from '../middlewares/verifyJWT.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import User from '../models/UserSchema.js';
 import { trackActivityAndStreak } from '../utils/activityTracker.js';
+import { logActivity } from '../utils/logActivity.js';
 const router = express.Router();
 
 router.post('/upload', verifyJWT, noteUpload.single('file'), async (req, res) => {
@@ -27,7 +28,8 @@ router.post('/upload', verifyJWT, noteUpload.single('file'), async (req, res) =>
     const userId = req.user.id;
 
     await trackActivityAndStreak(userId, { totalNotes: 1 });
-    res.status(201).json({ success: true, note });
+    await logActivity(req.user.id, 'Note', note._id, 'Uploaded a note');
+    res.status(201).json({ success:  true, note });
   } catch (err) {
     console.log(err)
     res.status(500).json({ success: false, message: err.message });

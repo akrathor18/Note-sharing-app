@@ -13,6 +13,7 @@ const activitySchema = new mongoose.Schema({
     required: true,
     refPath: 'type'
   },
+  description: { type: String },
   timestamp: { type: Date, default: Date.now },
 }, { _id: false });
 

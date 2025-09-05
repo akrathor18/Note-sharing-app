@@ -131,8 +131,10 @@ router.post('/changepassword', authMiddleware, VerifyJwtMiddleware, async (req, 
       // fetch user with linked state
       const user = await User.findById(userId)
         .populate('role')
-        .populate('links').populate('notes')
-        .populate('quizzes')
+        .populate('links').populate({
+        path: 'recentActivity.refId', // populate note/quiz info
+        select: 'title name'          // only return title (quiz/note)
+      })
         .select('-password -userstate -__v'); // Exclude password, userstate and __v fields
 
       if (!user) return res.status(404).json({ message: 'User not found' });
