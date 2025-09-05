@@ -90,11 +90,28 @@ router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
       if (isCorrect) score++;
       return {
         question: q.text,
+        questionId: q._id,
         userAnswer: answers[index],
         correctAnswer: q.correctAnswer,
         isCorrect
       };
+      
     });
+    const attempt = new QuizAttempt({
+      user: req.user.id,
+      quiz: quiz._id,
+      score,
+      answers: results.map(r => ({
+        questionId: r.questionId,
+        selectedAnswer: r.userAnswer,
+        isCorrect: r.isCorrect
+      }))
+    });
+    await attempt.save();
+      await User.findByIdAndUpdate(req.user.id, {
+      $push: { quizzesTaken: quiz._id }
+    });
+    // track activity and streak
     await trackActivityAndStreak(req.user.id, {
       totalQuizzesTaken: 1,
       correctAnswers: score
@@ -112,7 +129,5 @@ router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
-
 
 export default router;

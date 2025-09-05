@@ -15,6 +15,22 @@ const quizAttemptSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    answers: [
+        {
+            questionId: {
+                type: mongoose.Schema.Types.ObjectId,
+                required: true
+            },
+            selectedAnswer: {
+                type: String,
+                required: true
+            },
+            isCorrect: {
+                type: Boolean,  
+                required: true
+            }
+        }
+    ],
     attemptedAt: {
         type: Date,
         default: Date.now
