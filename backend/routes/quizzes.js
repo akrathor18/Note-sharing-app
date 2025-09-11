@@ -97,10 +97,15 @@ router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
             };
 
         });
+
+        const totalQuestions = quiz.questions.length;
+        const percentageScore = (score / totalQuestions) * 100;
+
         const attempt = new QuizAttempt({
             user: req.user.id,
             quiz: quiz._id,
             score,
+            percentageScore,
             answers: results.map(r => ({
                 questionId: r.questionId,
                 selectedAnswer: r.userAnswer,
@@ -122,7 +127,8 @@ router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
         res.json({
             score,
             total: quiz.questions.length,
-            results
+            results,
+            precentageScore
         });
     } catch (err) {
         console.log(err);
