@@ -146,7 +146,6 @@ router.post('/changepassword', authMiddleware, VerifyJwtMiddleware, async (req, 
     }
   });
 
-
 router.patch('/bio', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
   const userId = req.user.id;
   const { bio } = req.body;
@@ -160,22 +159,6 @@ router.patch('/bio', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
-router.post('/activity', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
-  const { type, refId } = req.body;
-
-  try {
-    await User.findByIdAndUpdate(req.user.id, {
-      $push: { recentActivity: { type, refId } }
-    });
-
-    res.status(200).json({ message: 'Activity recorded' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to log activity' });
-  }
-});
-
 
 router.put('/upload-profile-pic', authMiddleware, VerifyJwtMiddleware, profilePicUpload.single('image'), async (req, res) => {
   try {

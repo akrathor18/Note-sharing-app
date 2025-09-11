@@ -23,7 +23,7 @@ router.post('/upload', verifyJWT, noteUpload.single('file'), async (req, res) =>
 
     // Link note to user
     await User.findByIdAndUpdate(req.user.id, {
-      $push: { notesUploaded: note._id }
+      $push: { notes: note._id }
     });
     const userId = req.user.id;
 
