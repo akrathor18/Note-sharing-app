@@ -57,11 +57,11 @@ export default function CreateQuiz() {
             questions: quizData.questions.map((q) =>
                 q.id === questionId
                     ? {
-                          ...q,
-                          options: q.options.map((opt) =>
-                              opt.id === optionId ? { ...opt, text: value } : opt,
-                          ),
-                      }
+                        ...q,
+                        options: q.options.map((opt) =>
+                            opt.id === optionId ? { ...opt, text: value } : opt,
+                        ),
+                    }
                     : q,
             ),
         });

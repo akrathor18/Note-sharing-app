@@ -1,15 +1,12 @@
 import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { X, Save, Image, Tag, Calendar } from 'lucide-react';
-import API from '../../config/axios';
-import { toast } from 'react-toastify';
 import { subjects } from '../../config/data';
-
+import { useNoteStore } from "../../store/noteStore";
 export default function AddNoteModal({ onClose, onNoteAdded }) {
     // States
     const [selectedFile, setSelectedFile] = useState(null);
-    const [isUploading, setIsUploading] = useState(false);
-
+  const { uploadNote, isUploading } = useNoteStore();
     // Refs
     const fileInputRef = useRef(null);
 
@@ -34,34 +31,9 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
         }
     };
 
-    const onSubmit = async (data) => {
-        try {
-            setIsUploading(true);
-
-            const formData = new FormData();
-            if (selectedFile) {
-                formData.append('file', selectedFile);
-            }
-            formData.append('title', data.title);
-            formData.append('description', data.content);
-            formData.append('subject', data.subject);
-
-            await API.post('/notes/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
-            onNoteAdded();
-            toast.success('Note uploaded successfully');
-            onClose();
-        } catch (error) {
-            console.log(error);
-            toast.error(error.message);
-        } finally {
-            setIsUploading(false);
-        }
-    };
+  const onSubmit = async (data) => {
+    await uploadNote(data, selectedFile, onNoteAdded, onClose);
+  };
 
     return (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
