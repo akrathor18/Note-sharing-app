@@ -16,6 +16,15 @@ export const useUserStore = create((set) => ({
         }
     },
 
-    
+    updateBio: async (newBio) => {
+        try {
+            
+            await API.patch('/users/bio', { bio: newBio });
+            set((state) => ({ user: {...state.user, bio: newBio } }));      
+        } catch (error) {
+            set({ error: error.message || "Failed to update bio" });
+        }
+    },
+
 
 }));

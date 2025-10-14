@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import API from '../config/axios';
 import { toast } from 'react-toastify';
-import QuizzesList from '../components/profile/QuizzesList';
-import { Upload } from 'lucide-react';
 
 export const useQuizStore = create((set) => ({
 
