@@ -118,10 +118,19 @@ function navBar() {
         setUser(newUser);
     };
 
-    const handleLogout = () => {
-        removeToken(); // Remove token
-        handleAuthError('logout');
-        navigate('/signin');
+    const handleLogout = async () => {
+        try {
+            const response = await API.post('/users/logout');
+            if (response.status === 200) {
+                removeToken();
+                setIsAuthenticated(false);
+                setUser(null);
+                navigate('/signin');
+                toast.success('Logged out successfully');
+            }
+        } catch (error) {
+            console.log(error)
+        }
     };
 
     // Handle search

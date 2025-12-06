@@ -30,6 +30,7 @@ function Profile() {
                 setUserDetails(response.data);
                 setNewBio(response.data.bio);
                 setBio(response.data.bio);
+                console.log(response.data);
             } catch (error) {
                 console.log(error);
                 toast.error(error.response.data.message);
@@ -112,7 +113,7 @@ function Profile() {
     return (
         <div className="max-w-4xl mx-auto">
             <ProfileHeader
-                userDetails={userDetails}
+                userDetails={userDetails.user}
                 isEditing={isEditing}
                 handleInputChange={handleInputChange}
                 handleSave={handleSave}

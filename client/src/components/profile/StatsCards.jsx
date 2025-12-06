@@ -18,31 +18,31 @@ function StatsCards({ stats }) {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
             <StatCard
                 icon={<FileText size={18} className="text-[#FF007F]" />}
-                value={stats.totalNoteCreated}
+                // value={stats.totalNoteCreated}
                 label="Notes Created"
                 bgClass="bg-[#FF007F]/10"
             />
             <StatCard
                 icon={<FileText size={18} className="text-[#00E5FF]" />}
-                value={stats.totalNoteVisits}
+                // value={stats.totalNoteVisits}/
                 label="Notes Viewed"
                 bgClass="bg-[#00E5FF]/10"
             />
             <StatCard
                 icon={<BrainCircuit size={18} className="text-[#FF007F]" />}
-                value={stats.quizzesTaken}
+                // value={stats.quizzesTaken}
                 label="Quizzes Taken"
                 bgClass="bg-[#FF007F]/10"
             />
             <StatCard
                 icon={<CheckCircle2 size={18} className="text-[#00E5FF]" />}
-                value={stats.quizzesPassed}
+                // value={stats.quizzesPassed}
                 label="Quizzes Passed"
                 bgClass="bg-[#00E5FF]/10"
             />
             <StatCard
                 icon={<Clock size={18} className="text-[#FF007F]" />}
-                value={stats.totalStudyTime + 'h'}
+                // value={stats.totalStudyTime + 'h'}
                 label="Study Hours"
                 bgClass="bg-[#FF007F]/10"
             />
