@@ -263,7 +263,7 @@ function navBar() {
             {/* Main Content */}
             <div className="flex-1 overflow-auto w-full">
                 {/* Header */}
-                <header className="bg-[#1A1A1A] p-4 flex items-center justify-between sticky top-0 z-10">
+                <header className="index bg-[#1A1A1A] p-4 flex items-center justify-between sticky top-0">
                     <div className="relative w-full max-w-xs ml-auto md:ml-0">
                         <form onSubmit={handleSearch}>
                             <Search
