@@ -1,6 +1,5 @@
-"use client"
+import { useState, useEffect } from "react"
 
-import { useState } from "react"
 import {
   FileText,
   BrainCircuit,
@@ -13,26 +12,37 @@ import {
   Brain,
   PenTool,
 } from "lucide-react"
+
+// import { useUserStore } from "@/store/useUserStore";
+import { useUserStore } from "../store/userStore.js";
 import QuickStats from "../components/dashboard/QuickStats.jsx"
 import QuickAction from "../components/dashboard/QuickAction.jsx"
 import RecentActivity from "../components/dashboard/RecentActivity.jsx"
 import Streak from "../components/dashboard/Streak.jsx"
 import AverageQuizeScore from "../components/dashboard/AverageQuizeScore.jsx"
 import SecondaryStates from "../components/dashboard/SecondaryStates.jsx"
+import SkeletonLoader from "../components/dashboard/skeletonLoader.jsx";
 export default function Dashboard() {
-  const [selectedPeriod, setSelectedPeriod] = useState("week") // week, month, year
+//import zustand store
+  const { user, fetchUser, isLoading, error } = useUserStore();
+
+  useEffect(() => {
+    fetchUser();
+     // Load user when page opens
+  }, []);
+  console.log("User data:", user.user);
+    if (isLoading) return <SkeletonLoader />;
+  if (error) return <p>Error: {error}</p>;
+
 
   // User data based on your specifications
   const userData = {
-    name: "John",
-    totalNotesUploaded: 47,
-    totalQuizzesCreated: 23,
-    totalQuizAttempts: 156,
-    currentStreak: 12,
+    name: user ? user.user.name : "User",
+    totalNotesUploaded: user ? user.userState.totalNotes : 0,
+    totalQuizzesCreated: user? user.userState.totalQuizCreated:0,
+    totalQuizAttempts: user? user.userState.totalQuizzesTaken:0,
+    currentStreak: user? user.userState.streak:0,
     averageQuizScore: 87.5,
-    notesUploadTrend: "+8", // This week
-    level: 15,
-    totalPoints: 3420,
   }
 
   // Main stats cards data
@@ -82,11 +92,10 @@ export default function Dashboard() {
   // Secondary stats
   const secondaryStats = [
     {
-      label: "Notes Upload Trend",
-      value: userData.notesUploadTrend,
+      label: "Highest Streak",
+      value: user? user.userState.highestStreak:0,
       icon: TrendingUp,
       color: "#FFD93D",
-      description: "This week",
       change: "trending up",
     },
     {
@@ -94,7 +103,6 @@ export default function Dashboard() {
       value: `${userData.averageQuizScore}%`,
       icon: Trophy,
       color: "#9C27B0",
-      description: "Last 20 attempts",
       change: "excellent performance",
     },
   ]
@@ -175,8 +183,6 @@ export default function Dashboard() {
       points: 100,
     },
   ]
-
-
 
   return (
     <div className="space-y-6 md:space-y-8">

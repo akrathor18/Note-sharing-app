@@ -28,8 +28,11 @@ router.post('/upload', verifyJWT, noteUpload.single('file'), async (req, res) =>
     const userId = req.user.id;
 
     await trackActivityAndStreak(userId, { totalNotes: 1 });
-    await logActivity(req.user.id, 'Note', note._id, 'Uploaded a note');
-    res.status(201).json({ success:  true, note });
+    await logActivity(req.user.id, 'Note', note._id, 'Uploaded a note', {
+      refTitle: resp.title,
+      subject: resp.subject,
+    });
+    res.status(201).json({ success: true, note });
   } catch (err) {
     console.log(err)
     res.status(500).json({ success: false, message: err.message });

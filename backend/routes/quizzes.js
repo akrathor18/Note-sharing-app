@@ -119,16 +119,21 @@ router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
         // track activity and streak
         await trackActivityAndStreak(req.user.id, {
             totalQuizzesTaken: 1,
-            correctAnswers: precentageScore
+            correctAnswers: percentageScore
         });
 
-        await logActivity(req.user.id, 'Quiz', req.params.id, 'Attempted a quiz');
+        await logActivity(req.user.id, 'Quiz', req.params.id, 'Attempted a quiz',{
+            score,
+            totalQuestions: quiz.questions.length,
+            percentageScore,
+            refTitle: quiz.title,
+        });
 
         res.json({
             score,
             total: quiz.questions.length,
             results,
-            precentageScore
+            percentageScore
         });
     } catch (err) {
         console.log(err);

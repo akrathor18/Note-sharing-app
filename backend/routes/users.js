@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 import User from '../models/UserSchema.js';
 import Role from '../models/Roles.js';
+import QuizAttempt from '../models/QuizAttempt.js';
 import jwt from 'jsonwebtoken';
 import VerifyJwtMiddleware from '../middlewares/verifyJWT.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
@@ -121,30 +122,79 @@ router.post('/changepassword', authMiddleware, VerifyJwtMiddleware, async (req, 
   }
 });
 
-  router.get('/profile', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
-    try {
-      const userId = req.user._id;
+router.get('/profile', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id || req.user.id;
 
-      // track activity and streak
-      const userState = await trackActivityAndStreak(userId);
+    // track activity and streak (if this is lightweight for you)
+    const userState = await trackActivityAndStreak(userId);
 
-      // fetch user with linked state
-      const user = await User.findById(userId)
-        .populate('role')
-        .populate('links').populate({
-        path: 'recentActivity.refId', // populate note/quiz info
-        select: 'title name'          // only return title (quiz/note)
-      })
-        .select('-password -userstate -__v'); // Exclude password, userstate and __v fields
+    // fetch user
+   const user = await User.findById(userId)
+  .populate('role')
+  .populate('links')
+  .select('-password -userstate -__v')
+  .lean();
 
-      if (!user) return res.status(404).json({ message: 'User not found' });
-
-      res.status(200).json({ userState, user });
-    } catch (error) { 
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-  });
+
+    // only send latest N activities (e.g. 10)
+  const recentActivity =
+  (user.recentActivity || [])
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .slice(0, 10)
+    .map((activity) => ({
+      type: activity.type,
+      refId: activity.refId,
+      title: activity.refTitle || 'Untitled',   
+      description: activity.description,
+      score: activity.score ?? null,
+      percentageScore: activity.percentageScore ?? null,
+      totalQuestions: activity.totalQuestions ?? null,
+      timestamp: activity.timestamp,
+    }));
+
+user.recentActivity = recentActivity;
+
+    // attach clean recentActivity to user object
+    user.recentActivity = recentActivity;
+
+    res.status(200).json({ userState, user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+router.get('/average-score', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Get all attempts for this user
+    const attempts = await QuizAttempt.find({ user: userId });
+
+    if (!attempts.length) {
+      return res.json({ averagePercentage: 0, attempts: 0 });
+    }
+
+    // Calculate average percentage
+    const total = attempts.reduce((sum, a) => sum + a.percentageScore, 0);
+    const average = total / attempts.length;
+
+    res.json({
+      attempts: attempts.length,
+      averagePercentage: Number(average.toFixed(2)),
+    });
+
+  } catch (err) {
+    console.error("Error calculating average score:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 
 router.patch('/bio', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
   const userId = req.user.id;

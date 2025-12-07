@@ -5,7 +5,7 @@ export const useUserStore = create((set) => ({
     user: null,
     isLoading: false,
     error: null,
-
+    
     fetchUser: async () => {
         set({ isLoading: true, error: null });
         try {

@@ -11,9 +11,20 @@ const activitySchema = new mongoose.Schema({
   refId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    refPath: 'type'
+    refPath: 'type',
   },
+  refTitle: { type: String }, 
   description: { type: String },
+
+  // fields for quiz activity
+  score: { type: Number },             
+  percentageScore: { type: Number },    
+  totalQuestions: { type: Number },    
+
+  // field for note activity
+  subject: { type: String },
+  
+
   timestamp: { type: Date, default: Date.now },
 }, { _id: false });
 

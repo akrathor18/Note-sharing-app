@@ -17,7 +17,6 @@ function SecondaryStates(statsData) {
                                 {stat.value}
                             </div>
                             <div className="text-sm font-medium text-[#F5F5F5] mb-1">{stat.label}</div>
-                            <div className="text-xs text-[#F5F5F5]/60">{stat.description}</div>
                         </div>
                     </div>
                 </div>
