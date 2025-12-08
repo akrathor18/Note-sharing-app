@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 const activitySchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ['Note', 'Quiz'],
+    enum: ['quiz_created', 'note_upload', 'quiz_attempt', 'streak_milestone'],
     required: true,
   },
   refId: {

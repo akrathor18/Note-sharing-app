@@ -5,7 +5,7 @@ export const useUserStore = create((set) => ({
     user: null,
     isLoading: false,
     error: null,
-    
+    averageScore: null,
     fetchUser: async () => {
         set({ isLoading: true, error: null });
         try {
@@ -13,6 +13,15 @@ export const useUserStore = create((set) => ({
             set({ user: response.data, isLoading: false });
         } catch (error) {
             set({ error: error.message || "Failed to load user", isLoading: false });
+        }
+    },
+
+    getScore: async () => {
+        try {
+            const response = await API.get('/users/average-score');
+            set({ averageScore: response.data  });
+        } catch (error) {
+            console.log(error)
         }
     },
 

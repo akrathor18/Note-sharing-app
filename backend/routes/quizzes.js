@@ -23,7 +23,7 @@ router.post('/createQuiz', verifyJWT, async (req, res) => {
             $push: { quizzes: resp._id }
         });
         await trackActivityAndStreak(userId, { totalQuizCreated: 1 });
-        await logActivity(req.user.id, 'Quiz', resp._id, 'Created a quiz');
+        await logActivity(req.user.id, 'quiz_created', resp._id, 'Created a quiz');
         res.status(201).json(resp);
     } catch (error) {
         console.log(error);
@@ -122,11 +122,12 @@ router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
             correctAnswers: percentageScore
         });
 
-        await logActivity(req.user.id, 'Quiz', req.params.id, 'Attempted a quiz',{
+        await logActivity(req.user.id, 'quiz_attempt', req.params.id, 'Attempted a quiz',{
             score,
             totalQuestions: quiz.questions.length,
             percentageScore,
             refTitle: quiz.title,
+            subject: quiz.category
         });
 
         res.json({

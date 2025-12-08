@@ -2,7 +2,6 @@ function SecondaryStates(statsData) {
     const secondaryStats = statsData.statsData;
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {console.log(statsData)}
             {secondaryStats.map((stat, index) => (
                 <div key={index} className="bg-[#1A1A1A] rounded-xl p-6 border border-[#F5F5F5]/5">
                     <div className="flex items-center gap-4">

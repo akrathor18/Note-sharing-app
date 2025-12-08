@@ -17,16 +17,17 @@ import {
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import API from '../config/axios';
 import { removeToken, handleAuthError } from '../utils/auth';
+import { useUserStore } from "../store/userStore.js";
 
 function navBar() {
+    const {user} = useUserStore();
+    // console.log(user)
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(true);
     const [authView, setAuthView] = useState('signin'); // signin, signup
-    const [user, setUser] = useState();
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState(null);
     const [notifications, setNotifications] = useState([
         {
             id: 1,
@@ -47,19 +48,6 @@ function navBar() {
             read: true,
         },
     ]);
-
-    const fetchUserDetail = async () => {
-        try {
-            // const response = await API.get('/users/profile');
-            setUser(response.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    useEffect(() => {
-        fetchUserDetail();
-    }, []);
 
     // Toggle mobile menu
     const toggleMobileMenu = () => {
@@ -96,35 +84,13 @@ function navBar() {
         );
     };
 
-    // Handle authentication
-    const handleLogin = (email, password) => {
-        // In a real app, you would validate credentials against a backend
-        console.log('Logging in with:', email, password);
-        setIsAuthenticated(true);
-        setUser(userData);
-    };
-
-    const handleSignup = (name, email, password) => {
-        // In a real app, you would send this data to your backend
-        console.log('Signing up:', name, email, password);
-        setIsAuthenticated(true);
-        // Create a new user object based on the signup data
-        const newUser = {
-            ...userData,
-            name,
-            email,
-            stats: { ...userData.stats }, // Copy the sample stats
-        };
-        setUser(newUser);
-    };
-
     const handleLogout = async () => {
         try {
             const response = await API.post('/users/logout');
             if (response.status === 200) {
                 removeToken();
                 setIsAuthenticated(false);
-                setUser(null);
+                // setUser(null);
                 navigate('/signin');
                 toast.success('Logged out successfully');
             }
@@ -185,7 +151,7 @@ function navBar() {
                     <ul className="space-y-2">
                         <li>
                             <NavLink
-                                to={'/'}
+                                to={'/Dashboard'}
                                 className={({ isActive }) =>
                                     `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
                                         ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
@@ -259,11 +225,11 @@ function navBar() {
                 <div className="mt-auto pt-4 border-t border-[#F5F5F5]/10">
                     <div className="flex items-center gap-3 p-2">
                         <div className="w-8 h-8 rounded-full bg-[#00E5FF] flex items-center justify-center text-[#0D0D0D] font-bold">
-                            {user?.name.toUpperCase().charAt(0) || 'U'}
+                            {user?.user.name.toUpperCase().charAt(0) || 'U'}
                         </div>
                         <div>
-                            <p className="text-sm font-medium">{user?.name || 'User'}</p>
-                            <p className="text-xs text-[#F5F5F5]/60">{user?.role || 'Student'}</p>
+                            <p className="text-sm font-medium">{user?.user.name || 'User'}</p>
+                            <p className="text-xs text-[#F5F5F5]/60">{user?.user.role.role_name || 'Student'}</p>
                         </div>
                     </div>
                 </div>
