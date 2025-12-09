@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import API from '../config/axios';
-import { toast } from 'react-toastify';
+
 export const useUserStore = create((set) => ({
     user: null,
     isLoading: false,
@@ -34,6 +34,4 @@ export const useUserStore = create((set) => ({
             set({ error: error.message || "Failed to update bio" });
         }
     },
-
-
 }));

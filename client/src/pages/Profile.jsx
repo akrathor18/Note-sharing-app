@@ -13,9 +13,20 @@ import AchievementsList from '../components/profile/AchievementsList';
 import ActivityHistory from '../components/profile/ActivityHistory';
 import { toast } from 'react-toastify';
 import { recentActivity, userNotes, userQuizzes, achievements } from '../config/data';
+import { useUserStore } from '../store/userStore.js';
 
 function Profile() {
-    const [userDetails, setUserDetails] = useState();
+    const { user, averageScore, fetchUser, getScore, isLoading, error } =
+        useUserStore();
+
+         useEffect(() => {
+    fetchUser();
+    getScore();
+  }, [fetchUser, getScore]);
+
+        
+    const userState = user?.userState || {};
+    const userDetails = user?.user || {};
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
     const [bio, setBio] = useState('');
@@ -23,25 +34,10 @@ function Profile() {
     const [newBio, setNewBio] = useState();
     const fileInputRef = useRef(null);
 
-    const fetchUserDetail = async () => {
-        setTimeout(async () => {
-            try {
-                const response = await API.get('/users/profile');
-                setUserDetails(response.data);
-                setNewBio(response.data.bio);
-                setBio(response.data.bio);
-                console.log(response.data);
-            } catch (error) {
-                console.log(error);
-                toast.error(error.response.data.message);
-            }
-        }, 1000);
-    };
+    if (isLoading) return <SkeletonLoader />;
+    if (error) return <p>Error: {error}</p>;
 
-    useEffect(() => {
-        fetchUserDetail();
-    }, []);
-
+    console.log(userDetails, useState)
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setUserDetails({ ...userDetails, [name]: value });
@@ -79,41 +75,39 @@ function Profile() {
         fileInputRef.current.click();
     };
 
-     const handleFileChange = (e) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        alert("Please upload an image file")
-        return
-      }
-      // Optional size guard (2.5MB)
-      const maxSize = 2.5 * 1024 * 1024
-      if (file.size > maxSize) {
-        alert("Please upload an image smaller than 2.5MB")
-        return
-      }
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        const dataUrl = event.target?.result
-        // Update edited state (and live user if not editing)
-        if (isEditing) {
-          setEditedUser((prev) => ({ ...prev, profilePicture: dataUrl }))
-        } else {
-          setUser({ ...user, profilePicture: dataUrl })
+    const handleFileChange = (e) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            if (!file.type.startsWith("image/")) {
+                alert("Please upload an image file")
+                return
+            }
+            // Optional size guard (2.5MB)
+            const maxSize = 2.5 * 1024 * 1024
+            if (file.size > maxSize) {
+                alert("Please upload an image smaller than 2.5MB")
+                return
+            }
+            const reader = new FileReader()
+            reader.onload = (event) => {
+                const dataUrl = event.target?.result
+                // Update edited state (and live user if not editing)
+                if (isEditing) {
+                    setEditedUser((prev) => ({ ...prev, profilePicture: dataUrl }))
+                } else {
+                    setUser({ ...user, profilePicture: dataUrl })
+                }
+            }
+            reader.readAsDataURL(file)
         }
-      }
-      reader.readAsDataURL(file)
     }
-  }
 
-    if (!userDetails) {
-        return <SkeletonLoader />;
-    }
 
     return (
         <div className="max-w-4xl mx-auto">
             <ProfileHeader
-                userDetails={userDetails.user}
+                user={userDetails}
+                userStats={userState}
                 isEditing={isEditing}
                 handleInputChange={handleInputChange}
                 handleSave={handleSave}
