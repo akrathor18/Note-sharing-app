@@ -2,8 +2,9 @@ import React from 'react';
 import {   Mail,
   Calendar,
   Edit2,
-  Save,
   X,
+  Plus,
+  Trash2,
   Camera,
   Github,
   Twitter,
@@ -25,16 +26,67 @@ function ProfileHeader({
 
      const [editedUser, setEditedUser] = useState()
    
+     const User = {
+  name: "",
+  email: "",
+  role: "",
+  joinDate: "",
+  bio: "Computer Science student passionate about learning and sharing knowledge. Interested in data structures, algorithms, and web development.",
+  stats: {
+    notesCreated: 0,
+    notesViewed: 0,
+    quizzesTaken: 0,
+    quizzesPassed: 0,
+    studyHours: 0,
+  },
+  profilePicture: "",
+  socialLinks: [
+    { label: "GitHub", url: "", icon: "github" },
+    { label: "Twitter", url: "", icon: "twitter" },
+    { label: "LinkedIn", url: "", icon: "linkedin" },
+    { label: "Website", url: "", icon: "globe" },
+    { label: "Instagram", url: "", icon: "instagram" },
+  ],
+}
+
+  const handleSocialLinkChange = (index, field, value) => {
+    const updatedLinks = [...editedUser.socialLinks]
+    updatedLinks[index] = { ...updatedLinks[index], [field]: value }
+    setEditedUser({ ...editedUser, socialLinks: updatedLinks })
+  }
+
+  const handleAddSocialLink = () => {
+    setEditedUser({
+      ...editedUser,
+      socialLinks: [...editedUser.socialLinks, { label: "", url: "", icon: "globe" }],
+    })
+  }
+
+  const handleRemoveSocialLink = (index) => {
+    setEditedUser({
+      ...editedUser,
+      socialLinks: editedUser.socialLinks.filter((_, i) => i !== index),
+    })
+  }
+
+  const handleSaveProfilePicture = () => {
+    setUser((prev) => ({ ...prev, profilePicture: editedUser.profilePicture }))
+  }
+
+  const handleSaveSocialLinks = () => {
+    setUser((prev) => ({ ...prev, socialLinks: editedUser.socialLinks }))
+    setIsEditing(false)
+  }
     return (
-         <div className="bg-[#1A1A1A] rounded-xl p-6 mb-6">
-          {console.log(user)}
+    
+       <div className="bg-[#1A1A1A] rounded-xl p-6 mb-6">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
           {/* Profile Picture Section */}
           <div className="relative group">
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#00E5FF] flex items-center justify-center text-[#0D0D0D] text-4xl font-bold overflow-hidden">
-              { user.profilePic ? (
+              {editedUser?.profilePicture || user.profilePic ? (
                 <img
-                  src={user.profilePic}
+                  src={editedUser?.profilePicture || user.profilePic}
                   alt={`${user.name}'s profile`}
                   className="w-full h-full object-cover"
                 />
@@ -42,103 +94,84 @@ function ProfileHeader({
                 user.name?.charAt(0) || "U"
               )}
             </div>
-            {isEditing && (
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
-                <button
-                  onClick={handleFileUpload}
-                  className="bg-[#FF007F] text-white p-2 rounded-full shadow hover:bg-[#FF007F]/90"
-                  title="Upload profile picture"
-                >
-                  <Camera size={16} />
-                </button>
-                {editedUser.profilePicture && (
-                  <button
-                    onClick={handleRemoveProfilePicture}
-                    className="bg-[#1A1A1A] border border-[#F5F5F5]/10 text-[#F5F5F5] p-2 rounded-full hover:bg-[#F5F5F5]/10"
-                    title="Remove profile picture"
-                  >
-                    <X size={16} />
-                  </button>
-                )}
-              </div>
-            )}
-            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
           </div>
 
           {/* Profile Info */}
           <div className="flex-1 w-full">
             {isEditing ? (
-              <div className="space-y-6">
-                {/* Basic Info */}
-                <div>
-                  <h3 className="text-sm font-semibold text-[#F5F5F5] mb-3">Basic Information</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs text-[#F5F5F5]/60 mb-1">Name *</label>
-                      <input
-                        name="name"
-                        type="text"
-                        value={editedUser.name}
-                        onChange={handleInputChange}
-                        placeholder="Your full name"
-                        className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-[#FF007F]"
-                      />
+              <div className="space-y-4 md:space-y-6 w-full">
+                <div className="bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg p-4 md:p-6">
+                  <h3 className="text-sm font-semibold text-[#F5F5F5] mb-4">Profile Picture</h3>
+                  <div className="flex flex-col sm:flex-row items-center gap-4">
+                    <div className="relative">
+                      <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-[#00E5FF] flex items-center justify-center text-white text-2xl font-bold overflow-hidden flex-shrink-0">
+                        {editedUser.profilePicture || user.profilePicture ? (
+                          <img
+                            src={editedUser.profilePicture || user.profilePicture}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          user.name?.charAt(0) || "U"
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-xs text-[#F5F5F5]/60 mb-1">Email *</label>
-                      <input
-                        name="email"
-                        type="email"
-                        value={editedUser.email}
-                        onChange={handleInputChange}
-                        placeholder="your.email@example.com"
-                        className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-[#FF007F]"
-                      />
+                    <div className="flex flex-col gap-2 w-full sm:w-auto">
+                      <button
+                        onClick={handleFileUpload}
+                        className="w-full sm:w-auto px-4 py-2 bg-[#FF007F] text-white text-sm font-medium rounded-lg hover:bg-[#FF007F]/90 transition flex items-center justify-center gap-2"
+                      >
+                        <Camera size={16} />
+                        Upload Picture
+                      </button>
+                        <input
+    type="file"
+    ref={fileInputRef}
+    onChange={handleFileChange}
+    accept="image/*"
+    className="hidden"
+  />
+                      {editedUser.profilePicture && (
+                        <button
+                          onClick={handleRemoveProfilePicture}
+                          className="w-full sm:w-auto px-4 py-2 bg-[#1A1A1A] text-[#F5F5F5] text-sm font-medium rounded-lg border border-[#F5F5F5]/10 hover:bg-[#F5F5F5]/10 transition flex items-center justify-center gap-2"
+                        >
+                          <X size={16} />
+                          Remove
+                        </button>
+                      )}
                     </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-xs text-[#F5F5F5]/60 mb-1">Role/Title</label>
-                      <input
-                        name="role"
-                        type="text"
-                        value={editedUser.role}
-                        onChange={handleInputChange}
-                        placeholder="e.g., Computer Science Student"
-                        className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-[#FF007F]"
-                      />
-                    </div>
+                  </div>
+                  <div className="mt-4 flex flex-col sm:flex-row gap-2">
+                    <button
+                      onClick={handleSaveProfilePicture}
+                      className="flex-1 px-4 py-2 bg-[#00E5FF] text-[#0D0D0D] text-sm font-medium rounded-lg hover:bg-[#00E5FF]/90 transition"
+                    >
+                      Save Picture
+                    </button>
+                    <button
+                      onClick={handleCancel}
+                      className="flex-1 px-4 py-2 bg-[#1A1A1A] text-[#F5F5F5] text-sm font-medium rounded-lg border border-[#F5F5F5]/10 hover:bg-[#F5F5F5]/10 transition"
+                    >
+                      Cancel
+                    </button>
                   </div>
                 </div>
 
-                {/* Bio */}
-                <div>
-                  <h3 className="text-sm font-semibold text-[#F5F5F5] mb-3">Bio</h3>
-                  <textarea
-                    name="bio"
-                    value={editedUser.bio}
-                    onChange={handleInputChange}
-                    placeholder="Tell others about yourself..."
-                    rows="4"
-                    className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-[#FF007F]"
-                  />
-                  <p className="text-xs text-[#F5F5F5]/40 mt-1">{editedUser.bio?.length || 0}/500 characters</p>
-                </div>
-
-                {/* Social Links */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
+                <div className="bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg p-4 md:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                     <h3 className="text-sm font-semibold text-[#F5F5F5]">Social Links</h3>
                     <button
                       onClick={handleAddSocialLink}
-                      className="text-xs flex items-center gap-1 text-[#FF007F] hover:text-[#FF007F]/80"
+                      className="w-full sm:w-auto text-xs flex items-center justify-center gap-1 px-3 py-2 text-[#FF007F] hover:text-[#FF007F]/80 border border-[#FF007F]/20 rounded-lg hover:bg-[#FF007F]/5 transition"
                     >
                       <Plus size={14} />
                       Add Link
                     </button>
                   </div>
                   <div className="space-y-3 max-h-80 overflow-y-auto">
-                    {console.log(user.links|| null)}
-                    {user.links?.map((link, index) => (
-                      <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-2 items-end">
+                    {editedUser.socialLinks?.map((link, index) => (
+                      <div key={index} className="space-y-2 p-3 bg-[#1A1A1A] rounded-lg border border-[#F5F5F5]/5">
                         <div>
                           <label className="block text-xs text-[#F5F5F5]/60 mb-1">Label</label>
                           <input
@@ -149,9 +182,9 @@ function ProfileHeader({
                             className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-[#FF007F]"
                           />
                         </div>
-                        <div className="md:col-span-2">
+                        <div>
                           <label className="block text-xs text-[#F5F5F5]/60 mb-1">URL</label>
-                          <div className="flex gap-2">
+                          <div className="flex flex-col sm:flex-row gap-2">
                             <input
                               type="url"
                               value={link.url}
@@ -161,34 +194,31 @@ function ProfileHeader({
                             />
                             <button
                               onClick={() => handleRemoveSocialLink(index)}
-                              className="px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#F5F5F5]/10 hover:bg-[#F5F5F5]/10 text-[#FF007F]"
+                              className="w-full sm:w-auto px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#F5F5F5]/10 hover:bg-[#F5F5F5]/10 text-[#FF007F] transition flex items-center justify-center gap-1"
                               title="Remove"
                             >
                               <Trash2 size={16} />
+                              <span className="sm:hidden text-xs">Remove</span>
                             </button>
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-2 justify-center md:justify-start pt-2">
-                  <button
-                    onClick={handleSave}
-                    className="flex items-center gap-2 bg-[#FF007F] text-white px-4 py-2 rounded-lg hover:bg-[#FF007F]/90"
-                  >
-                    <Save size={16} />
-                    Save Changes
-                  </button>
-                  <button
-                    onClick={handleCancel}
-                    className="flex items-center gap-2 bg-[#1A1A1A] border border-[#F5F5F5]/10 px-4 py-2 rounded-lg hover:bg-[#F5F5F5]/5"
-                  >
-                    <X size={16} />
-                    Cancel
-                  </button>
+                  <div className="mt-4 flex flex-col sm:flex-row gap-2">
+                    <button
+                      onClick={handleSaveSocialLinks}
+                      className="flex-1 px-4 py-2 bg-[#00E5FF] text-[#0D0D0D] text-sm font-medium rounded-lg hover:bg-[#00E5FF]/90 transition"
+                    >
+                      Save Links
+                    </button>
+                    <button
+                      onClick={handleCancel}
+                      className="flex-1 px-4 py-2 bg-[#1A1A1A] text-[#F5F5F5] text-sm font-medium rounded-lg border border-[#F5F5F5]/10 hover:bg-[#F5F5F5]/10 transition"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -196,7 +226,7 @@ function ProfileHeader({
                 <div className="flex justify-between items-start w-full">
                   <div>
                     <h1 className="text-2xl font-bold">{user.name || "User"}</h1>
-                    <p className="text-[#F5F5F5]/60">{user.role?.role_name || "Student"}</p>
+                    <p className="text-[#F5F5F5]/60">{user.role?.role_name}</p>
                   </div>
                   <button
                     onClick={() => {
@@ -253,6 +283,7 @@ function ProfileHeader({
           </div>
         </div>
       </div>
+
     );
 }
 

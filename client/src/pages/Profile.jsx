@@ -19,12 +19,12 @@ function Profile() {
     const { user, averageScore, fetchUser, getScore, isLoading, error } =
         useUserStore();
 
-         useEffect(() => {
-    fetchUser();
-    getScore();
-  }, [fetchUser, getScore]);
+    useEffect(() => {
+        fetchUser();
+        getScore();
+    }, [fetchUser, getScore]);
 
-        
+
     const userState = user?.userState || {};
     const userDetails = user?.user || {};
     const [isEditing, setIsEditing] = useState(false);
@@ -76,31 +76,24 @@ function Profile() {
     };
 
     const handleFileChange = (e) => {
-        const file = e.target.files?.[0]
-        if (file) {
-            if (!file.type.startsWith("image/")) {
-                alert("Please upload an image file")
-                return
-            }
-            // Optional size guard (2.5MB)
-            const maxSize = 2.5 * 1024 * 1024
-            if (file.size > maxSize) {
-                alert("Please upload an image smaller than 2.5MB")
-                return
-            }
-            const reader = new FileReader()
-            reader.onload = (event) => {
-                const dataUrl = event.target?.result
-                // Update edited state (and live user if not editing)
-                if (isEditing) {
-                    setEditedUser((prev) => ({ ...prev, profilePicture: dataUrl }))
-                } else {
-                    setUser({ ...user, profilePicture: dataUrl })
-                }
-            }
-            reader.readAsDataURL(file)
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            alert("Please upload an image file");
+            return;
         }
-    }
+
+        const maxSize = 2.5 * 1024 * 1024;
+        if (file.size > maxSize) {
+            alert("Please upload an image smaller than 2.5MB");
+            return;
+        }
+
+        // TODO: implement preview / upload later
+        console.log("Selected file:", file);
+    };
+
 
 
     return (
