@@ -75,24 +75,35 @@ function Profile() {
         fileInputRef.current.click();
     };
 
-    const handleFileChange = (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+     const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-        if (!file.type.startsWith("image/")) {
-            alert("Please upload an image file");
-            return;
-        }
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload an image file");
+      return;
+    }
 
-        const maxSize = 2.5 * 1024 * 1024;
-        if (file.size > maxSize) {
-            alert("Please upload an image smaller than 2.5MB");
-            return;
-        }
+    const maxSize = 2.5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert("Please upload an image smaller than 2.5MB");
+      return;
+    }
 
-        // TODO: implement preview / upload later
-        console.log("Selected file:", file);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result;
+      // set local preview + edited user
+      setPreviewImage(dataUrl);
+      setEditedUser((prev) => ({
+        ...prev,
+        profilePic: dataUrl,
+      }));
+      // later you can also call a prop to upload to backend
+      // onProfilePicChange(file or dataUrl)
     };
+    reader.readAsDataURL(file);
+  };
 
 
 
