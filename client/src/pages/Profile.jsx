@@ -36,8 +36,7 @@ function Profile() {
 
     if (isLoading) return <SkeletonLoader />;
     if (error) return <p>Error: {error}</p>;
-
-    console.log(userDetails, useState)
+    userState.averageScore = averageScore ? averageScore.averagePercentage : 0;
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setUserDetails({ ...userDetails, [name]: value });
@@ -121,13 +120,13 @@ function Profile() {
                 fileInputRef={fileInputRef}
                 handleFileChange={handleFileChange}
             />
-            <StatsCards stats={userDetails.stats} />
+            <StatsCards stats={userState} />
             <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
             <div>
                 {activeTab === 'overview' && (
                     <div className="space-y-6">
                         <AboutMe
-                            bio={bio}
+                            bio={userDetails.bio}
                             editingBio={editingBio}
                             newBio={newBio}
                             handleBioEdit={handleBioEdit}

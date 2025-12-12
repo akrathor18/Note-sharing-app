@@ -27,7 +27,7 @@ function ProfileHeader({
   handleFileChange,
 }) {
 
-  const [editedUser, setEditedUser] = useState()
+  const [editedUser, setEditedUser] = useState({});
   const [previewImage, setPreviewImage] = useState(user?.profilePic || "");
   const User = {
     name: "",
@@ -43,25 +43,20 @@ function ProfileHeader({
       studyHours: 0,
     },
     profilePic: "",
-    socialLinks: [
-      { label: "GitHub", url: "", icon: "github" },
-      { label: "Twitter", url: "", icon: "twitter" },
-      { label: "LinkedIn", url: "", icon: "linkedin" },
-      { label: "Website", url: "", icon: "globe" },
-      { label: "Instagram", url: "", icon: "instagram" },
-    ],
+    links: [ ],
   }
 
-  useEffect(() => {
-    if (user) {
-      setEditedUser({
-        ...user,
-        bio: user.bio || "",
-        links: user.links || [],
-      });
-      setPreviewImage(user.profilePic || "");
-    }
-  }, [user]);
+useEffect(() => {
+  if (user) {
+    setEditedUser({
+      ...user,
+      bio: user.bio || "",
+      links: user.links ? [...user.links] : []
+    });
+    setPreviewImage(user.profilePic || "");
+  }
+}, [user]);
+
 
 
   const handleLocalFileChange = (e) => {
@@ -93,24 +88,28 @@ function ProfileHeader({
 
 
   const handleSocialLinkChange = (index, field, value) => {
-    const updatedLinks = [...editedUser.socialLinks]
-    updatedLinks[index] = { ...updatedLinks[index], [field]: value }
-    setEditedUser({ ...editedUser, socialLinks: updatedLinks })
-  }
+  setEditedUser(prev => {
+    const links = Array.isArray(prev.links) ? [...prev.links] : [];
+    links[index] = { ...links[index], [field]: value };
+    return { ...prev, links };
+  });
+};
 
-  const handleAddSocialLink = () => {
-    setEditedUser({
-      ...editedUser,
-      socialLinks: [...editedUser.links, { label: "", url: "", icon: "globe" }],
-    })
-  }
+const handleAddSocialLink = () => {
+  setEditedUser(prev => {
+    const links = Array.isArray(prev.links) ? [...prev.links] : [];
+    return { ...prev, links: [...links, { label: "", url: "", icon: "globe" }] };
+  });
+};
 
-  const handleRemoveSocialLink = (index) => {
-    setEditedUser({
-      ...editedUser,
-      socialLinks: editedUser.socialLinks.filter((_, i) => i !== index),
-    })
-  }
+const handleRemoveSocialLink = (index) => {
+  setEditedUser(prev => {
+    const links = Array.isArray(prev.links) ? [...prev.links] : [];
+    links.splice(index, 1);
+    return { ...prev, links };
+  });
+};
+
 
   const handleSaveProfilePicture = () => {
     setUser((prev) => ({ ...prev, profilePicture: editedUser.profilePicture }))
@@ -118,7 +117,7 @@ function ProfileHeader({
 
   const handleSaveSocialLinks = () => {
     // setUser((prev) => ({ ...prev, socialLinks: editedUser.socialLinks }))
-    console.log(editedUser.socialLinks)
+    console.log(editedUser.links)
     setIsEditing(false)
   }
   return (
@@ -149,7 +148,7 @@ function ProfileHeader({
                 <h3 className="text-sm font-semibold text-[#F5F5F5] mb-4">Profile Picture</h3>
                 <div className="flex flex-col sm:flex-row items-center gap-4">
                   <div className="relative">
-                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-[#00E5FF] flex items-center justify-center text-white text-2xl font-bold overflow-hidden flex-shrink-0">
+                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#00E5FF] flex items-center justify-center text-[#0D0D0D]  text-4xl font-bold overflow-hidden flex-shrink-0">
                       {editedUser.profilePic || user.profilePic ? (
                         <img
                           src={previewImage}
@@ -215,41 +214,44 @@ function ProfileHeader({
                   </button>
                 </div>
                 <div className="space-y-3 max-h-80 overflow-y-auto">
-                  {user.links?.map((link, index) => (
-                    <div key={index} className="space-y-2 p-3 bg-[#1A1A1A] rounded-lg border border-[#F5F5F5]/5">
-                      <div>
-                        <label className="block text-xs text-[#F5F5F5]/60 mb-1">Label</label>
-                        <input
-                          type="text"
-                          value={link.label}
-                          onChange={(e) => handleSocialLinkChange(index, "label", e.target.value)}
-                          placeholder="e.g., GitHub"
-                          className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-[#FF007F]"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs text-[#F5F5F5]/60 mb-1">URL</label>
-                        <div className="flex flex-col sm:flex-row gap-2">
-                          <input
-                            type="url"
-                            value={link.url}
-                            onChange={(e) => handleSocialLinkChange(index, "url", e.target.value)}
-                            placeholder="https://example.com"
-                            className="flex-1 bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-[#FF007F]"
-                          />
-                          <button
-                            onClick={() => handleRemoveSocialLink(index)}
-                            className="w-full sm:w-auto px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#F5F5F5]/10 hover:bg-[#F5F5F5]/10 text-[#FF007F] transition flex items-center justify-center gap-1"
-                            title="Remove"
-                          >
-                            <Trash2 size={16} />
-                            <span className="sm:hidden text-xs">Remove</span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+  {(editedUser?.links || []).map((link, index) => (
+    <div key={index} className="space-y-2 p-3 bg-[#1A1A1A] rounded-lg border border-[#F5F5F5]/5">
+      <div>
+        <label className="block text-xs text-[#F5F5F5]/60 mb-1">Label</label>
+        <input
+          type="text"
+          value={link.label}
+          onChange={(e) => handleSocialLinkChange(index, "label", e.target.value)}
+          required={true}
+          placeholder="e.g., instagram, github"
+          className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-[#FF007F]"
+        />
+      </div>
+      <div>
+        <label className="block text-xs text-[#F5F5F5]/60 mb-1">URL</label>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <input
+            type="url"
+            value={link.url}
+            onChange={(e) => handleSocialLinkChange(index, "url", e.target.value)}
+          required={"true"}
+            placeholder="https://example.com"
+            className="flex-1 bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-[#FF007F]"
+          />
+          <button
+            onClick={() => handleRemoveSocialLink(index)}
+            className="w-full sm:w-auto px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#F5F5F5]/10 hover:bg-[#F5F5F5]/10 text-[#FF007F] transition flex items-center justify-center gap-1"
+            title="Remove"
+          >
+            <Trash2 size={16} />
+            <span className="sm:hidden text-xs">Remove</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
                 <div className="mt-4 flex flex-col sm:flex-row gap-2">
                   <button
                     onClick={handleSaveSocialLinks}
