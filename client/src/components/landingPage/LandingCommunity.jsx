@@ -43,7 +43,7 @@ export default function LandingCommunity() {
                             </div>
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="sm:grid sm:grid-cols-2 sm:gap-4 flex flex-wrap justify-center">
                         <div className="space-y-4">
                             <div className="bg-[#1A1A1A] rounded-2xl p-6 border border-[#F5F5F5]/5">
                                 <div className="flex items-center gap-3 mb-4">

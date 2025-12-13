@@ -142,7 +142,7 @@ function navBar() {
                 className={`${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                     } md:translate-x-0 fixed md:static inset-y-0 left-0 z-20 w-64 bg-[#1A1A1A] p-4 flex flex-col transition-transform duration-300 ease-in-out overflow-y-auto`}
             >
-                <NavLink to={'/'} className="flex items-center gap-2 mb-8">
+                <NavLink to={'/'} className="flex items-center gap-4 sm:gap-2 mb-8">
                     <BookOpen className="text-[#FF007F]" />
                     <h1 className="text-xl font-bold">StudyHub</h1>
                 </NavLink>
@@ -269,7 +269,7 @@ function navBar() {
 
                             {/* Notification Dropdown */}
                             {isNotificationMenuOpen && (
-                                <div className="absolute xs:right-0 -right-14 mt-2 w-80 bg-[#1A1A1A] rounded-lg shadow-lg border border-[#F5F5F5]/10 py-1 z-50">
+                                <div className="absolute xs:right-0 -right-14 mt-2 sm:w-80 w-64  bg-[#1A1A1A] rounded-lg shadow-lg border border-[#F5F5F5]/10 py-1 z-50">
                                     <div className="px-4 py-2 border-b border-[#F5F5F5]/10">
                                         <h3 className="font-medium">Notifications</h3>
                                     </div>

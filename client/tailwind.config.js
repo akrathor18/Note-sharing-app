@@ -46,6 +46,9 @@ module.exports = {
       },
       screens: {
         xs: "376px",
+         
+         'max-md': { 'max': '770px' }, // applies below 768px
+        '3xl': '1600px' // extra large screens
       },
     },
   },
