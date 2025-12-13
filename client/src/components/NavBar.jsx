@@ -91,7 +91,7 @@ function navBar() {
                 removeToken();
                 setIsAuthenticated(false);
                 // setUser(null);
-                navigate('/signin');
+                navigate('/');
                 toast.success('Logged out successfully');
             }
         } catch (error) {
