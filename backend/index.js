@@ -16,7 +16,7 @@ import helmet from 'helmet';
 
 dotenv.config();
 
-const port = process.env.BACKEND_PORT || 3000;
+const PORT = process.env.PORT || 3000;
 const app = express();
 // setupSwagger(app);
 const limiter = rateLimit({
@@ -30,15 +30,22 @@ app.use(helmet());
 app.use(cookieParser());
 app.use(
     cors({
-        origin: process.env.FRONTEND_PORT || 'http://localhost:5173',
+        origin: [
+            'http://localhost:5173',
+            process.env.FRONTEND_URL, // Firebase URL
+        ],
         credentials: true,
-    }),
+    })
 );
 app.use(bodyParser.json());
 
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+})
+
 // Routes
 app.get('/', (_, res) => {
-    res.send('Hello World!');
+    res.send('StudyHub API is running ');
 });
 // app.use(
 //     '/api-docs',
@@ -50,7 +57,7 @@ app.use('/api/quiz', quizRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/links', linkRoutes);
 
-app.listen(port, () => {
-    console.log(`🚀 Server running on http://localhost:${port}`);
-    console.log(`📘 Swagger docs at http://localhost:${port}/api-docs`);
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
 });
+
