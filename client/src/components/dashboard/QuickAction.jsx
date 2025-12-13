@@ -1,5 +1,4 @@
 import React from 'react'
-
 import {
     Plus,
     Upload,
@@ -8,6 +7,7 @@ import {
     Zap,
 
 } from "lucide-react"
+import { Link } from 'react-router-dom'
 
 
 const quickActions = [
@@ -17,6 +17,7 @@ const quickActions = [
         icon: Plus,
         color: "#FF007F",
         action: "create-note",
+        link: "/createquiz",
     },
     {
         title: "Take Quiz",
@@ -24,6 +25,7 @@ const quickActions = [
         icon: Play,
         color: "#00E5FF",
         action: "take-quiz",
+        link: "/quizzes",
     },
     {
         title: "Browse Notes",
@@ -31,6 +33,7 @@ const quickActions = [
         icon: Eye,
         color: "#4CAF50",
         action: "browse-notes",
+        link: "/notes",
     },
     {
         title: "Upload Notes",
@@ -38,6 +41,7 @@ const quickActions = [
         icon: Upload,
         color: "#FFD93D",
         action: "upload",
+        link: "/notes",
     },
 ]
 function QuickAction() {
@@ -53,14 +57,16 @@ function QuickAction() {
                         key={index}
                         className="p-4 rounded-lg bg-[#0D0D0D] hover:bg-[#0D0D0D]/80 border border-[#F5F5F5]/5 hover:border-[#F5F5F5]/20 transition-all group text-center"
                     >
+                        <Link to={action.link}>
                         <div
                             className="w-12 h-12 mx-auto rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"
                             style={{ backgroundColor: `${action.color}20` }}
-                        >
+                            >
                             <action.icon size={24} style={{ color: action.color }} />
                         </div>
                         <div className="font-medium text-sm mb-1">{action.title}</div>
                         <div className="text-xs text-[#F5F5F5]/60">{action.description}</div>
+                            </Link>
                     </button>
                 ))}
             </div>

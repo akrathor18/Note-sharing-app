@@ -67,7 +67,7 @@ router.get('/search', async (req, res) => {
   };
 
   try {
-    const notes = await Note.find(searchQuery);
+    const notes = await Note.find(searchQuery).populate('uploadedBy', 'name');
     res.status(200).json(notes);
   } catch (err) {
     console.error(err);
