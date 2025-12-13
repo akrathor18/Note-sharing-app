@@ -1,0 +1,35 @@
+name: Deploy Frontend to Firebase
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "client/**"
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: cd client && npm install
+
+      - name: Build frontend
+        run: cd client && npm run build
+
+      - name: Deploy to Firebase
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_TOKEN }}"
+          channelId: live
+          projectId: shophub-dev
