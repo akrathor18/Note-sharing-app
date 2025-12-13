@@ -125,13 +125,7 @@ function navBar() {
         };
     }, [isUserMenuOpen, isNotificationMenuOpen]);
 
-    const navLinks = [
-        { to: '/dashboard', icon: <Home size={20} />, label: 'Dashboard' },
-        { to: '/notes', icon: <FileText size={20} />, label: 'Notes' },
-        { to: '/quizzes', icon: <BrainCircuit size={20} />, label: 'Quizzes' },
-        { to: '/profile', icon: <UserCircle size={20} />, label: 'Profile' },
-        { to: '/settings', icon: <SettingsIcon size={20} />, label: 'Settings' },
-    ];
+    // If not authenticated, show auth screens
 
     return (
         <div className="flex h-screen bg-[#0D0D0D] text-[#F5F5F5] relative">
@@ -148,15 +142,14 @@ function navBar() {
                 className={`${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                     } md:translate-x-0 fixed md:static inset-y-0 left-0 z-20 w-64 bg-[#1A1A1A] p-4 flex flex-col transition-transform duration-300 ease-in-out overflow-y-auto`}
             >
-                <NavLink to={'/'} className="flex items-center gap-4 sm:gap-2 mb-8">
+                <NavLink to={'/'} className="flex items-center gap-2 mb-8">
                     <BookOpen className="text-[#FF007F]" />
                     <h1 className="text-xl font-bold">StudyHub</h1>
                 </NavLink>
 
                 <nav className="flex-1">
                     <ul className="space-y-2">
-                    { navLinks.map((link) => (
-                        <li key={link.to}>
+                        <li>
                             <NavLink
                                 to={'/Dashboard'}
                                 className={({ isActive }) =>
@@ -166,11 +159,66 @@ function navBar() {
                                     }`
                                 }
                             >
-                                {link.icon}
-                                <span>{link.label}</span>
+                                <Home size={20} />
+                                <span>Dashboard</span>
                             </NavLink>
                         </li>
-                        ))}
+                        <li>
+                            <NavLink
+                                to={'/notes'}
+                                className={({ isActive }) =>
+                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                                        ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
+                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                    }`
+                                }
+                            >
+                                <FileText size={20} />
+                                <span>Notes</span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                to={'/quizzes'}
+                                className={({ isActive }) =>
+                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                                        ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
+                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                    }`
+                                }
+                            >
+                                <BrainCircuit size={20} />
+                                <span>Quizzes</span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                to={'/profile'}
+                                className={({ isActive }) =>
+                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                                        ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
+                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                    }`
+                                }
+                            >
+                                <UserCircle size={20} />
+                                <span>Profile</span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                to={'/settings'}
+                                className={({ isActive }) =>
+                                    `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
+                                        ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
+                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                    }`
+                                }
+                            >
+                                <SettingsIcon size={20} />
+                                <span>Settings</span>
+                            </NavLink>
+                        </li>
                     </ul>
                 </nav>
 
@@ -221,7 +269,7 @@ function navBar() {
 
                             {/* Notification Dropdown */}
                             {isNotificationMenuOpen && (
-                                <div className="absolute xs:right-0 -right-14 mt-2 sm:w-80 w-64  bg-[#1A1A1A] rounded-lg shadow-lg border border-[#F5F5F5]/10 py-1 z-50">
+                                <div className="absolute xs:right-0 -right-14 mt-2 w-80 bg-[#1A1A1A] rounded-lg shadow-lg border border-[#F5F5F5]/10 py-1 z-50">
                                     <div className="px-4 py-2 border-b border-[#F5F5F5]/10">
                                         <h3 className="font-medium">Notifications</h3>
                                     </div>
