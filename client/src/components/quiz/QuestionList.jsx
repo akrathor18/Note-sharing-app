@@ -4,7 +4,7 @@ import QuestionForm from './QuestionForm';
 export default function QuestionList({ questions, onAddQuestion, ...props }) {
     return (
         <div>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-wrap items-center justify-between mb-4">
                 <h3 className="text-lg font-bold">Questions</h3>
                 <button
                     onClick={onAddQuestion}

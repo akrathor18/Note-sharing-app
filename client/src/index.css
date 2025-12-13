@@ -38,3 +38,7 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #6b7280; /* Color on hover */
 }
+
+.index{
+    z-index: 15;  
+}

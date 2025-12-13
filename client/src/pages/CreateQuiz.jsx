@@ -57,11 +57,11 @@ export default function CreateQuiz() {
             questions: quizData.questions.map((q) =>
                 q.id === questionId
                     ? {
-                          ...q,
-                          options: q.options.map((opt) =>
-                              opt.id === optionId ? { ...opt, text: value } : opt,
-                          ),
-                      }
+                        ...q,
+                        options: q.options.map((opt) =>
+                            opt.id === optionId ? { ...opt, text: value } : opt,
+                        ),
+                    }
                     : q,
             ),
         });
@@ -158,7 +158,7 @@ export default function CreateQuiz() {
             <div className="bg-[#1A1A1A] rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
                 <CreateQuizHeader />
 
-                <div className="p-6 space-y-6">
+                <div className="sm:p-6 p-3 space-y-6">
                     <QuizMetadataForm quizData={quizData} onInputChange={handleInputChange} />
 
                     <QuestionList

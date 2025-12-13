@@ -4,6 +4,11 @@ const quizSchema = new mongoose.Schema({
     title: { type: String, required: true },
     category: { type: String, required: true },
     timeLimit: { type: Number, default: 10 },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
     difficulty: {
         type: String,
         enum: ['Easy', 'Medium', 'Hard'],

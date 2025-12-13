@@ -15,16 +15,16 @@ export default function LandingFooter() {
                             together, succeed faster.
                         </p>
                         <div className="flex gap-4">
-                            <a href="#" className="text-[#F5F5F5]/60 hover:text-[#FF007F] transition-colors">
+                            <a href="https://github.com/akrathor18" target="_blank" className="text-[#F5F5F5]/60 hover:text-[#FF007F] transition-colors">
                                 <Github size={24} />
                             </a>
-                            <a href="#" className="text-[#F5F5F5]/60 hover:text-[#FF007F] transition-colors">
+                            <a href="https://x.com/iam_ashish_dev" target="_blank" className="text-[#F5F5F5]/60 hover:text-[#FF007F] transition-colors">
                                 <Twitter size={24} />
                             </a>
-                            <a href="#" className="text-[#F5F5F5]/60 hover:text-[#FF007F] transition-colors">
+                            <a href="https://linkedin.com/in/ashishkumartech" target="_blank" className="text-[#F5F5F5]/60 hover:text-[#FF007F] transition-colors">
                                 <Linkedin size={24} />
                             </a>
-                            <a href="#" className="text-[#F5F5F5]/60 hover:text-[#FF007F] transition-colors">
+                            <a href="mailto:ashishk.codes@gmail.com" target="_blank" className="text-[#F5F5F5]/60 hover:text-[#FF007F] transition-colors">
                                 <Mail size={24} />
                             </a>
                         </div>
@@ -80,8 +80,10 @@ export default function LandingFooter() {
                         </ul>
                     </div>
                 </div>
-                <div className="border-t border-[#F5F5F5]/10 mt-12 pt-8 text-center text-[#F5F5F5]/60">
-                    <p>&copy; 2024 StudyHub. Empowering students worldwide. All rights reserved.</p>
+                <div className="border-t border-[#F5F5F5]/10 mt-12 pt-8 text-center text-[#F5F5F5]">
+                    <p>
+                        Built with ❤️ by <a href="https://github.com/akrathor18" target="_blank" className=" text-[#00E5FF] hover:text-[#FF007F]" >Ashish Kumar.</a>
+                    </p>
                 </div>
             </div>
         </footer>

@@ -1,4 +1,4 @@
-import { FileText, Download } from 'lucide-react';
+import { FileText, Download, PenLine, UserPen } from 'lucide-react';
 import { formatDate } from '../../utils/formatDate';
 
 export default function NoteCard({ note }) {
@@ -15,15 +15,21 @@ export default function NoteCard({ note }) {
                     <span className="text-xs bg-[#FF007F]/10 text-[#FF007F] px-2 py-1 rounded-full">
                         {note.subject}
                     </span>
-                    <span className="text-xs text-[#F5F5F5]/60">{note.pages} pages</span>
+                    <span className="text-xs text-[#F5F5F5]/60 flex flex-row items-center gap-1">
+                    <PenLine size={14} />
+                    { formatDate(note.createdAt)
+                    }</span>
                 </div>
                 <h3 className="font-medium mb-2 line-clamp-2">{note.title}</h3>
                 <p className="text-xs text-[#F5F5F5]/70 mb-3 line-clamp-2">{note.description}</p>
-                <div className="flex items-center justify-between">
-                    <span className="text-xs text-[#F5F5F5]/60">{formatDate(note.createdAt)}</span>
+                <div className="flex items-center justify-between ">
+                    <span className="text-xs text-[#F5F5F5]/60 flex flex-row gap-2"> 
+                    <UserPen size={16} />
+                    {(note.uploadedBy && note.uploadedBy.name) ? `Uploaded by ${note.uploadedBy.name}` : 'Uploader info not available'}
+                    </span>
                     <div className="flex items-center gap-1 text-xs text-[#F5F5F5]/60">
                         <Download size={14} />
-                        {note.totalDownloads}
+                        {note.fileType}
                     </div>
                 </div>
                 <a href={note.fileUrl} target="_blank" rel="noopener noreferrer">

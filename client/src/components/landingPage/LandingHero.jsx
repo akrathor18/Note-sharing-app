@@ -45,7 +45,7 @@ export default function LandingHero({ onGetStarted }) {
                             </div>
                         </div>
                     </div>
-                    <div className="relative">
+                    <div className="relative max-md:hidden">
                         <div className="relative bg-gradient-to-br from-[#FF007F]/20 via-[#1A1A1A] to-[#00E5FF]/20 rounded-3xl p-8 border border-[#F5F5F5]/10">
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="bg-[#1A1A1A] rounded-2xl p-6 border border-[#F5F5F5]/5 hover:border-[#FF007F]/30 transition-all group">

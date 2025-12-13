@@ -5,13 +5,19 @@ import LandingCommunity from "../components/landingPage/LandingCommunity"
 import LandingTestimonials from "../components/landingPage/LandingTestimonials"
 import LandingCTA from "../components/landingPage/LandingCTA"
 import LandingFooter from "../components/landingPage/LandingFooter"
-import { Navigate } from "react-router-dom"
+import { Navigate, useNavigate } from "react-router-dom"
 import { isTokenExpired } from "../utils/auth"
 
-export default function LandingPage({ onGetStarted }) {
+export default function LandingPage() {
+
+    const navigate = useNavigate();
 
     if (!isTokenExpired()) {
         return <Navigate to="/dashboard" />
+    }
+
+    const onGetStarted = () => {
+       navigate("/dashboard")
     }
 
     return (

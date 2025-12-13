@@ -1,15 +1,12 @@
 import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { X, Save, Image, Tag, Calendar } from 'lucide-react';
-import API from '../../config/axios';
-import { toast } from 'react-toastify';
 import { subjects } from '../../config/data';
-
+import { useNoteStore } from "../../store/noteStore";
 export default function AddNoteModal({ onClose, onNoteAdded }) {
     // States
     const [selectedFile, setSelectedFile] = useState(null);
-    const [isUploading, setIsUploading] = useState(false);
-
+  const { uploadNote, isUploading } = useNoteStore();
     // Refs
     const fileInputRef = useRef(null);
 
@@ -34,34 +31,9 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
         }
     };
 
-    const onSubmit = async (data) => {
-        try {
-            setIsUploading(true);
-
-            const formData = new FormData();
-            if (selectedFile) {
-                formData.append('file', selectedFile);
-            }
-            formData.append('title', data.title);
-            formData.append('description', data.content);
-            formData.append('subject', data.subject);
-
-            await API.post('/notes/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
-            onNoteAdded();
-            toast.success('Note uploaded successfully');
-            onClose();
-        } catch (error) {
-            console.log(error);
-            toast.error(error.message);
-        } finally {
-            setIsUploading(false);
-        }
-    };
+  const onSubmit = async (data) => {
+    await uploadNote(data, selectedFile, onNoteAdded, onClose);
+  };
 
     return (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
@@ -132,7 +104,7 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
 
                     <div>
                         <label className="block text-sm font-medium mb-1">Attachments</label>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                             <button
                                 onClick={handleFileUpload}
                                 type="button"
@@ -148,7 +120,7 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
                                 className="hidden"
                             />
                             <span className="text-xs text-[#F5F5F5]/60">
-                                Supported formats: PDF, DOC, DOCX, JPG, PNG
+                                Supported formats: PDF, DOC, DOCX,
                             </span>
                             {errors.file && (
                                 <p className="text-xs text-red-500 mt-1">{errors.file.message}</p>
@@ -178,7 +150,7 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
                         <button
                             type="submit"
                             disabled={isUploading}
-                            className={`flex items-center gap-2 ${isUploading ? `bg-gray-500` : `bg-[#FF007F] hover:bg-[#FF007F]`}/90 text-white px-4 py-2 rounded-lg`}
+                            className={`flex items-center gap-2 ${isUploading ? `bg-gray-500` : `bg-[#FF007F] hover:bg-[#FF007F]`}/90 text-white sm:px-4 sm:py-2 px-2 rounded-lg`}
                         >
                             <Save size={16} />
                             {isUploading ? 'Uploading...' : 'Save Note'}

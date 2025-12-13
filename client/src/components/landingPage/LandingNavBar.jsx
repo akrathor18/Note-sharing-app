@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { BookOpen, Menu, X } from "lucide-react"
+import { Link } from "react-router-dom"
 
 export default function LandingNavBar({ onGetStarted }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)

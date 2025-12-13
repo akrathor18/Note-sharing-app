@@ -13,9 +13,20 @@ import AchievementsList from '../components/profile/AchievementsList';
 import ActivityHistory from '../components/profile/ActivityHistory';
 import { toast } from 'react-toastify';
 import { recentActivity, userNotes, userQuizzes, achievements } from '../config/data';
+import { useUserStore } from '../store/userStore.js';
 
 function Profile() {
-    const [userDetails, setUserDetails] = useState();
+    const { user, averageScore, fetchUser, getScore, isLoading, error } =
+        useUserStore();
+
+    useEffect(() => {
+        fetchUser();
+        getScore();
+    }, [fetchUser, getScore]);
+
+
+    const userState = user?.userState || {};
+    const userDetails = user?.user || {};
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
     const [bio, setBio] = useState('');
@@ -23,24 +34,9 @@ function Profile() {
     const [newBio, setNewBio] = useState();
     const fileInputRef = useRef(null);
 
-    const fetchUserDetail = async () => {
-        setTimeout(async () => {
-            try {
-                const response = await API.get('/users/profile');
-                setUserDetails(response.data);
-                setNewBio(response.data.bio);
-                setBio(response.data.bio);
-            } catch (error) {
-                console.log(error);
-                toast.error(error.response.data.message);
-            }
-        }, 1000);
-    };
-
-    useEffect(() => {
-        fetchUserDetail();
-    }, []);
-
+    if (isLoading) return <SkeletonLoader />;
+    if (error) return <p>Error: {error}</p>;
+    userState.averageScore = averageScore ? averageScore.averagePercentage : 0;
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setUserDetails({ ...userDetails, [name]: value });
@@ -79,25 +75,42 @@ function Profile() {
     };
 
     const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            // Simulate profile picture change
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                // In a real app, update the user's profile picture
-            };
-            reader.readAsDataURL(file);
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            alert("Please upload an image file");
+            return;
         }
+
+        const maxSize = 2.5 * 1024 * 1024;
+        if (file.size > maxSize) {
+            alert("Please upload an image smaller than 2.5MB");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const dataUrl = event.target?.result;
+            // set local preview + edited user
+            setPreviewImage(dataUrl);
+            setEditedUser((prev) => ({
+                ...prev,
+                profilePic: dataUrl,
+            }));
+            // later you can also call a prop to upload to backend
+            // onProfilePicChange(file or dataUrl)
+        };
+        reader.readAsDataURL(file);
     };
 
-    if (!userDetails) {
-        return <SkeletonLoader />;
-    }
+
 
     return (
         <div className="max-w-4xl mx-auto">
             <ProfileHeader
-                userDetails={userDetails}
+                user={userDetails}
+                userStats={userState}
                 isEditing={isEditing}
                 handleInputChange={handleInputChange}
                 handleSave={handleSave}
@@ -107,13 +120,13 @@ function Profile() {
                 fileInputRef={fileInputRef}
                 handleFileChange={handleFileChange}
             />
-            <StatsCards stats={userDetails.stats} />
+            <StatsCards stats={userState} />
             <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
             <div>
                 {activeTab === 'overview' && (
                     <div className="space-y-6">
                         <AboutMe
-                            bio={bio}
+                            bio={userDetails.bio}
                             editingBio={editingBio}
                             newBio={newBio}
                             handleBioEdit={handleBioEdit}

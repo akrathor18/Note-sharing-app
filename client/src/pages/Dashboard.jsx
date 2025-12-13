@@ -1,78 +1,133 @@
-import { Clock, FileText, CheckCircle2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import API from '../config/axios';
+import { useEffect } from "react";
+import {
+  FileText,
+  Flame,
+  Trophy,
+  TrendingUp,
+  Brain,
+  PenTool,
+} from "lucide-react";
 
-// Components
-import SkeletonLoader from '../components/dashboard/skeletonLoader';
-import ActivityStats from '../components/dashboard/activityStats';
-import RecentNotes from '../components/dashboard/recentNotes';
-import UpcomingQuizzes from '../components/dashboard/upcomingQuiz';
-import StudyActivityChart from '../components/dashboard/studyActivityChart';
-
-// Sample Data
-import { recentNotes, upcomingQuizzes } from '../config/data';
+import { useUserStore } from "../store/userStore.js";
+import QuickStats from "../components/dashboard/QuickStats.jsx";
+import QuickAction from "../components/dashboard/QuickAction.jsx";
+import RecentActivity from "../components/dashboard/RecentActivity.jsx";
+import Streak from "../components/dashboard/Streak.jsx";
+import AverageQuizeScore from "../components/dashboard/AverageQuizeScore.jsx";
+import SecondaryStates from "../components/dashboard/SecondaryStates.jsx";
+import SkeletonLoader from "../components/dashboard/skeletonLoader.jsx";
 
 export default function Dashboard() {
-    const [userDetails, setUserDetails] = useState();
+  // Zustand store
+  const { user, averageScore, fetchUser, getScore, isLoading, error } =
+    useUserStore();
 
-    const fetchUserDetail = async () => {
-        setTimeout(async () => {
-            try {
-                const response = await API.get('/users/profile');
-                setUserDetails(response.data);
-            } catch (error) {
-                console.log(error);
-            }
-        }, 1000);
-    };
+  // Fetch user + quiz stats on mount
+  useEffect(() => {
+    fetchUser();
+    getScore();
+  }, [fetchUser, getScore]);
 
-    useEffect(() => {
-        fetchUserDetail();
-    }, []);
+  if (isLoading) return <SkeletonLoader />;
+  if (error) return <p>Error: {error}</p>;
 
-    useEffect(() => {
-        console.log('Fetched user details:', userDetails);
-    }, [userDetails]);
+  // Safely unwrap user data
+  const userState = user?.userState || {};
+  const userInfo = user?.user || {};
+  const userData = {
+    name: userInfo.name || "User",
+    totalNotesUploaded: userState.totalNotes || 0,
+    totalQuizzesCreated: userState.totalQuizCreated || 0,
+    totalQuizAttempts: userState.totalQuizzesTaken || 0,
+    currentStreak: userState.streak || 0,
+    averageQuizScore: averageScore ? averageScore.averagePercentage : 0,
+    attemptedQuizzes: averageScore ? averageScore.attempts : 0,
+    highestStreak: userState.highestStreak || 0,
+  };
 
-    const activityStats = [
-        {
-            label: 'Notes Viewed',
-            value: userDetails?.stats?.totalNoteVisits ?? 10,
-            icon: FileText,
-            color: '#FF007F',
-        },
-        {
-            label: 'Quizzes Completed',
-            value: userDetails?.stats?.quizzesTaken ?? 10,
-            icon: CheckCircle2,
-            color: '#00E5FF',
-        },
-        {
-            label: 'Study Hours',
-            value: userDetails?.stats?.totalStudyTime ?? 10,
-            icon: Clock,
-            color: '#FF007F',
-        },
-    ];
+  const recentActivity = userInfo.recentActivity || [];
 
-    if (!userDetails) {
-        return <SkeletonLoader />;
-    }
+  const mainStats = [
+    {
+      label: "Total Notes Uploaded",
+      value: userData.totalNotesUploaded,
+      icon: FileText,
+      color: "#FF007F",
+      trendUp: true,
+      description: "Notes shared with community",
+      bgGradient: "from-[#FF007F]/20 to-[#FF007F]/5",
+    },
+    {
+      label: "Total Quizzes Created",
+      value: userData.totalQuizzesCreated,
+      icon: Brain,
+      color: "#00E5FF",
+      trendUp: true,
+      description: "Interactive quizzes made",
+      bgGradient: "from-[#00E5FF]/20 to-[#00E5FF]/5",
+    },
+    {
+      label: "Total Quiz Attempts",
+      value: userData.totalQuizAttempts,
+      icon: PenTool,
+      color: "#4CAF50",
+      trendUp: true,
+      description: "Practice sessions completed",
+      bgGradient: "from-[#4CAF50]/20 to-[#4CAF50]/5",
+    },
+    {
+      label: "Current Streak",
+      value: `${userData.currentStreak} days`,
+      icon: Flame,
+      color: "#FF6B35",
+      trendUp: true,
+      description: "Keep the momentum going!",
+      bgGradient: "from-[#FF6B35]/20 to-[#FF6B35]/5",
+    },
+  ];
 
-    return (
-        <div className="space-y-6 md:space-y-8">
-            <div>
-                <h1 className="text-xl md:text-2xl font-bold mb-1">
-                    Welcome back, {userDetails.name}!
-                </h1>
-                <p className="text-[#F5F5F5]/60">Here's what's happening with your studies</p>
-            </div>
-            <ActivityStats stats={activityStats} />
-            <RecentNotes notes={recentNotes} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <UpcomingQuizzes quizzes={upcomingQuizzes} />
-                <StudyActivityChart />
-            </div>
+  const secondaryStats = [
+    {
+      label: "Highest Streak",
+      value: userData.highestStreak,
+      icon: TrendingUp,
+      color: "#FFD93D",
+      change: "trending up",
+    },
+    {
+      label: "Average Quiz Score",
+      value: `${userData.averageQuizScore}%`,
+      icon: Trophy,
+      color: "#9C27B0",
+      change: "excellent performance",
+    },
+  ];
+
+  return (
+    <div className="space-y-6 md:space-y-8">
+      <div>
+        <h1 className="text-xl md:text-2xl font-bold mb-1">
+          Welcome back, {userData.name}!
+        </h1>
+        <p className="text-[#F5F5F5]/60">
+          Here's what's happening with your studies
+        </p>
+      </div>
+
+      <QuickStats mainStats={mainStats} />
+      <SecondaryStates statsData={secondaryStats} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <QuickAction />
+          <RecentActivity activity={recentActivity} />
         </div>
-    );
+
+        <div className="space-y-6">
+          <Streak user={userData} />
+          <AverageQuizeScore user={userData} />
+        </div>
+      </div>
+    </div>
+  );
 }

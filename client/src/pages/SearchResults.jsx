@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { FileText, BrainCircuit, Search, Filter, Download, ChevronRight } from 'lucide-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { formatDate } from '../utils/formatDate';
+import NoteCard from '../components/notes/NoteCard';
 import API from '../config/axios';
+import QuizCard from '../components/quiz/QuizCard';
 
 export default function SearchResults() {
 
@@ -30,6 +34,7 @@ export default function SearchResults() {
                     query
                 });
             } catch (error) {
+                toast.error(error.response.data.error || 'An error occurred while fetching search results.');
                 console.log(error);
             }
         };
@@ -48,9 +53,9 @@ export default function SearchResults() {
 
     const sortResults = (items) => {
         if (sortBy === 'newest') {
-            return [...items].sort((a, b) => new Date(b.date) - new Date(a.date));
+            return [...items].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         } else if (sortBy === 'oldest') {
-            return [...items].sort((a, b) => new Date(a.date) - new Date(b.date));
+            return [...items].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
         }
         return items;
     };
@@ -137,37 +142,12 @@ export default function SearchResults() {
                                 )}
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                                 {(activeTab === 'all'
                                     ? sortedResults.notes.slice(0, 3)
                                     : sortedResults.notes
                                 ).map((note) => (
-                                    <div
-                                        key={note.id}
-                                        className="flex items-center gap-3 p-4 rounded-lg bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 transition-colors"
-                                    >
-                                        <div className="w-12 h-12 rounded-lg bg-[#FF007F]/10 flex items-center justify-center flex-shrink-0">
-                                            <FileText size={24} className="text-[#FF007F]" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <h3 className="font-medium truncate">
-                                                    {note.title}
-                                                </h3>
-                                                <span className="text-xs bg-[#FF007F]/10 text-[#FF007F] px-2 py-0.5 rounded-full whitespace-nowrap">
-                                                    {note.subject}
-                                                </span>
-                                            </div>
-                                            <p className="text-sm text-[#F5F5F5]/60 line-clamp-1">
-                                                {note.description}
-                                            </p>
-                                        </div>
-                                        <a href={note.fileUrl} target='_blank'>
-                                            <button className="p-2 rounded-full hover:bg-[#0D0D0D] transition-colors flex-shrink-0">
-                                                <Download size={18} />
-                                            </button>
-                                        </a>
-                                    </div>
+                                    <NoteCard key={note._id} note={note} />
                                 ))}
                             </div>
                         </div>
@@ -187,44 +167,12 @@ export default function SearchResults() {
                                 )}
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                                 {(activeTab === 'all'
                                     ? sortedResults.quizzes.slice(0, 3)
                                     : sortedResults.quizzes
                                 ).map((quiz) => (
-                                    <div
-                                        key={quiz._id}
-                                        className="flex items-center gap-3 p-4 rounded-lg bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 transition-colors"
-                                    >
-                                        <div className="w-12 h-12 rounded-lg bg-[#00E5FF]/10 flex items-center justify-center flex-shrink-0">
-                                            <BrainCircuit size={24} className="text-[#00E5FF]" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <h3 className="font-medium truncate">
-                                                    {quiz.title}
-                                                </h3>
-                                                <span
-                                                    className={`text-xs px-2 py-1 rounded-full ${quiz.difficulty === 'Easy'
-                                                        ? 'bg-green-500/10 text-green-500'
-                                                        : quiz.difficulty === 'Medium'
-                                                            ? 'bg-yellow-500/10 text-yellow-500'
-                                                            : 'bg-red-500/10 text-red-500'
-                                                        }`}
-                                                >
-                                                    {quiz.difficulty}
-                                                </span>
-                                            </div>
-                                            <p className="text-sm text-[#F5F5F5]/60 line-clamp-1">
-                                                {quiz.category}
-                                            </p>
-                                        </div>
-                                        <button
-                                            onClick={() => navigate(`/quiz/${quiz._id}`)}
-                                            className="px-3 py-1.5 rounded-lg bg-[#00E5FF] text-[#0D0D0D] text-sm font-medium hover:bg-[#00E5FF]/90 transition-colors flex-shrink-0">
-                                            Start
-                                        </button>
-                                    </div>
+                                    <QuizCard key={quiz._id} quizData={quiz} />
                                 ))}
                             </div>
                         </div>

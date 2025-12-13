@@ -17,13 +17,16 @@ import {
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import API from '../config/axios';
 import { removeToken, handleAuthError } from '../utils/auth';
+import { useUserStore } from "../store/userStore.js";
 
 function navBar() {
+    const {user} = useUserStore();
+    // console.log(user)
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(true);
-    const [user, setUser] = useState();
+    const [authView, setAuthView] = useState('signin'); // signin, signup
     const [searchQuery, setSearchQuery] = useState('');
     const [notifications, setNotifications] = useState([
         {
@@ -45,19 +48,6 @@ function navBar() {
             read: true,
         },
     ]);
-
-    const fetchUserDetail = async () => {
-        try {
-            const response = await API.get('/users/profile');
-            setUser(response.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    useEffect(() => {
-        fetchUserDetail();
-    }, []);
 
     // Toggle mobile menu
     const toggleMobileMenu = () => {
@@ -94,10 +84,19 @@ function navBar() {
         );
     };
 
-    const handleLogout = () => {
-        removeToken(); // Remove token
-        handleAuthError('logout');
-        navigate('/signin');
+    const handleLogout = async () => {
+        try {
+            const response = await API.post('/users/logout');
+            if (response.status === 200) {
+                removeToken();
+                setIsAuthenticated(false);
+                // setUser(null);
+                navigate('/');
+                toast.success('Logged out successfully');
+            }
+        } catch (error) {
+            console.log(error)
+        }
     };
 
     // Handle search
@@ -149,7 +148,7 @@ function navBar() {
                 className={`${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                     } md:translate-x-0 fixed md:static inset-y-0 left-0 z-20 w-64 bg-[#1A1A1A] p-4 flex flex-col transition-transform duration-300 ease-in-out overflow-y-auto`}
             >
-                <NavLink to={'/'} className="flex items-center gap-2 mb-8">
+                <NavLink to={'/'} className="flex items-center gap-4 sm:gap-2 mb-8">
                     <BookOpen className="text-[#FF007F]" />
                     <h1 className="text-xl font-bold">StudyHub</h1>
                 </NavLink>
@@ -159,7 +158,7 @@ function navBar() {
                     { navLinks.map((link) => (
                         <li key={link.to}>
                             <NavLink
-                                to={link.to}
+                                to={'/Dashboard'}
                                 className={({ isActive }) =>
                                     `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
                                         ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
@@ -178,11 +177,11 @@ function navBar() {
                 <div className="mt-auto pt-4 border-t border-[#F5F5F5]/10">
                     <div className="flex items-center gap-3 p-2">
                         <div className="w-8 h-8 rounded-full bg-[#00E5FF] flex items-center justify-center text-[#0D0D0D] font-bold">
-                            {user?.name.toUpperCase().charAt(0) || 'U'}
+                            {user?.user.name.toUpperCase().charAt(0) || 'U'}
                         </div>
                         <div>
-                            <p className="text-sm font-medium">{user?.name || 'User'}</p>
-                            <p className="text-xs text-[#F5F5F5]/60">{user?.role || 'Student'}</p>
+                            <p className="text-sm font-medium">{user?.user.name || 'User'}</p>
+                            <p className="text-xs text-[#F5F5F5]/60">{user?.user.role.role_name || 'Student'}</p>
                         </div>
                     </div>
                 </div>
@@ -191,7 +190,7 @@ function navBar() {
             {/* Main Content */}
             <div className="flex-1 overflow-auto w-full">
                 {/* Header */}
-                <header className="bg-[#1A1A1A] p-4 flex items-center justify-between sticky top-0 z-10">
+                <header className="index bg-[#1A1A1A] p-4 flex items-center justify-between sticky top-0">
                     <div className="relative w-full max-w-xs ml-auto md:ml-0">
                         <form onSubmit={handleSearch}>
                             <Search
@@ -222,7 +221,7 @@ function navBar() {
 
                             {/* Notification Dropdown */}
                             {isNotificationMenuOpen && (
-                                <div className="absolute xs:right-0 -right-14 mt-2 w-80 bg-[#1A1A1A] rounded-lg shadow-lg border border-[#F5F5F5]/10 py-1 z-50">
+                                <div className="absolute xs:right-0 -right-14 mt-2 sm:w-80 w-64  bg-[#1A1A1A] rounded-lg shadow-lg border border-[#F5F5F5]/10 py-1 z-50">
                                     <div className="px-4 py-2 border-b border-[#F5F5F5]/10">
                                         <h3 className="font-medium">Notifications</h3>
                                     </div>

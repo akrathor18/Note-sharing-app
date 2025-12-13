@@ -11,7 +11,7 @@ export default function QuestionForm({
 }) {
     return (
         <div key={question.id} className="bg-[#0D0D0D] rounded-lg p-4 border border-[#F5F5F5]/5">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-wrap items-center justify-between mb-4">
                 <h4 className="font-medium">Question {questionIndex + 1}</h4>
                 {canBeRemoved && (
                     <button
@@ -41,7 +41,7 @@ export default function QuestionForm({
                     <label className="block text-sm font-medium mb-2">Answer Options</label>
                     <div className="space-y-2">
                         {question.options.map((option) => (
-                            <div key={option.id} className="flex items-center gap-3">
+                            <div key={option.id} className="flex flex-wrap items-center gap-3">
                                 <input
                                     type="radio"
                                     name={`correct-${question.id}`}
