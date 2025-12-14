@@ -25,8 +25,15 @@ const limiter = rateLimit({
 });
 // Middle wares
 
+app.set("trust proxy", 1);
+
 app.use(limiter);
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
+
 app.use(cookieParser());
 app.use(
     cors({
