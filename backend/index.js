@@ -39,7 +39,7 @@ app.use(
     cors({
         origin: [
             'http://localhost:5173',
-            process.env.FRONTEND_URL, // Firebase URL
+            'https://studyhub-dev.web.app', // Firebase URL
         ],
         credentials: true,
     })
