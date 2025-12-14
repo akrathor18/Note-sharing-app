@@ -314,7 +314,7 @@ function navBar() {
                         <div className="relative user-menu-container">
                             <button
                                 onClick={toggleUserMenu}
-                                className="p-2 rounded-full hover:bg-[#F5F5F5]/5 transition-colors"
+                                className="p-2 rounded-full bg-[#F5F5F5]/5 transition-colors"
                             >
                                 <User size={20} />
                             </button>
