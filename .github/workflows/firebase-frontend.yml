@@ -33,3 +33,4 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_TOKEN }}"
           channelId: live
           projectId: shophub-dev
+          entryPoint: client
