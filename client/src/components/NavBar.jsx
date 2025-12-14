@@ -48,8 +48,7 @@ function navBar() {
             read: true,
         },
     ]);
-    
-    if (!user) return <div>Loading...</div>;
+
     // Toggle mobile menu
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -257,7 +256,7 @@ function navBar() {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        {/* <div className="relative notification-menu-container">
+                        <div className="relative notification-menu-container">
                             <button
                                 onClick={toggleNotificationMenu}
                                 className="relative p-2 rounded-full hover:bg-[#F5F5F5]/5 transition-colors"
@@ -310,12 +309,12 @@ function navBar() {
                                     </div>
                                 </div>
                             )}
-                        {/* </div> */}
+                        </div>
 
                         <div className="relative user-menu-container">
                             <button
                                 onClick={toggleUserMenu}
-                                className="p-2 rounded-full bg-[#F5F5F5]/5 transition-colors"
+                                className="p-2 rounded-full hover:bg-[#F5F5F5]/5 transition-colors"
                             >
                                 <User size={20} />
                             </button>
