@@ -130,6 +130,5 @@ dist
 .pnp.*
 
 package-lock.json
-client/.firebaserc
 # Firebase cache
 client/.firebase/
