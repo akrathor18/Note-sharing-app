@@ -13,19 +13,25 @@ import {trackActivityAndStreak} from '../utils/activityTracker.js';
 
 // Helper function to generate JWT and set cookie 
 function generateSessionId(user, res) {
-  const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-    expiresIn: '7d',
-  });
+  const token = jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: '7d' }
+  );
+
+  const isProd = process.env.NODE_ENV === 'production';
 
   res.cookie('token', token, {
-    httpOnly: false,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'none',
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    httpOnly: true,                 
+    secure: isProd,                 // set to true in production
+    sameSite: isProd ? 'none' : 'lax', 
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    path: '/',                     
   });
 
   return token;
 }
+
 
 // Auth routes below
 router.post('/register', async (req, res) => {
