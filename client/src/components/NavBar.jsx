@@ -48,7 +48,8 @@ function navBar() {
             read: true,
         },
     ]);
-
+    
+    if (!user) return <div>Loading...</div>;
     // Toggle mobile menu
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
