@@ -27,7 +27,7 @@ function Profile() {
 
     const userState = user?.userState || {};
     const userDetails = user?.user || {};
-    const recentActivity =  [];
+    const recentActivity = user?.user.recentActivity || [];
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
     const [bio, setBio] = useState('');
