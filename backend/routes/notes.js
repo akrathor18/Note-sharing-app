@@ -50,7 +50,51 @@ router.get('/getnotes', authMiddleware, async (req, res) => {
   }
 });
 
+router.get('/mynotes', verifyJWT, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const notes = await Note.find({ uploadedBy: userId })
+      .populate('uploadedBy', 'name email')
+      .populate('subject', 'name');
+    res.status(200).json(notes);
+  }
+  catch (error) {
+    res.status(500).json({ message: 'Failed to retrieve user notes', error: error.message });
+  }
+});
 
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid note ID" });
+    }
+
+    const note = await Note.findById(id);
+
+    if (!note) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+
+    if (note.user.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized to delete this note" });
+    }
+
+    await note.deleteOne();
+
+    res.status(200).json({
+      message: "Note deleted successfully",
+      noteId: id,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to delete note",
+      error: error.message,
+    });
+  }
+});
 router.get('/search', async (req, res) => {
   const { query } = req.query;
 

@@ -3,8 +3,11 @@ import API from '../config/axios';
 import { toast } from 'react-toastify';
 export const useNoteStore = create((set) => ({
     notes: [],
+    userNotes: [],
     isLoading: false,
     error: null,
+    isDeleting: false,
+    isUploading: false,
     //Get notes
     fetchNotes: async () => {
         set({ isLoading: true, error: null });
@@ -45,4 +48,34 @@ export const useNoteStore = create((set) => ({
             set({ isUploading: false });
         }
     },
+
+    fetchUserNotes: async (userId) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await API.get('/notes/mynotes');
+            set({ userNotes: response.data, isLoading: false });
+            console.log(response.data)
+        }
+        catch (error) {
+            console.log(error)
+            set({ error: error.message || "Failed to load user notes", isLoading: false });
+        }
+    },
+    
+    deleteNote: async (noteId) => {
+        set({ isDeleting: true, error: null });
+        try {
+            await API.delete(`/notes/${noteId}`);
+            set((state) => ({
+                userNotes: state.userNotes.filter((note) => note.id !== noteId),
+                isDeleting: false,
+            }));
+            toast.success('Note deleted successfully');
+        }
+        catch (error) {
+            console.log(error)
+            set({ error: error.message || "Failed to delete note", isLoading: false });
+        }   
+    },
+    
 }));

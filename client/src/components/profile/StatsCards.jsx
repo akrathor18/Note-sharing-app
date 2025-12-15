@@ -18,7 +18,6 @@ function StatCard({ icon, value, label, iconClass, bgClass }) {
 function StatsCards({ stats }) {
     return (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-           { console.log(stats)}
             <StatCard
                 icon={<FileText size={18} className="text-[#FF007F] " />}
                 value={stats.totalNotes}

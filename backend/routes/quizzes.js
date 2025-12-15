@@ -7,6 +7,7 @@ import QuizAttempt from '../models/QuizAttempt.js';
 import { trackActivityAndStreak } from '../utils/activityTracker.js';
 import { logActivity } from '../utils/logActivity.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
+import mongoose from 'mongoose';
 
 router.post('/createQuiz', verifyJWT, async (req, res) => {
     try {
@@ -41,6 +42,35 @@ router.get('/getQuiz', async (req, res) => {
     }
 });
 
+router.get('/myQuizzes', verifyJWT, async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const quizzes = await Quiz.aggregate([
+            {
+                $match: { createdBy: new mongoose.Types.ObjectId(userId) }
+            },
+            {
+                $project: {
+                    title: 1,
+                    description: 1,
+                    createdAt: 1,
+                    category: 1,
+                    questionCount: { $size: "$questions" }
+                }
+            }
+        ]);
+
+        res.status(200).json(quizzes);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+
+
 // Search Quizzes
 router.get('/search', async (req, res) => {
     const { search } = req.query;
@@ -62,6 +92,42 @@ router.get('/search', async (req, res) => {
     }
 });
 
+// Delete quiz by ID only by the creator
+router.delete("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid quiz ID" });
+        }
+
+        const quiz = await Quiz.findById(id);
+
+        if (!quiz) {
+            return res.status(404).json({ message: "Quiz not found" });
+        }
+
+        if (quiz.user.toString() !== req.user.id) {
+            return res.status(403).json({
+                message: "Not authorized to delete this quiz",
+            });
+        }
+
+        await quiz.deleteOne();
+
+        res.status(200).json({
+            message: "Quiz deleted successfully",
+            quizId: id,
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to delete quiz",
+            error: error.message,
+        });
+    }
+});
+//Get quiz by ID
 router.get('/:id', async (req, res) => {
     try {
         const quiz = await Quiz.findById(req.params.id).select('-questions.correctAnswer');;
@@ -122,7 +188,7 @@ router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
             correctAnswers: percentageScore
         });
 
-        await logActivity(req.user.id, 'quiz_attempt', req.params.id, 'Attempted a quiz',{
+        await logActivity(req.user.id, 'quiz_attempt', req.params.id, 'Attempted a quiz', {
             score,
             totalQuestions: quiz.questions.length,
             percentageScore,
@@ -139,38 +205,6 @@ router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: 'Server error' });
-    }
-});
-
-// Deleting a quiz
-router.delete("/:id", authMiddleware, verifyJWT, async (req, res) => {
-    try {
-        const quizId = req.params.id;
-        const userId = req.user.id;
-
-        // Find the quiz to make sure it exists and belongs to this user
-        const quiz = await Quiz.findById(quizId);
-
-        if (!quiz) {
-            return res.status(404).json({ message: "Quiz not found" });
-        }
-
-        if (quiz.createdBy.toString() !== userId) {
-            return res.status(403).json({ message: "Unauthorized: You can only delete your own quizzes" });
-        }
-
-        // Delete the quiz
-        await Quiz.findByIdAndDelete(quizId);
-
-        // Remove the quiz reference from user's quizzes array
-        await User.findByIdAndUpdate(userId, {
-            $pull: { quizzes: quizId }
-        });
-
-        res.status(200).json({ message: "Quiz deleted successfully" });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
     }
 });
 

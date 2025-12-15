@@ -11,6 +11,7 @@ import NotesList from '../components/profile/NotesList';
 import QuizzesList from '../components/profile/QuizzesList';
 import AchievementsList from '../components/profile/AchievementsList';
 import ActivityHistory from '../components/profile/ActivityHistory';
+import ErrorState from '../common/components/ErrorState';
 import { toast } from 'react-toastify';
 import { userNotes, userQuizzes, achievements } from '../config/data';
 import { useUserStore } from '../store/userStore.js';
@@ -36,7 +37,7 @@ function Profile() {
     const fileInputRef = useRef(null);
 
     if (isLoading) return <SkeletonLoader />;
-    if (error) return <p>Error: {error}</p>;
+    if (error) return <ErrorState title='Unable to load Profile' message="Something went wrong while fetching your Profile."/>;
     userState.averageScore = averageScore ? averageScore.averagePercentage : 0;
     const handleInputChange = (e) => {
         const { name, value } = e.target;
