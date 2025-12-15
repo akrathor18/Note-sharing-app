@@ -1,24 +1,34 @@
 import React from 'react';
-import { FileText, BrainCircuit } from 'lucide-react';
-
+import { FileText, BrainCircuit, Clock, } from 'lucide-react';
+import { getActivityColor, getActivityIcon } from '../../utils/getActivityIconColor';
+import { formatDate } from '../../utils/formatDate';
 function ActivityItem({ activity }) {
+    const ActivityIcon = getActivityIcon(activity.type)
+    const activityColor = getActivityColor(activity.type)
     return (
-        <div className="flex items-center gap-3 p-3 rounded-lg bg-[#0D0D0D]">
+        <div className="space-y-3">
             <div
-                className={`w-10 h-10 rounded-lg ${activity.type === 'note' ? 'bg-[#FF007F]/10' : 'bg-[#00E5FF]/10'
-                    } flex items-center justify-center`}
+                key={activity.id}
+                className="flex items-center gap-4 p-4 rounded-lg bg-[#0D0D0D] hover:bg-[#0D0D0D]/80 transition-colors border border-[#F5F5F5]/5"
             >
-                {activity.type === 'note' ? (
-                    <FileText size={20} className="text-[#FF007F]" />
-                ) : (
-                    <BrainCircuit size={20} className="text-[#00E5FF]" />
-                )}
-            </div>
-            <div>
-                <h3 className="font-medium">{activity.title}</h3>
-                <p className="text-xs text-[#F5F5F5]/60">
-                    {activity.action} {activity.score ? `• Score: ${activity.score}` : ''} • {activity.date}
-                </p>
+                <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: `${activityColor}20` }}
+                >
+                    <ActivityIcon size={20} style={{ color: activityColor }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-medium truncate">{activity.title}</h3>
+
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-[#F5F5F5]/60 mb-1">
+                        <span className="capitalize">{activity.description}</span>
+                        {activity.subject && <span>• {activity.subject}</span>}
+                        {activity.score && <span>{`• Score: ${activity.percentageScore}%`}</span>}
+                        <span>• {formatDate(activity.timestamp)}</span>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -1,46 +1,14 @@
 import React from 'react'
 import {
-    BrainCircuit,
-    Plus,
-    Activity,
-    Flame,
-    Upload,
     Clock,
 } from "lucide-react"
 
 import { formatDate } from '../../utils/formatDate';
+import { getActivityIcon, getActivityColor } from '../../utils/getActivityIconColor';
 function RecentActivity(activityData) {
     const activity = activityData.activity;
 
-    const getActivityIcon = (type) => {
-        switch (type) {
-            case "note_upload":
-                return Upload
-            case "quiz_attempt":
-                return BrainCircuit
-            case "quiz_created":
-                return Plus
-            case "streak_milestone":
-                return Flame
-            default:
-                return Activity
-        }
-    }
-
-    const getActivityColor = (type) => {
-        switch (type) {
-            case "note_upload":
-                return "#FF007F"
-            case "quiz_attempt":
-                return "#00E5FF"
-            case "quiz_created":
-                return "#4CAF50"
-            case "streak_milestone":
-                return "#FF6B35"
-            default:
-                return "#9E9E9E"
-        }
-    }
+    
     return (
         <div className="bg-[#1A1A1A] rounded-xl p-6 border border-[#F5F5F5]/5">
             <div className="flex items-center justify-between mb-6">
@@ -87,7 +55,6 @@ function RecentActivity(activityData) {
                         )
                     })}
                 </div>
-
             ) : (
                 <div className="flex flex-col items-center justify-center py-12">
                     <div className="w-16 h-16 rounded-full bg-[#0D0D0D] flex items-center justify-center mb-4">

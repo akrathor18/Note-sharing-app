@@ -12,7 +12,7 @@ import QuizzesList from '../components/profile/QuizzesList';
 import AchievementsList from '../components/profile/AchievementsList';
 import ActivityHistory from '../components/profile/ActivityHistory';
 import { toast } from 'react-toastify';
-import { recentActivity, userNotes, userQuizzes, achievements } from '../config/data';
+import { userNotes, userQuizzes, achievements } from '../config/data';
 import { useUserStore } from '../store/userStore.js';
 
 function Profile() {
@@ -27,6 +27,7 @@ function Profile() {
 
     const userState = user?.userState || {};
     const userDetails = user?.user || {};
+    const recentActivity =  [];
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
     const [bio, setBio] = useState('');
