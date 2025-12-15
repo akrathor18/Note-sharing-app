@@ -5,8 +5,7 @@ import { formatDate } from '../../utils/formatDate';
 function QuizCard(quizData) {
     const quiz = quizData.quizData;
     const navigate = useNavigate();
-    // console.log(quiz.quiz)
-    const startQuiz = (quiz) => {
+    const startQuiz = (quizId) => {
         navigate(`/quiz/${quizId}`);
     }
     return (
@@ -59,7 +58,7 @@ function QuizCard(quizData) {
                 </div>
 
                 <button
-                    onClick={() => startQuiz(quiz)}
+                    onClick={() => startQuiz(quiz._id)}
                     className="w-full py-2 rounded-lg bg-[#0D0D0D] hover:bg-[#FF007F] hover:text-white transition-colors flex items-center justify-center gap-2 font-medium"
                 >
                     Start Quiz
