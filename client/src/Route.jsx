@@ -49,8 +49,8 @@ const routes = [
                     { path: 'profile', element: <Profile /> },
                     { path: 'settings', element: <Settings /> },
                     { path: 'search', element: <SearchResults /> },
-                    { path: 'createquiz', element: <CreateQuiz /> },
-                    { path: 'quiz/:id', element: <QuizScreen /> },
+                    { path: 'quizzes/createquiz', element: <CreateQuiz /> },
+                    { path: 'quizzes/:id', element: <QuizScreen /> },
                     { path: 'feedback', element: <Feedback /> },
                 ],
             }]

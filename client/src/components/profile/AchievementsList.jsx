@@ -9,7 +9,7 @@ function AchievementsList({ achievements }) {
             <div className="space-y-4">
                 {achievements.map((achievement) => (
                     <AchievementCard key={achievement.id} achievement={achievement} showProgress={true} />
-                ))}
+                 ))}
             </div>
             <div className="bg-[#1A1A1A] rounded-xl p-5 text-center">
                 <div className="w-16 h-16 mx-auto rounded-full bg-[#FF007F]/10 flex items-center justify-center mb-3">

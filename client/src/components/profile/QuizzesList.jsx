@@ -1,23 +1,48 @@
-import React from 'react';
+import {useEffect} from 'react';
 
-function QuizCard({ quiz }) {
+import { Trash2 } from 'lucide-react';
+
+import { useQuizStore } from '../../store/quizStore';
+import { formatDate } from '../../utils/formatDate';
+import ErrorState from '../../common/components/ErrorState';
+import CardSkeleton from '../../common/components/CardSkeleton';
+
+function QuizCard(quiz) {
+    const { deleteNote, isDeleting } = useQuizStore();
     return (
         <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#F5F5F5]/5">
             <div className="flex items-center justify-between mb-2">
                 <span className="text-xs bg-[#00E5FF]/10 text-[#00E5FF] px-2 py-1 rounded-full">
-                    {quiz.subject}
+                    {quiz.quiz.category}
                 </span>
-                <span className="text-xs text-[#F5F5F5]/60">{quiz.date}</span>
+                <span className="text-xs text-[#F5F5F5]/60">{formatDate(quiz.quiz.createdAt)}</span>
             </div>
-            <h3 className="font-medium mb-3">{quiz.title}</h3>
-            <div className="flex items-center text-xs">
-                <span className="text-green-500">Score: {quiz.score}</span>
+            <h3 className="font-medium mb-3">{quiz.quiz.title}</h3>
+            <div className="flex justify-between items-center text-xs">
+                <span className="text-green-500">{quiz.quiz.questionCount} Questions</span>
+                <button
+                    onClick={() => deleteNote(note._id)}
+                    disabled={isDeleting}
+                    className="p-1 flex flex-row rounded-full  hover:bg-[#ff0000]/10 text-[#ff0000]"
+                >
+                    <Trash2 size={14} />{isDeleting ? 'Deleting...' : 'Delete'}
+                </button>
             </div>
         </div>
     );
 }
 
-function QuizzesList({ userQuizzes }) {
+function QuizzesList() {
+
+    const { ftechUserQuizzes, userQuizzes, isLoading, error } = useQuizStore();
+        useEffect(() => {
+            ftechUserQuizzes();
+        }, [ftechUserQuizzes]);
+    
+        if (isLoading) return <CardSkeleton />;
+        if (error) return <ErrorState title="Unable to load quizzes"
+            message={error} />;
+
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">

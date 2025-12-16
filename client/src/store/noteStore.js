@@ -73,8 +73,10 @@ export const useNoteStore = create((set) => ({
             toast.success('Note deleted successfully');
         }
         catch (error) {
-            console.log(error)
             set({ error: error.message || "Failed to delete note", isLoading: false });
+            toast.error(
+                error?.response?.data?.message || 'Server error. Note could not be deleted.',
+            );
         }   
     },
     

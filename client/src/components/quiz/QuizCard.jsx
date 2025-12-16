@@ -1,13 +1,15 @@
-import { AlertCircle, BrainCircuit, ChevronRight, Clock,UserPen,PenLine } from 'lucide-react';
+import { AlertCircle, BrainCircuit, ChevronRight, FileText, Plus, Clock, UserPen, PenLine } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../../utils/formatDate';
 
 function QuizCard(quizData) {
     const quiz = quizData.quizData;
     const navigate = useNavigate();
+
     const startQuiz = (quizId) => {
-        navigate(`/quiz/${quizId}`);
+        navigate(`/quizzes/${quizId}`);
     }
+
     return (
         <div
             key={quiz._id}
@@ -39,7 +41,7 @@ function QuizCard(quizData) {
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-1 text-xs text-[#F5F5F5]/60">
                         <UserPen size={14} />
-                        Create By: {quiz.createdBy?.name||"User"} 
+                        Create By: {quiz.createdBy?.name || "User"}
                     </div>
                     <div className="flex items-center gap-1 text-xs text-[#F5F5F5]/60">
                         <PenLine size={14} />

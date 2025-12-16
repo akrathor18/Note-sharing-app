@@ -45,7 +45,9 @@ router.get('/getQuiz', async (req, res) => {
 router.get('/myQuizzes', verifyJWT, async (req, res) => {
     try {
         const userId = req.user.id;
-
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid quiz ID" });
+        }
         const quizzes = await Quiz.aggregate([
             {
                 $match: { createdBy: new mongoose.Types.ObjectId(userId) }

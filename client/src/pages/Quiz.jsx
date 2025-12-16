@@ -1,57 +1,56 @@
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import QuizCard from '../components/quiz/QuizCard';
-import API from '../config/axios';
+import QuizGrid from '../components/quiz/QuizGrid';
+import QuizListSkeleton from '../components/quiz/QuizListSkeleton';
+import ErrorState from '../common/components/ErrorState';
+import SearchAndFilter from '../common/components/SearchAndFilter';
+import SubjectTabs from '../common/components/SubjectTabs';
+import { useQuizStore } from '../store/quizStore';
+import Header from '../common/components/Header';
 
 export default function Quiz() {
-    const [activeView, setActiveView] = useState('list');
-
     const navigate = useNavigate();
 
-    const [quizzes, setQuizzes] = useState([]);
-
-    const getQuizzes = async () => {
-        try {
-            const response = await API.get('quiz/getQuiz');
-            setQuizzes(response.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    const [activeSubject, setActiveSubject] = useState('All Subjects');
+    const [searchTerm, setSearchTerm] = useState('');
+    const { QuizzesList, fetchQuizzes, isLoading, error } = useQuizStore();
 
     useEffect(() => {
-        getQuizzes();
-    }, []);
+        fetchQuizzes();
+    }, [fetchQuizzes]);
+
+    if (isLoading) return <QuizListSkeleton />;
+    if (error) return <ErrorState title="Unable to load quizzes"
+        message={error} />;
 
 
-    // Quiz List View
-    if (activeView === 'list') {
-        return (
-            <div className="space-y-4 md:space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4"></div>
-                <div>
-                    <h1 className="text-xl md:text-2xl font-bold mb-1">Quizzes</h1>
-                    <p className="text-[#F5F5F5]/60">
-                        Test your knowledge with interactive quizzes
-                    </p>
-                </div>
-                <Link to={'/createquiz'}>
-                    <button className="flex items-center justify-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors  sm:w-auto">
-                        <Plus size={18} />
-                        <span>Create your own Quiz</span>
-                    </button>
-                </Link>
-
-                {/* Quiz Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {quizzes.map((quiz) => (
-                        <QuizCard key={quiz._id} quizData={quiz} />
-                    ))}
-                </div>
-            </div>
-        );
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+    const handleAddQuizClick = () => {
+        navigate('./createquiz');
     }
 
-    return null;
+const filteredQuiz = QuizzesList
+        .filter((quiz) => {return activeSubject === 'All Subjects' || quiz.category.toLowerCase() === activeSubject.toLowerCase()})
+        .filter(
+            (quiz) =>
+                searchTerm === '' ||
+                quiz.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                quiz.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (quiz.description &&
+                    quiz.description.toLowerCase().includes(searchTerm.toLowerCase())),
+        );
+    // Quiz List View
+    return (
+        <div className="space-y-4 md:space-y-6">
+            <Header onAddClick={handleAddQuizClick} title={"Quizzes"} description={"Test your knowledge with interactive quizzes"} />
+            <SearchAndFilter searchTerm={searchTerm} onSearchChange={handleSearchChange} />
+            <SubjectTabs activeSubject={activeSubject} onSubjectClick={setActiveSubject} />
+            {/* Quiz Cards */}
+            <QuizGrid quiz={filteredQuiz} searchTerm={searchTerm} />
+        </div>
+    );
 }
+

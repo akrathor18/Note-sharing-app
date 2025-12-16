@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import API from '../config/axios';
-import NotesHeader from '../components/notes/NotesHeader';
-import SearchAndFilter from '../components/notes/SearchAndFilter';
-import SubjectTabs from '../components/notes/SubjectTabs';
+import Header from '../common/components/Header.jsx';
+import SearchAndFilter from '../common/components/SearchAndFilter';
+import SubjectTabs from '../common/components/SubjectTabs';
 import NotesGrid from '../components/notes/NotesGrid';
 import AddNoteModal from '../components/notes/AddNoteModal';
 
@@ -59,7 +59,7 @@ export default function Notes() {
 
     return (
         <div className="space-y-4 md:space-y-6">
-            <NotesHeader onAddNoteClick={handleAddNoteClick} />
+            <Header onAddClick={handleAddNoteClick} title={"Notes"} description={"Browse and download study materials"}/>
 
             <SearchAndFilter searchTerm={searchTerm} onSearchChange={handleSearchChange} />
 
