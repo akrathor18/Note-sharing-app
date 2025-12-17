@@ -160,6 +160,7 @@ router.get('/profile', authMiddleware, VerifyJwtMiddleware, async (req, res) => 
       percentageScore: activity.percentageScore ?? null,
       totalQuestions: activity.totalQuestions ?? null,
       timestamp: activity.timestamp,
+      subject: activity.subject || 'General',
     }));
 
 user.recentActivity = recentActivity;

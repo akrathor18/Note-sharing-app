@@ -8,9 +8,11 @@ import ErrorState from '../../common/components/ErrorState';
 import CardSkeleton from '../../common/components/CardSkeleton';
 
 function QuizCard(quiz) {
-    const { deleteNote, isDeleting } = useQuizStore();
+    const { deleteQuiz, isDeleting } = useQuizStore();
     return (
+
         <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#F5F5F5]/5">
+            {console.log(quiz)}
             <div className="flex items-center justify-between mb-2">
                 <span className="text-xs bg-[#00E5FF]/10 text-[#00E5FF] px-2 py-1 rounded-full">
                     {quiz.quiz.category}
@@ -21,7 +23,7 @@ function QuizCard(quiz) {
             <div className="flex justify-between items-center text-xs">
                 <span className="text-green-500">{quiz.quiz.questionCount} Questions</span>
                 <button
-                    onClick={() => deleteNote(note._id)}
+                    onClick={() => deleteQuiz(quiz.quiz._id)}
                     disabled={isDeleting}
                     className="p-1 flex flex-row rounded-full  hover:bg-[#ff0000]/10 text-[#ff0000]"
                 >

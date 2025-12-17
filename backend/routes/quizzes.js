@@ -24,7 +24,10 @@ router.post('/createQuiz', verifyJWT, async (req, res) => {
             $push: { quizzes: resp._id }
         });
         await trackActivityAndStreak(userId, { totalQuizCreated: 1 });
-        await logActivity(req.user.id, 'quiz_created', resp._id, 'Created a quiz');
+        await logActivity(req.user.id, 'quiz_created', resp._id, 'Created a quiz',{
+            refTitle: resp.title,
+            subject: resp.category
+        });
         res.status(201).json(resp);
     } catch (error) {
         console.log(error);
@@ -95,7 +98,7 @@ router.get('/search', async (req, res) => {
 });
 
 // Delete quiz by ID only by the creator
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifyJWT, async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -108,8 +111,8 @@ router.delete("/:id", async (req, res) => {
         if (!quiz) {
             return res.status(404).json({ message: "Quiz not found" });
         }
-
-        if (quiz.user.toString() !== req.user.id) {
+        console.log("Quiz to be deleted:", quiz);
+        if (quiz.createdBy.toString() !== req.user._id.toString()) {
             return res.status(403).json({
                 message: "Not authorized to delete this quiz",
             });
@@ -123,9 +126,10 @@ router.delete("/:id", async (req, res) => {
         });
 
     } catch (error) {
+        console.error(error);
         res.status(500).json({
             message: "Failed to delete quiz",
-            error: error.message,
+            error: error,
         });
     }
 });
@@ -133,7 +137,7 @@ router.delete("/:id", async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-
+        console.log("Fetching quiz with ID:", id);
         //Check ObjectId validity first
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(404).json({ message: 'Quiz not found' });
@@ -148,7 +152,7 @@ router.get('/:id', async (req, res) => {
 
         res.status(200).json(quiz);
     } catch (err) {
-        console.error(err);
+        console.log(err);
         res.status(500).json({ message: 'Server error' });
     }
 });

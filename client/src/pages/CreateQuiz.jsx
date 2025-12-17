@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import API from '../config/axios';
 
 import CreateQuizHeader from '../components/quiz/CreateQuizHeader';
 import QuizMetadataForm from '../components/quiz/QuizMetadataForm';
@@ -151,9 +150,8 @@ export default function CreateQuiz() {
 
     const handleSaveQuiz = async () => {
         if (!validateQuiz()) return;
-        console.log(quizData)
-
         UploadQuiz(quizData);
+        navigate('/quizzes');
     };
     if (error) toast.error(error);
 

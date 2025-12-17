@@ -3,10 +3,8 @@ import API from '../config/axios';
 import { toast } from 'react-toastify';
 import { Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-const navigate = useNavigate();
 
-export const useQuizStore = create((set) => ({
-
+export const useQuizStore = create((set) => ({    
     QuizzesList: [],
     userQuizzes: [],
     activeQuiz: null,
@@ -31,11 +29,9 @@ export const useQuizStore = create((set) => ({
     UploadQuiz: async (quizData) => {
         try {
             set({ isUploading: true });
-            console.log("data in api",quizData);
             await API.post('quiz/createQuiz', quizData);
             toast.success('Success! Your quiz is ready to use.');
             set({ isUploading: false });
-            navigate('/quizzes');
         } catch (error) {
             console.log(error)
             set({ isUploading: false });
@@ -94,7 +90,7 @@ export const useQuizStore = create((set) => ({
     deleteQuiz: async (quizId) => {
         try {
             set({ isDeleting: true });
-            await API.delete(`/quiz/deleteQuiz/${quizId}`);
+            await API.delete(`/quiz/${quizId}`);
             set((state) => ({
                 userQuizzes: state.userQuizzes.filter((quiz) => quiz._id !== quizId),
                 isDeleting: false,
