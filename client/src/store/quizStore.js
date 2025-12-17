@@ -1,16 +1,20 @@
 import { create } from 'zustand';
 import API from '../config/axios';
 import { toast } from 'react-toastify';
+import { Upload } from 'lucide-react';
+import ActivityItem from '../components/profile/ActivityItem';
 
 export const useQuizStore = create((set) => ({
 
     QuizzesList: [],
-    userQuizzes:[],
+    userQuizzes: [],
+    activeQuiz: null,
     isLoading: false,
     error: null,
-    isUploading:false,
-    isDeleting:false,
-
+    isUploading: false,
+    isDeleting: false,
+    uploadingAnswers: false,
+    result: null,
 
     //Get quizzes
     fetchQuizzes: async () => {
@@ -39,29 +43,41 @@ export const useQuizStore = create((set) => ({
         }
     },
 
-    getQuizById: async (id) => {
-        const existingQuiz = get().quizzes.find((quiz) => quiz.id === id);
-        
-        // If found locally, return it instantly
-        if (existingQuiz) return existingQuiz;
-        
-        // Otherwise, fetch from API (new or not loaded quiz)
+    getQuizById: async (quizId) => {
         try {
-            set({ isLoading: true, error: null });
-            const response = await api.get(`/quiz/${id}`);
-            const fetchedQuiz = response.data;
+            set({
+                isLoading: true,
+                error: null,
+                result: null, 
+            });
 
-            // Store it for future access
-            set((state) => ({
-                quizzes: [...state.quizzes, fetchedQuiz],
-            }));
-            set({ isLoading: false });
-            return fetchedQuiz;
-        } catch (error) {
-            console.error('Failed to fetch quiz by id:', error);
-            throw error;
+            const res = await API.get(`/quiz/${quizId}`);
+            console.log(res)
+            set({
+                res:res,
+                activeQuiz: res.data,
+                isLoading: false,
+            });
+        } catch (err) {
+            set({
+                error: err?.response?.data?.message || 'Failed to load quiz',
+                isLoading: false,
+            });
         }
     },
+
+
+
+    resetQuizState: () => {
+        set({
+            activeQuiz: null,
+            result: null,
+            error: null,
+            uploadingAnswers: false,
+        });
+    },
+
+
 
     ftechUserQuizzes: async (userId) => {
         try {
@@ -71,13 +87,13 @@ export const useQuizStore = create((set) => ({
             console.log(response.data)
         } catch (error) {
             console.log(error)
-            set({ error: error.message || "Failed to load user quizzes", isLoading: false });   
+            set({ error: error.message || "Failed to load user quizzes", isLoading: false });
         }
     },
 
     deleteQuiz: async (quizId) => {
         try {
-            set({ isDeleting: true });  
+            set({ isDeleting: true });
             await API.delete(`/quiz/deleteQuiz/${quizId}`);
             set((state) => ({
                 userQuizzes: state.userQuizzes.filter((quiz) => quiz._id !== quizId),
@@ -90,6 +106,28 @@ export const useQuizStore = create((set) => ({
             toast.error(
                 error?.response?.data?.message || 'Server error. Quiz could not be deleted.',
             );
+        }
+    },
+
+    attmptQuiz: async ({ quizId, answers }) => {
+        try {
+            set({ uploadingAnswers: true, error: null });
+
+            const response = await API.post(
+                `/quiz/${quizId}/attempt`,
+                { answers }
+            );
+
+            set({
+                result: response.data,
+                uploadingAnswers: false
+            });
+
+        } catch (error) {
+            set({
+                error: error?.response?.data?.message || "Failed to attempt quiz",
+                uploadingAnswers: false
+            });
         }
     },
 

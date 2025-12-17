@@ -1,107 +1,148 @@
 import { useState, useEffect } from 'react';
-import { Clock, CheckCircle2, XCircle, ArrowRight, RotateCcw } from 'lucide-react';
+import {
+    Clock,
+    CheckCircle2,
+    XCircle,
+    ArrowRight,
+    RotateCcw,
+} from 'lucide-react';
+import ErrorState from '../common/components/ErrorState';
+import QuizSkeleton from '../common/components/QuizSkeleton';
+import QuizNotFound from '../components/quiz/QuizNotFound';
+import QuizSubmitting from '../components/quiz/QuizSubmitting';
+import { getPerformanceMessage } from '../utils/helperFunctions';
 import { useParams, useNavigate } from 'react-router-dom';
-import API from '../config/axios';
+import { useQuizStore } from '../store/quizStore';
+
 export default function QuizScreen() {
     const navigate = useNavigate();
+    const { quizId } = useParams();
 
-    const [activeView, setActiveView] = useState('quiz'); // list, quiz, result
-    const [activeQuiz, setActiveQuiz] = useState();
+    const {
+        getQuizById,
+        attmptQuiz,
+        activeQuiz,
+        isLoading,
+        uploadingAnswers,
+        error,
+        result,
+    } = useQuizStore();
+
+    const [activeView, setActiveView] = useState('quiz');
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [selectedAnswers, setSelectedAnswers] = useState({});
-    const [quizResult, setQuizResult] = useState(null);
 
-    // fetching the quiz --
-    const { id } = useParams();
-    const getQuizData = async () => {
-        const response = await API.get(`/quiz/${id}`);
-        console.log(response);
-        setActiveQuiz(response.data);
-    };
+    /* ================= FETCH QUIZ ================= */
     useEffect(() => {
-        getQuizData();
-    }, []);
+        if (!quizId) return;
+        setActiveView('quiz');
+        setCurrentQuestion(0);
+        setSelectedAnswers({});
+        getQuizById(quizId);
+    }, [quizId, getQuizById]);
 
-    const handleAnswerSelect = (questionId, answerId) => {
-        setSelectedAnswers({
-            ...selectedAnswers,
-            [questionId]: answerId,
-        });
+
+
+    /* ================= SHOW RESULT WHEN READY ================= */
+    useEffect(() => {
+        if (result) {
+            setActiveView('result');
+        }
+        else {
+            setActiveView('quiz');
+        }
+    }, [result]);
+
+
+
+
+    /* ================= HANDLERS ================= */
+    const handleAnswerSelect = (questionId, optionId) => {
+        setSelectedAnswers((prev) => ({
+            ...prev,
+            [questionId]: optionId,
+        }));
     };
 
-    const goToNextQuestion = () => {
+    const goToNextQuestion = async () => {
         if (currentQuestion < activeQuiz.questions.length - 1) {
-            setCurrentQuestion(currentQuestion + 1);
+            setCurrentQuestion((prev) => prev + 1);
         } else {
-            // Calculate results
-            let correctAnswers = 0;
-            activeQuiz.questions.forEach((question) => {
-                if (selectedAnswers[question._id] === question.correctAnswer) {
-                    correctAnswers++;
-                }
+            console.log(selectedAnswers)
+            await attmptQuiz({
+                quizId: activeQuiz._id,
+                answers: selectedAnswers,
             });
-
-            setQuizResult({
-                totalQuestions: activeQuiz.questions.length,
-                correctAnswers,
-                score: Math.round((correctAnswers / activeQuiz.questions.length) * 100),
-            });
-
-            setActiveView('result');
         }
     };
 
     const resetQuiz = () => {
+        setCurrentQuestion(0);
+        setSelectedAnswers({});
+        setActiveView('quiz');
         navigate('/quizzes');
     };
+    /* ================= STATES ================= */
+    if (isLoading) return <QuizSkeleton />;
+    if (uploadingAnswers) return <QuizSubmitting />;
 
-    // Quiz Taking View
-    if (activeView === 'quiz' && activeQuiz) {
+    if (error) return <ErrorState title="Error loading quiz" message={error} />;
+    if (!activeQuiz) return <QuizNotFound />;
+
+
+
+
+    /* ================= QUIZ VIEW ================= */
+    if (activeView === 'quiz') {
         const currentQ = activeQuiz.questions[currentQuestion];
-        const progress = ((currentQuestion + 1) / activeQuiz.questions.length) * 100;
+        const progress =
+            ((currentQuestion + 1) / activeQuiz.questions.length) * 100;
 
         return (
             <div className="max-w-3xl mx-auto">
-                {/* Quiz Header */}
-                <div className="mb-6 md:mb-8">
-                    <h2 className="text-lg md:text-xl font-bold mb-2">{activeQuiz.title}</h2>
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm text-[#F5F5F5]/60">
-                            Question {currentQuestion + 1} of {activeQuiz.questions.length}
+                {/* Header */}
+                <div className="mb-6">
+                    <h2 className="text-xl font-bold mb-2">{activeQuiz.title}</h2>
+                    <div className="flex justify-between text-sm text-[#F5F5F5]/60">
+                        <span>
+                            Question {currentQuestion + 1} of{' '}
+                            {activeQuiz.questions.length}
                         </span>
-                        <span className="text-sm text-[#F5F5F5]/60 flex items-center gap-1">
+                        <span className="flex items-center gap-1">
                             <Clock size={14} />
                             {activeQuiz.questions.length * 1.5} min
                         </span>
                     </div>
 
-                    {/* Progress Bar */}
+                    {/* Progress */}
                     <div className="w-full h-1.5 bg-[#1A1A1A] rounded-full mt-3">
                         <div
-                            className="h-full bg-[#00E5FF] rounded-full transition-all duration-300"
+                            className="h-full bg-[#00E5FF] rounded-full transition-all"
                             style={{ width: `${progress}%` }}
-                        ></div>
+                        />
                     </div>
                 </div>
 
                 {/* Question */}
-                <div className="bg-[#1A1A1A] rounded-xl p-4 md:p-6 mb-6">
-                    <h3 className="text-base md:text-lg font-medium mb-4 md:mb-6">
+                <div className="bg-[#1A1A1A] rounded-xl p-6 mb-6">
+                    <h3 className="text-lg font-medium mb-6">
                         {currentQ.text}
                     </h3>
 
                     <div className="space-y-3">
                         {currentQ.options.map((option) => (
                             <button
-                                key={option.id}
-                                onClick={() => handleAnswerSelect(currentQ._id, option.id)}
-                                className={`w-full text-left p-3 md:p-4 rounded-lg flex items-center transition-all duration-200 ${selectedAnswers[currentQ._id] === option.id
-                                    ? 'bg-[#FF007F]/20 border border-[#FF007F]'
-                                    : 'bg-[#0D0D0D] border border-[#F5F5F5]/10 hover:border-[#F5F5F5]/30'
+                                key={option._id}
+                                onClick={() =>
+                                    handleAnswerSelect(currentQ._id, option.id)
+                                }
+                                className={`w-full text-left p-4 rounded-lg flex items-center border transition ${selectedAnswers[currentQ._id] === option.id
+                                    ? 'bg-[#FF007F]/20 border-[#FF007F]'
+                                    : 'bg-[#0D0D0D] border-[#F5F5F5]/10 hover:border-[#F5F5F5]/30'
                                     }`}
                             >
                                 <span
-                                    className={`w-6 h-6 rounded-full mr-3 flex items-center justify-center ${selectedAnswers[currentQ._id] === option.id
+                                    className={`w-6 h-6 mr-3 rounded-full flex items-center justify-center text-sm ${selectedAnswers[currentQ._id] === option.id
                                         ? 'bg-[#FF007F] text-white'
                                         : 'bg-[#1A1A1A] text-[#F5F5F5]/60'
                                         }`}
@@ -118,21 +159,22 @@ export default function QuizScreen() {
                 <div className="flex justify-between">
                     <button
                         onClick={resetQuiz}
-                        className="px-4 py-2 rounded-lg bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 transition-colors flex items-center gap-2"
+                        className="px-4 py-2 bg-[#1A1A1A] rounded-lg flex items-center gap-2"
                     >
-                        <RotateCcw size={16} />
-                        Quit
+                        <RotateCcw size={16} /> Quit
                     </button>
 
                     <button
                         onClick={goToNextQuestion}
                         disabled={!selectedAnswers[currentQ._id]}
-                        className={`px-6 py-2 rounded-lg flex items-center gap-2 transition-colors ${selectedAnswers[currentQ._id]
-                            ? 'bg-[#FF007F] hover:bg-[#FF007F]/90 text-white'
+                        className={`px-6 py-2 rounded-lg flex items-center gap-2 ${selectedAnswers[currentQ._id]
+                            ? 'bg-[#FF007F] text-white'
                             : 'bg-[#1A1A1A]/50 text-[#F5F5F5]/30 cursor-not-allowed'
                             }`}
                     >
-                        {currentQuestion < activeQuiz.questions.length - 1 ? 'Next' : 'Finish'}
+                        {currentQuestion < activeQuiz.questions.length - 1
+                            ? 'Next'
+                            : 'Finish'}
                         <ArrowRight size={16} />
                     </button>
                 </div>
@@ -140,8 +182,10 @@ export default function QuizScreen() {
         );
     }
 
-    // Quiz Result View
-    if (activeView === 'result' && quizResult) {
+    /* ================= RESULT VIEW ================= */
+    if (activeView === 'result' && result) {
+        const performance = getPerformanceMessage(result.percentageScore);
+
         return (
             <div className="max-w-2xl mx-auto text-center">
                 <div className="mb-6 md:mb-8">
@@ -170,56 +214,66 @@ export default function QuizScreen() {
                                 r="40"
                                 fill="transparent"
                                 strokeDasharray="251.2"
-                                strokeDashoffset={251.2 - (251.2 * quizResult.score) / 100}
+                                strokeDashoffset={251.2 - (251.2 * result.percentageScore) / 100}
                                 transform="rotate(-90 50 50)"
                             ></circle>
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
                             <span className="text-3xl md:text-4xl font-bold">
-                                {quizResult.score}%
+                                {result.percentageScore.toFixed(1)}%
                             </span>
                             <span className="text-[#F5F5F5]/60 text-sm">Score</span>
                         </div>
+
+
+
                     </div>
                 </div>
+                <div className="my-4 flex flex-col items-center">
+                    <div className="flex items-center gap-2">
+                        <performance.Icon size={22} className={performance.color} />
+                        <h3 className="text-lg font-semibold">
+                            {performance.title}
+                        </h3>
+                    </div>
 
+                    <p className="text-[#F5F5F5]/60 mt-1 text-center">
+                        {performance.subtitle}
+                    </p>
+                </div>
                 {/* Stats */}
-                <div className="grid grid-cols-2 gap-4 mb-6 md:mb-8">
-                    <div className="bg-[#1A1A1A] rounded-xl p-4">
-                        <div className="flex items-center justify-center gap-2 mb-1">
-                            <CheckCircle2 size={20} className="text-green-500" />
-                            <span className="text-lg font-medium">{quizResult.correctAnswers}</span>
-                        </div>
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                    <div className="bg-[#1A1A1A] p-4 rounded-xl">
+                        <CheckCircle2 className="mx-auto text-green-500 mb-2" />
+                        <p className="text-lg">{result.score}</p>
                         <p className="text-sm text-[#F5F5F5]/60">Correct</p>
                     </div>
 
-                    <div className="bg-[#1A1A1A] rounded-xl p-4">
-                        <div className="flex items-center justify-center gap-2 mb-1">
-                            <XCircle size={20} className="text-red-500" />
-                            <span className="text-lg font-medium">
-                                {quizResult.totalQuestions - quizResult.correctAnswers}
-                            </span>
-                        </div>
+                    <div className="bg-[#1A1A1A] p-4 rounded-xl">
+                        <XCircle className="mx-auto text-red-500 mb-2" />
+                        <p className="text-lg">
+                            {result.total - result.score}
+                        </p>
                         <p className="text-sm text-[#F5F5F5]/60">Incorrect</p>
                     </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex gap-4 justify-center">
                     <button
                         onClick={() => {
                             setCurrentQuestion(0);
                             setSelectedAnswers({});
                             setActiveView('quiz');
                         }}
-                        className="px-6 py-3 rounded-lg bg-[#00E5FF] text-[#0D0D0D] hover:bg-[#00E5FF]/90 transition-colors font-medium"
+                        className="px-6 py-3 bg-[#00E5FF] text-black rounded-lg"
                     >
                         Try Again
                     </button>
 
                     <button
                         onClick={resetQuiz}
-                        className="px-6 py-3 rounded-lg bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 transition-colors font-medium"
+                        className="px-6 py-3 bg-[#1A1A1A] rounded-lg"
                     >
                         Back to Quizzes
                     </button>
@@ -227,4 +281,6 @@ export default function QuizScreen() {
             </div>
         );
     }
+
+    return <p>Loading quiz...</p>;
 }

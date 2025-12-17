@@ -132,13 +132,27 @@ router.delete("/:id", async (req, res) => {
 //Get quiz by ID
 router.get('/:id', async (req, res) => {
     try {
-        const quiz = await Quiz.findById(req.params.id).select('-questions.correctAnswer');;
-        if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
-        res.json(quiz);
+        const { id } = req.params;
+
+        //Check ObjectId validity first
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(404).json({ message: 'Quiz not found' });
+        }
+
+        const quiz = await Quiz.findById(id)
+            .select('-questions.correctAnswer');
+
+        if (!quiz) {
+            return res.status(404).json({ message: 'Quiz not found' });
+        }
+
+        res.status(200).json(quiz);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ message: 'Server error' });
     }
 });
+
 
 router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
     try {
@@ -146,24 +160,36 @@ router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
         if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
 
         const { answers } = req.body;
-        // `answers` should be an array of user answers matching the order of quiz.questions
 
-        if (!answers || answers.length !== quiz.questions.length) {
-            return res.status(400).json({ message: 'Invalid number of answers' });
+        const unanswered = quiz.questions.filter(
+            q => !answers[q._id.toString()]
+        );
+
+        if (unanswered.length > 0) {
+            return res.status(400).json({
+                message: 'Please answer all questions before submitting the quiz'
+            });
+        }
+
+
+        if (!answers || typeof answers !== 'object') {
+            return res.status(400).json({ message: 'Invalid answers format' });
         }
 
         let score = 0;
-        const results = quiz.questions.map((q, index) => {
-            const isCorrect = q.correctAnswer === answers[index];
+        const results = quiz.questions.map((q) => {
+            const userAnswer = answers[q._id.toString()];
+            const isCorrect = q.correctAnswer === userAnswer;
+
             if (isCorrect) score++;
+
             return {
                 question: q.text,
                 questionId: q._id,
-                userAnswer: answers[index],
+                userAnswer,
                 correctAnswer: q.correctAnswer,
                 isCorrect
             };
-
         });
 
         const totalQuestions = quiz.questions.length;
@@ -176,10 +202,11 @@ router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
             percentageScore,
             answers: results.map(r => ({
                 questionId: r.questionId,
-                selectedAnswer: r.userAnswer,
+                selectedAnswer: r.userAnswer ?? null, // ✅ FIX
                 isCorrect: r.isCorrect
             }))
         });
+
         await attempt.save();
         await User.findByIdAndUpdate(req.user.id, {
             $push: { quizzesTaken: quiz._id }

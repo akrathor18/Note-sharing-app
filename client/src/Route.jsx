@@ -50,7 +50,7 @@ const routes = [
                     { path: 'settings', element: <Settings /> },
                     { path: 'search', element: <SearchResults /> },
                     { path: 'quizzes/createquiz', element: <CreateQuiz /> },
-                    { path: 'quizzes/:id', element: <QuizScreen /> },
+                    { path: 'quizzes/:quizId', element: <QuizScreen /> },
                     { path: 'feedback', element: <Feedback /> },
                 ],
             }]
