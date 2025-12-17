@@ -1,6 +1,15 @@
 import { Clock, AlertCircle } from 'lucide-react';
-
 const difficulties = ['Easy', 'Medium', 'Hard'];
+
+export const subjects = [
+    { id: 'cs', name: 'Computer Science' },
+    { id: 'math', name: 'Mathematics' },
+    { id: 'physics', name: 'Physics' },
+    { id: 'chemistry', name: 'Chemistry' },
+    { id: 'biology', name: 'Biology' },
+    { id: 'CE', name: 'civil engineering' },
+    { id: 'ME', name: 'mechanical engineering' },
+];
 
 export default function QuizMetadataForm({ quizData, onInputChange }) {
     return (
@@ -27,14 +36,26 @@ export default function QuizMetadataForm({ quizData, onInputChange }) {
                 <label htmlFor="category" className="block text-sm font-medium mb-2">
                     Subject <span className="text-[#FF007F]">*</span>
                 </label>
-                <input
+                <select
                     id="category"
                     name="category"
                     value={quizData.category}
                     onChange={onInputChange}
                     className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
                     required
-                ></input>
+                >
+                    {/* Placeholder */}
+                    <option value="" disabled>
+                        Select subject
+                    </option>
+
+                    {subjects.map((subject) => (
+                        <option key={subject.id} value={subject.name}>
+                            {subject.name}
+                        </option>
+                    ))}
+                </select>
+
             </div>
 
             {/* Time Limit */}

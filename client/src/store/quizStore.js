@@ -2,7 +2,8 @@ import { create } from 'zustand';
 import API from '../config/axios';
 import { toast } from 'react-toastify';
 import { Upload } from 'lucide-react';
-import ActivityItem from '../components/profile/ActivityItem';
+import { useNavigate } from 'react-router-dom';
+const navigate = useNavigate();
 
 export const useQuizStore = create((set) => ({
 
@@ -30,16 +31,15 @@ export const useQuizStore = create((set) => ({
     UploadQuiz: async (quizData) => {
         try {
             set({ isUploading: true });
-            console.log(quizData);
+            console.log("data in api",quizData);
             await API.post('quiz/createQuiz', quizData);
             toast.success('Success! Your quiz is ready to use.');
             set({ isUploading: false });
             navigate('/quizzes');
         } catch (error) {
+            console.log(error)
+            set({ isUploading: false });
             set({ error: error.message || "Failed to upload quiz" });
-            toast.error(
-                error?.response?.data?.message || 'Server error. Quiz could not be created.',
-            );
         }
     },
 

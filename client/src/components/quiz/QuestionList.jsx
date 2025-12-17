@@ -1,7 +1,17 @@
 import { Plus } from 'lucide-react';
 import QuestionForm from './QuestionForm';
 
-export default function QuestionList({ questions, onAddQuestion, ...props }) {
+export default function QuestionList({
+    questions,
+    expandedQuestionId,
+    setExpandedQuestionId,
+    onAddQuestion,
+    onRemoveQuestion,
+    onQuestionChange,
+    onOptionChange,
+    onCorrectAnswerChange,
+}) {
+
     return (
         <div>
             <div className="flex flex-wrap items-center justify-between mb-4">
@@ -21,10 +31,21 @@ export default function QuestionList({ questions, onAddQuestion, ...props }) {
                         key={question.id}
                         question={question}
                         questionIndex={index}
+                        isExpanded={expandedQuestionId === question.id}
+                        onToggle={() =>
+                            setExpandedQuestionId(
+                                expandedQuestionId === question.id ? null : question.id
+                            )
+                        }
                         canBeRemoved={questions.length > 1}
-                        {...props}
+                        onRemoveQuestion={onRemoveQuestion}
+                        onQuestionChange={onQuestionChange}
+                        onOptionChange={onOptionChange}
+                        onCorrectAnswerChange={onCorrectAnswerChange}
                     />
                 ))}
+
+
             </div>
         </div>
     );

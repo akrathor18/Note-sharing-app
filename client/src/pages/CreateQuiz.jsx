@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import API from '../config/axios';
@@ -7,6 +7,8 @@ import CreateQuizHeader from '../components/quiz/CreateQuizHeader';
 import QuizMetadataForm from '../components/quiz/QuizMetadataForm';
 import QuestionList from '../components/quiz/QuestionList';
 import CreateQuizFooter from '../components/quiz/CreateQuizFooter';
+
+import { useQuizStore } from '../store/quizStore';
 
 const initialQuestionState = {
     id: 1,
@@ -29,12 +31,19 @@ const initialQuizState = {
 };
 
 export default function CreateQuiz() {
+
+    const { UploadQuiz, isUploading, error } = useQuizStore()
     // Hooks
     const navigate = useNavigate();
 
     // State
+    const [expandedQuestionId, setExpandedQuestionId] = useState(null);
     const [quizData, setQuizData] = useState(initialQuizState);
-    const [isUploading, setIsUploading] = useState(false);
+    useEffect(() => {
+        if (quizData.questions.length && expandedQuestionId === null) {
+            setExpandedQuestionId(quizData.questions[0].id);
+        }
+    }, []);
 
     // Handlers
     const handleInputChange = (e) => {
@@ -92,6 +101,7 @@ export default function CreateQuiz() {
             ...quizData,
             questions: [...quizData.questions, newQuestion],
         });
+        setExpandedQuestionId(newQuestion.id);
     };
 
     const removeQuestion = (questionId) => {
@@ -110,6 +120,10 @@ export default function CreateQuiz() {
     const validateQuiz = () => {
         if (!quizData.title.trim()) {
             toast.warn('Please enter a quiz title');
+            return false;
+        }
+        if (!quizData.category.trim()) {
+            toast.warn('Please select a subject for the quiz');
             return false;
         }
         for (const question of quizData.questions) {
@@ -137,21 +151,11 @@ export default function CreateQuiz() {
 
     const handleSaveQuiz = async () => {
         if (!validateQuiz()) return;
+        console.log(quizData)
 
-        setIsUploading(true);
-        try {
-            await API.post('quiz/createQuiz', quizData);
-            toast.success('Success! Your quiz is ready to use.');
-            navigate('/quizzes');
-        } catch (error) {
-            console.log(error);
-            toast.error(
-                error?.response?.data?.message || 'Server error. Quiz could not be created.',
-            );
-        } finally {
-            setIsUploading(false);
-        }
+        UploadQuiz(quizData);
     };
+    if (error) toast.error(error);
 
     return (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
@@ -163,12 +167,15 @@ export default function CreateQuiz() {
 
                     <QuestionList
                         questions={quizData.questions}
+                        expandedQuestionId={expandedQuestionId}
+                        setExpandedQuestionId={setExpandedQuestionId}
                         onAddQuestion={addQuestion}
                         onRemoveQuestion={removeQuestion}
                         onQuestionChange={handleQuestionChange}
                         onOptionChange={handleOptionChange}
                         onCorrectAnswerChange={handleCorrectAnswerChange}
                     />
+
                 </div>
 
                 <CreateQuizFooter
