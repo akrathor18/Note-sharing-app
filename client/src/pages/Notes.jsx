@@ -1,32 +1,29 @@
 import { useState, useEffect } from 'react';
-import API from '../config/axios';
+
 import Header from '../common/components/Header.jsx';
 import SearchAndFilter from '../common/components/SearchAndFilter';
 import SubjectTabs from '../common/components/SubjectTabs';
 import NotesGrid from '../components/notes/NotesGrid';
 import AddNoteModal from '../components/notes/AddNoteModal';
+import Skeleton from '../common/components/Skeleton';
+import ErrorState from '../common/components/ErrorState';
+import { useNoteStore } from '../store/noteStore';
 
 export default function Notes() {
+    const { notes, error, isLoading, fetchNotes } = useNoteStore();
     // States
-    const [notes, setNotes] = useState([]);
     const [activeSubject, setActiveSubject] = useState('All Subjects');
     const [searchTerm, setSearchTerm] = useState('');
     const [isAddNoteModalOpen, setIsAddNoteModalOpen] = useState(false);
 
     // Data fetching
-    const getNotes = async () => {
-        try {
-            const response = await API.get('/notes/getnotes');
-            setNotes(response.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
-    // Effects
     useEffect(() => {
-        getNotes();
-    }, []);
+        fetchNotes();
+    }, [fetchNotes]);
+
+    if (isLoading) return <Skeleton />;
+    if (error) return <ErrorState title='Unable to load notes' message={error} />;
 
     // Handlers
     const handleSearchChange = (e) => {
@@ -42,7 +39,7 @@ export default function Notes() {
     };
 
     const handleNoteAdded = () => {
-        getNotes(); // Re-fetch notes after a new one is added
+        fetchNotes(); // Re-fetch notes after a new one is added
     };
 
     // Derived state

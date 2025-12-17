@@ -17,7 +17,7 @@ const quickActions = [
         icon: Plus,
         color: "#FF007F",
         action: "create-note",
-        link: "/createquiz",
+        link: "/quizzes/createquiz",
     },
     {
         title: "Take Quiz",

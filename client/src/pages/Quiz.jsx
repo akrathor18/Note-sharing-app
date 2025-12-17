@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import QuizGrid from '../components/quiz/QuizGrid';
-import QuizListSkeleton from '../components/quiz/QuizListSkeleton';
+import Skeleton from '../common/components/Skeleton';
 import ErrorState from '../common/components/ErrorState';
 import SearchAndFilter from '../common/components/SearchAndFilter';
 import SubjectTabs from '../common/components/SubjectTabs';
@@ -20,7 +20,7 @@ export default function Quiz() {
         fetchQuizzes();
     }, [fetchQuizzes]);
 
-    if (isLoading) return <QuizListSkeleton />;
+    if (isLoading) return <Skeleton />;
     if (error) return <ErrorState title="Unable to load quizzes"
         message={error} />;
 

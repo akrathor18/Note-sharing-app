@@ -10,7 +10,7 @@ function QuizListSkeleton() {
       {/* Create Button */}
       <div className="h-10 w-48 bg-[#1A1A1A] rounded-lg"></div>
 
-      {/* Quiz Cards Grid */}
+      {/*  Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {[...Array(6)].map((_, i) => (
           <div

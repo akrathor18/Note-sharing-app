@@ -12,7 +12,6 @@ function QuizCard(quiz) {
     return (
 
         <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#F5F5F5]/5">
-            {console.log(quiz)}
             <div className="flex items-center justify-between mb-2">
                 <span className="text-xs bg-[#00E5FF]/10 text-[#00E5FF] px-2 py-1 rounded-full">
                     {quiz.quiz.category}
