@@ -6,9 +6,11 @@ export const useNoteStore = create((set, get) => ({
     userNotes: [],
     isLoading: false,
     error: null,
-    isDeleting: false,
+    deletingNoteId: null,
     isUploading: false,
     errorOnUpload: null,
+    errorOnDelete: null,
+
     //Get notes
     fetchNotes: async () => {
         set({ isLoading: true, error: null, errorOnUpload: null });
@@ -83,17 +85,18 @@ export const useNoteStore = create((set, get) => ({
     },
 
     deleteNote: async (noteId) => {
-        set({ isDeleting: true, error: null });
+        set({ deletingNoteId: noteId, errorOnDelete: null });
         try {
             await API.delete(`/notes/${noteId}`);
             set((state) => ({
                 userNotes: state.userNotes.filter((note) => note.id !== noteId),
-                isDeleting: false,
+                deletingNoteId: null,
             }));
+            fetchUserNotes();
             toast.success('Note deleted successfully');
         }
         catch (error) {
-            set({ error: error.message || "Failed to delete note", isLoading: false });
+            set({ errorOnDelete: error.message || "Failed to delete note", deletingNoteId: null });
             toast.error(
                 error?.response?.data?.message || 'Server error. Note could not be deleted.',
             );

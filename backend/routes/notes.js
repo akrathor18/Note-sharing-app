@@ -6,9 +6,10 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 import User from '../models/UserSchema.js';
 import { trackActivityAndStreak } from '../utils/activityTracker.js';
 import { logActivity } from '../utils/logActivity.js';
+import mongoose from 'mongoose';
 const router = express.Router();
 
-router.post('/upload', verifyJWT, noteUpload.single('file'), async (req, res) => {
+router.post('/upload', verifyJWT,authMiddleware, noteUpload.single('file'), async (req, res) => {
   try {
     const { title, description, subject } = req.body;
 
@@ -50,7 +51,7 @@ router.get('/getnotes', authMiddleware, async (req, res) => {
   }
 });
 
-router.get('/mynotes', verifyJWT, async (req, res) => {
+router.get('/mynotes', verifyJWT,authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
     const notes = await Note.find({ uploadedBy: userId })
@@ -63,7 +64,7 @@ router.get('/mynotes', verifyJWT, async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",verifyJWT,authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -76,8 +77,8 @@ router.delete("/:id", async (req, res) => {
     if (!note) {
       return res.status(404).json({ message: "Note not found" });
     }
-
-    if (note.user.toString() !== req.user.id) {
+    console.log(note.uploadedBy.toString(), req.user.id); 
+    if (note.uploadedBy.toString() !== req.user.id.toString()) {
       return res.status(403).json({ message: "Not authorized to delete this note" });
     }
 

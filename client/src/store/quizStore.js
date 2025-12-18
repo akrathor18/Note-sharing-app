@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import API from '../config/axios';
 import { toast } from 'react-toastify';
-import { Upload } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 export const useQuizStore = create((set) => ({    
     QuizzesList: [],
@@ -11,7 +9,8 @@ export const useQuizStore = create((set) => ({
     isLoading: false,
     error: null,
     isUploading: false,
-    isDeleting: false,
+    deleteQuizId: null,
+    errorOnDelete: null,
     uploadingAnswers: false,
     result: null,
 
@@ -73,14 +72,11 @@ export const useQuizStore = create((set) => ({
         });
     },
 
-
-
     ftechUserQuizzes: async (userId) => {
         try {
             set({ isLoading: true, error: null });
             const response = await API.get('/quiz/myQuizzes');
             set({ userQuizzes: response.data, isLoading: false });
-            console.log(response.data)
         } catch (error) {
             console.log(error)
             set({ error: error.message || "Failed to load user quizzes", isLoading: false });
@@ -89,16 +85,16 @@ export const useQuizStore = create((set) => ({
 
     deleteQuiz: async (quizId) => {
         try {
-            set({ isDeleting: true });
+            set({ deleteQuizId: null });
             await API.delete(`/quiz/${quizId}`);
             set((state) => ({
                 userQuizzes: state.userQuizzes.filter((quiz) => quiz._id !== quizId),
-                isDeleting: false,
+                deleteQuizId: null,
             }));
+            
             toast.success('Quiz deleted successfully');
         } catch (error) {
-            set({ error: error.message || "Failed to delete quiz", isDeleting: false });
-
+            set({ errorOnDelete: error.message || "Failed to delete quiz", deleteQuizId: null });
             toast.error(
                 error?.response?.data?.message || 'Server error. Quiz could not be deleted.',
             );

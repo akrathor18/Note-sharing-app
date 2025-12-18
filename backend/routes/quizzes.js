@@ -111,7 +111,6 @@ router.delete("/:id", verifyJWT, async (req, res) => {
         if (!quiz) {
             return res.status(404).json({ message: "Quiz not found" });
         }
-        console.log("Quiz to be deleted:", quiz);
         if (quiz.createdBy.toString() !== req.user._id.toString()) {
             return res.status(403).json({
                 message: "Not authorized to delete this quiz",

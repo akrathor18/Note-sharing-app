@@ -6,7 +6,7 @@ import ErrorState from '../../common/components/ErrorState';
 import CardSkeleton from '../../common/components/CardSkeleton';
 
 function NoteCard({ note }) {
-    const { deleteNote, isDeleting } = useNoteStore();
+    const { deleteNote, deletingNoteId } = useNoteStore();
 
     return (
         <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#F5F5F5]/5">
@@ -19,13 +19,20 @@ function NoteCard({ note }) {
             <h3 className="font-medium mb-3">{note.title}</h3>
             <div className="flex justify-between gap items-center text-xs text-[#F5F5F5]/60">
                 <span>File Type: {note.fileType.toUpperCase()}</span>
-                <button
-                    onClick={() => deleteNote(note._id)}
-                    disabled={isDeleting}
-                    className="p-1 flex flex-row rounded-full  hover:bg-[#ff0000]/10 text-[#ff0000]"
-                >
-                    <Trash2 size={14} />{isDeleting ? 'Deleting...' : 'Delete'}
-                </button>
+                {deletingNoteId === note._id ? (
+                    <span className="text-red-400 flex items-center gap-1">
+                        <Trash2 size={14} />
+                        Deleting...
+                    </span>
+                ) : (
+                    <button
+                        onClick={() => deleteNote(note._id)}
+                        className="text-red-500 flex flex-row gap-1 hover:text-red-400"
+                    >
+                        <Trash2 size={14} />Delete 
+                    </button>
+                )}
+
             </div>
         </div>
     );

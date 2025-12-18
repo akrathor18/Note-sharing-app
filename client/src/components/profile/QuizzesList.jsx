@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 
 import { Trash2 } from 'lucide-react';
 
@@ -8,7 +8,7 @@ import ErrorState from '../../common/components/ErrorState';
 import CardSkeleton from '../../common/components/CardSkeleton';
 
 function QuizCard(quiz) {
-    const { deleteQuiz, isDeleting } = useQuizStore();
+    const { deleteQuiz, deleteQuizId } = useQuizStore();
     return (
 
         <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#F5F5F5]/5">
@@ -21,13 +21,21 @@ function QuizCard(quiz) {
             <h3 className="font-medium mb-3">{quiz.quiz.title}</h3>
             <div className="flex justify-between items-center text-xs">
                 <span className="text-green-500">{quiz.quiz.questionCount} Questions</span>
-                <button
-                    onClick={() => deleteQuiz(quiz.quiz._id)}
-                    disabled={isDeleting}
-                    className="p-1 flex flex-row rounded-full  hover:bg-[#ff0000]/10 text-[#ff0000]"
-                >
-                    <Trash2 size={14} />{isDeleting ? 'Deleting...' : 'Delete'}
-                </button>
+
+                {deleteQuizId === quiz.quiz._id ? (
+                    <span className="text-red-400 flex items-center gap-1">
+                        <Trash2 size={14} />
+                        Deleting...
+                    </span>
+                ) : (
+                    <button
+                        onClick={() => deleteQuiz(quiz.quiz._id)}
+                        className="text-red-500 flex flex-row gap-1 hover:text-red-400"
+                    >
+                        <Trash2 size={14} />Delete
+                    </button>
+                )}
+
             </div>
         </div>
     );
@@ -36,13 +44,13 @@ function QuizCard(quiz) {
 function QuizzesList() {
 
     const { ftechUserQuizzes, userQuizzes, isLoading, error } = useQuizStore();
-        useEffect(() => {
-            ftechUserQuizzes();
-        }, [ftechUserQuizzes]);
-    
-        if (isLoading) return <CardSkeleton />;
-        if (error) return <ErrorState title="Unable to load quizzes"
-            message={error} />;
+    useEffect(() => {
+        ftechUserQuizzes();
+    }, [ftechUserQuizzes]);
+
+    if (isLoading) return <CardSkeleton />;
+    if (error) return <ErrorState title="Unable to load quizzes"
+        message={error} />;
 
     return (
         <div className="space-y-4">

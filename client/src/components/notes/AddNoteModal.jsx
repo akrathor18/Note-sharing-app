@@ -238,7 +238,7 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
                             onDrop={handleDrop}
                             onDragOver={handleDragOver}
                             onClick={() => fileInputRef.current.click()}
-                            className="border-2 border-dashed border-[#F5F5F5]/20 rounded-lg p-6 text-center cursor-pointer hover:border-[#FF007F] transition"
+                            className="mt-2 border-2 border-dashed border-[#F5F5F5]/20 rounded-lg p-6 text-center cursor-pointer hover:border-[#FF007F] transition"
                         >
                             <p className="text-sm text-[#F5F5F5]/60">
                                 Drag & drop a file here, or click to upload

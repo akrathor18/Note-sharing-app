@@ -8,7 +8,7 @@ function ActivityHistory({ recentActivity }) {
             {recentActivity.length > 0 ? (
                 <div className="space-y-3">
                     {recentActivity.map((activity) => (
-                        <ActivityItem key={activity.id} activity={activity} />
+                        <ActivityItem key={activity.timestamp} activity={activity} />
                     ))}
                 </div>
             ) : (

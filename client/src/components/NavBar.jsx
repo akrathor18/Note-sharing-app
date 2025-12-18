@@ -256,8 +256,8 @@ function navBar() {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <div className="relative notification-menu-container">
-                            <button
+                        {/* <div className="relative notification-menu-container"> */}
+                            {/* <button
                                 onClick={toggleNotificationMenu}
                                 className="relative p-2 rounded-full hover:bg-[#F5F5F5]/5 transition-colors"
                             >
@@ -265,10 +265,10 @@ function navBar() {
                                 {notifications.some((n) => !n.read) && (
                                     <span className="absolute top-1 right-1 w-2 h-2 bg-[#FF007F] rounded-full"></span>
                                 )}
-                            </button>
+                            </button> */}
 
                             {/* Notification Dropdown */}
-                            {isNotificationMenuOpen && (
+                            {/* {isNotificationMenuOpen && (
                                 <div className="absolute xs:right-0 -right-14 mt-2 w-80 bg-[#1A1A1A] rounded-lg shadow-lg border border-[#F5F5F5]/10 py-1 z-50">
                                     <div className="px-4 py-2 border-b border-[#F5F5F5]/10">
                                         <h3 className="font-medium">Notifications</h3>
@@ -308,8 +308,8 @@ function navBar() {
                                         </button>
                                     </div>
                                 </div>
-                            )}
-                        </div>
+                            )} */}
+                        {/* </div> */}
 
                         <div className="relative user-menu-container">
                             <button
