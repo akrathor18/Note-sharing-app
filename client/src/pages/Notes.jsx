@@ -10,7 +10,7 @@ import ErrorState from '../common/components/ErrorState';
 import { useNoteStore } from '../store/noteStore';
 
 export default function Notes() {
-    const { notes, error, isLoading, fetchNotes } = useNoteStore();
+    const { notes, error, isLoading, fetchNotes, cancelCreateNote } = useNoteStore();
     // States
     const [activeSubject, setActiveSubject] = useState('All Subjects');
     const [searchTerm, setSearchTerm] = useState('');
@@ -36,6 +36,7 @@ export default function Notes() {
 
     const handleCloseModal = () => {
         setIsAddNoteModalOpen(false);
+        cancelCreateNote()
     };
 
     const handleNoteAdded = () => {
@@ -56,7 +57,7 @@ export default function Notes() {
 
     return (
         <div className="space-y-4 md:space-y-6">
-            <Header onAddClick={handleAddNoteClick} title={"Notes"} description={"Browse and download study materials"}/>
+            <Header onAddClick={handleAddNoteClick} title={"Notes"} description={"Browse and download study materials"} />
 
             <SearchAndFilter searchTerm={searchTerm} onSearchChange={handleSearchChange} />
 
