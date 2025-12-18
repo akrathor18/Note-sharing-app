@@ -4,7 +4,7 @@ import { useNoteStore } from '../../store/noteStore';
 import { formatDate } from '../../utils/formatDate';
 import ErrorState from '../../common/components/ErrorState';
 import CardSkeleton from '../../common/components/CardSkeleton';
-
+import EmptyState from '../../common/components/EmptyState';
 function NoteCard({ note }) {
     const { deleteNote, deletingNoteId } = useNoteStore();
 
@@ -48,6 +48,11 @@ function NotesList() {
     if (isLoading) return <CardSkeleton />;
     if (error) return <ErrorState title="Unable to load notes"
         message="Something went wrong while fetching notes." />;
+
+if (!userNotes || userNotes.length === 0) {
+  return <EmptyState type="note" />;
+}
+
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">

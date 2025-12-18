@@ -57,7 +57,7 @@ export default function Notes() {
 
     return (
         <div className="space-y-4 md:space-y-6">
-            <Header onAddClick={handleAddNoteClick} title={"Notes"} description={"Browse and download study materials"} />
+            <Header route={"Note"} onAddClick={handleAddNoteClick} title={"Notes"} description={"Browse and download study materials"} />
 
             <SearchAndFilter searchTerm={searchTerm} onSearchChange={handleSearchChange} />
 

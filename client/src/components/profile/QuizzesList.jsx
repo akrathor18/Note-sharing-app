@@ -6,7 +6,7 @@ import { useQuizStore } from '../../store/quizStore';
 import { formatDate } from '../../utils/formatDate';
 import ErrorState from '../../common/components/ErrorState';
 import CardSkeleton from '../../common/components/CardSkeleton';
-
+import EmptyState from '../../common/components/EmptyState';
 function QuizCard(quiz) {
     const { deleteQuiz, deleteQuizId } = useQuizStore();
     return (
@@ -51,7 +51,10 @@ function QuizzesList() {
     if (isLoading) return <CardSkeleton />;
     if (error) return <ErrorState title="Unable to load quizzes"
         message={error} />;
-
+    
+    if (!userQuizzes || userQuizzes.length === 0) {
+        return <EmptyState type="quiz" />;
+    }
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">

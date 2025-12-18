@@ -71,7 +71,6 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
 
         const file = e.dataTransfer.files[0];
         if (!file) return;
-
         const error = validateFile(file);
 
         if (error) {
@@ -91,15 +90,15 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
 
 
     const onSubmit = async (data) => {
-        if (!fileError) {
-            await uploadNote(data, selectedFile, onNoteAdded, onClose);
-        }
-        else {
-            toast.error('Please fix file errors before submitting.');
+        console.log("Submitting note with data:", data);
+        if (!selectedFile) {
+            toast.error("Please upload a file");
+            return;
         }
 
-
+        await uploadNote(data, selectedFile, onNoteAdded, onClose);
     };
+
 
     return (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
@@ -184,8 +183,6 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
                             </button>
                             <input
                                 id="file"
-                                name="file"
-                                {...register('file', { required: 'File is required' })}
                                 type="file"
                                 accept=".doc,.docx,.pdf"
                                 ref={fileInputRef}
@@ -193,13 +190,10 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
                                 className="hidden"
                             />
 
+
                             <span className="text-xs text-[#F5F5F5]/60">
                                 Supported formats: PDF, DOC, DOCX,
                             </span>
-
-                            {!selectedFile && errors.file && (
-                                <p className="text-xs text-red-500 mt-1">{errors.file.message}</p>
-                            )}
 
                             {selectedFile && !fileError && (
                                 <div className="mt-3 flex items-center justify-between bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg px-3 py-2">

@@ -89,10 +89,9 @@ export const useNoteStore = create((set, get) => ({
         try {
             await API.delete(`/notes/${noteId}`);
             set((state) => ({
-                userNotes: state.userNotes.filter((note) => note.id !== noteId),
+                userNotes: state.userNotes.filter((note) => note._id !== noteId),
                 deletingNoteId: null,
             }));
-            fetchUserNotes();
             toast.success('Note deleted successfully');
         }
         catch (error) {

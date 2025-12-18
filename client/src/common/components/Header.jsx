@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react';
 
-export default function Header({ onAddClick, title, description }) {
+export default function Header({ route,onAddClick, title, description }) {
     return (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -12,7 +12,7 @@ export default function Header({ onAddClick, title, description }) {
                 className="flex items-center justify-center gap-2 bg-[#FF007F] hover:bg-[#FF007F]/90 text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto"
             >
                 <Plus size={18} />
-                <span>Add Note</span>
+                <span>Add {route}</span>
             </button>
         </div>
     );

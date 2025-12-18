@@ -45,7 +45,7 @@ const filteredQuiz = QuizzesList
     // Quiz List View
     return (
         <div className="space-y-4 md:space-y-6">
-            <Header onAddClick={handleAddQuizClick} title={"Quizzes"} description={"Test your knowledge with interactive quizzes"} />
+            <Header route="Quiz" onAddClick={handleAddQuizClick} title={"Quizzes"} description={"Test your knowledge with interactive quizzes"} />
             <SearchAndFilter searchTerm={searchTerm} onSearchChange={handleSearchChange} />
             <SubjectTabs activeSubject={activeSubject} onSubjectClick={setActiveSubject} />
             {/* Quiz Cards */}

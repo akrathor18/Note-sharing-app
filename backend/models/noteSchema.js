@@ -24,6 +24,14 @@ const noteSchema = new mongoose.Schema({
         enum: ['pdf', 'doc', 'docx'],
         required: true,
     },
+    filePublicId: {
+        type: String,
+        required: true,
+    },
+    mimetype: {
+        type: String,
+        required: true,
+    },
     pages: {
         type: Number,
         default: 0, // Default to 0 if not specified

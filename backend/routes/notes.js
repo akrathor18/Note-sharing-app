@@ -7,21 +7,24 @@ import User from '../models/UserSchema.js';
 import { trackActivityAndStreak } from '../utils/activityTracker.js';
 import { logActivity } from '../utils/logActivity.js';
 import mongoose from 'mongoose';
+import cloudinary from '../config/cloudinary.js';
+
 const router = express.Router();
 
-router.post('/upload', verifyJWT,authMiddleware, noteUpload.single('file'), async (req, res) => {
+router.post('/upload', verifyJWT, authMiddleware, noteUpload.single('file'), async (req, res) => {
+ 
   try {
     const { title, description, subject } = req.body;
-
     const note = await Note.create({
       title,
       description,
       subject,
+      filePublicId: req.file.filename,
+      mimetype: req.file.mimetype,
       uploadedBy: req.user.id,
       fileUrl: req.file.path,
       fileType: req.file.originalname.split('.').pop(),
     });
-
     // Link note to user
     await User.findByIdAndUpdate(req.user.id, {
       $push: { notes: note._id }
@@ -35,8 +38,9 @@ router.post('/upload', verifyJWT,authMiddleware, noteUpload.single('file'), asyn
     });
     res.status(201).json({ success: true, note });
   } catch (err) {
+
     console.log(err)
-    res.status(500).json({ success: false, message: err.message });
+    res.status(500).json({success: false, message: err.message });
   }
 });
 
@@ -51,20 +55,25 @@ router.get('/getnotes', authMiddleware, async (req, res) => {
   }
 });
 
-router.get('/mynotes', verifyJWT,authMiddleware, async (req, res) => {
+router.get('/mynotes', verifyJWT, authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
+
     const notes = await Note.find({ uploadedBy: userId })
-      .populate('uploadedBy', 'name email')
+      .populate('uploadedBy', 'name')
       .populate('subject', 'name');
+
     res.status(200).json(notes);
-  }
-  catch (error) {
-    res.status(500).json({ message: 'Failed to retrieve user notes', error: error.message });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to retrieve user notes',
+      error: error.message
+    });
   }
 });
 
-router.delete("/:id",verifyJWT,authMiddleware, async (req, res) => {
+
+router.delete("/:id", verifyJWT, authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -73,29 +82,46 @@ router.delete("/:id",verifyJWT,authMiddleware, async (req, res) => {
     }
 
     const note = await Note.findById(id);
-
     if (!note) {
       return res.status(404).json({ message: "Note not found" });
     }
-    console.log(note.uploadedBy.toString(), req.user.id); 
+
     if (note.uploadedBy.toString() !== req.user.id.toString()) {
-      return res.status(403).json({ message: "Not authorized to delete this note" });
+      return res.status(403).json({ message: "Not authorized" });
     }
 
+    // DELETE FILE FROM CLOUDINARY (ONCE)
+    if (note.filePublicId) {
+
+      await cloudinary.uploader.destroy(note.filePublicId, {
+        resource_type: "raw", // 🔥 IMPORTANT
+      });
+    }
+
+    // DELETE NOTE FROM DB
     await note.deleteOne();
 
+    // REMOVE NOTE ID FROM USER
+    await User.findByIdAndUpdate(
+      req.user.id,
+      { $pull: { notes: id } }
+    );
+
     res.status(200).json({
-      message: "Note deleted successfully",
+      message: "Note and file deleted successfully",
       noteId: id,
     });
 
   } catch (error) {
+    console.error("Delete error:", error);
     res.status(500).json({
       message: "Failed to delete note",
       error: error.message,
     });
   }
 });
+
+
 router.get('/search', async (req, res) => {
   const { query } = req.query;
 
