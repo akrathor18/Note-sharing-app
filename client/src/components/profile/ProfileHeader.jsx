@@ -15,6 +15,9 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { formatDate } from '../../utils/formatDate';
+import { useUserStore } from '../../store/userStore';
+import { toast } from 'react-toastify';
+
 function ProfileHeader({
   user,
   isEditing,
@@ -27,8 +30,12 @@ function ProfileHeader({
   handleFileChange,
 }) {
 
+  const { updateProfilePic, deleteProfilePic, isUploading, uploadProgress, isDeleting, errorOnDelete, errorOnUpload, } = useUserStore();
+
   const [editedUser, setEditedUser] = useState({});
   const [previewImage, setPreviewImage] = useState(user?.profilePic || "");
+  const [selectedFile, setSelectedFile] = useState(null);
+
   const User = {
     name: "",
     email: "",
@@ -43,20 +50,29 @@ function ProfileHeader({
       studyHours: 0,
     },
     profilePic: "",
-    links: [ ],
+    links: [],
   }
 
-useEffect(() => {
-  if (user) {
-    setEditedUser({
-      ...user,
-      bio: user.bio || "",
-      links: user.links ? [...user.links] : []
-    });
-    setPreviewImage(user.profilePic || "");
+  useEffect(() => {
+  if (!isEditing) {
+    setPreviewImage(user?.profilePic || "");
+    setSelectedFile(null);
   }
-}, [user]);
+}, [user?.profilePic, isEditing]);
 
+
+  useEffect(() => {
+    if (user) {
+      setEditedUser({
+        ...user,
+        bio: user.bio || "",
+        links: user.links ? [...user.links] : []
+      });
+      setPreviewImage(user.profilePic || "");
+    }
+  }, [user]);
+
+const displayImage = isEditing ? previewImage : user?.profilePic;
 
 
   const handleLocalFileChange = (e) => {
@@ -74,70 +90,96 @@ useEffect(() => {
       return;
     }
 
+    setSelectedFile(file);
+
     const reader = new FileReader();
     reader.onload = (event) => {
       const dataUrl = event.target?.result;
       setPreviewImage(dataUrl);
-      setEditedUser((prev) => ({
-        ...prev,
-        profilePic: dataUrl,  // 👈 use profilePic, same as backend
-      }));
     };
     reader.readAsDataURL(file);
   };
 
 
   const handleSocialLinkChange = (index, field, value) => {
-  setEditedUser(prev => {
-    const links = Array.isArray(prev.links) ? [...prev.links] : [];
-    links[index] = { ...links[index], [field]: value };
-    return { ...prev, links };
-  });
-};
+    setEditedUser(prev => {
+      const links = Array.isArray(prev.links) ? [...prev.links] : [];
+      links[index] = { ...links[index], [field]: value };
+      return { ...prev, links };
+    });
+  };
 
-const handleAddSocialLink = () => {
-  setEditedUser(prev => {
-    const links = Array.isArray(prev.links) ? [...prev.links] : [];
-    return { ...prev, links: [...links, { label: "", url: "", icon: "globe" }] };
-  });
-};
+  const handleAddSocialLink = () => {
+    setEditedUser(prev => {
+      const links = Array.isArray(prev.links) ? [...prev.links] : [];
+      return { ...prev, links: [...links, { label: "", url: "", icon: "globe" }] };
+    });
+  };
 
-const handleRemoveSocialLink = (index) => {
-  setEditedUser(prev => {
-    const links = Array.isArray(prev.links) ? [...prev.links] : [];
-    links.splice(index, 1);
-    return { ...prev, links };
-  });
-};
+  const handleRemoveSocialLink = (index) => {
+    setEditedUser(prev => {
+      const links = Array.isArray(prev.links) ? [...prev.links] : [];
+      links.splice(index, 1);
+      return { ...prev, links };
+    });
+  };
 
 
-  const handleSaveProfilePicture = () => {
-    setUser((prev) => ({ ...prev, profilePicture: editedUser.profilePicture }))
-  }
+  const handleSaveProfilePicture = async () => {
+    if (!selectedFile) {
+      toast.info("No new image selected");
+      return;
+    };
+
+    setIsEditing(false);
+    try {
+      const success = await updateProfilePic(selectedFile);
+
+      if (!success) {
+        setPreviewImage(user.profilePic || "");
+        toast.error("Upload failed. Reverted image.");
+      }
+    } catch {
+      // rollback if upload fails
+      setPreviewImage(user.profilePic || "");
+      toast.error("Upload failed. Reverted image.");
+    }
+  };
+
 
   const handleSaveSocialLinks = () => {
     // setUser((prev) => ({ ...prev, socialLinks: editedUser.socialLinks }))
     console.log(editedUser.links)
     setIsEditing(false)
   }
+  const handleRemoveProfilePicture = () => {
+    setPreviewImage("");
+    setEditedUser(false)
+    setEditedUser((prev) => ({
+      ...prev,
+      profilePic: "",
+    }));
+    deleteProfilePic();
+  }
+
   return (
 
     <div className="bg-[#1A1A1A] rounded-xl p-6 mb-6">
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
         {/* Profile Picture Section */}
         <div className="relative group">
-          {!isEditing ? 
-          (<div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#00E5FF] flex items-center justify-center text-[#0D0D0D] text-4xl font-bold overflow-hidden">
-            {editedUser?.profilePicture || user.profilePic ? (
-              <img
-                src={editedUser?.profilePicture || user.profilePic}
-                alt={`${user.name}'s profile`}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              user?.name?.charAt(0)?.toUpperCase() || "U"
-            )}
-          </div>) : ("")}
+          {!isEditing ?
+            (<div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#00E5FF] flex items-center justify-center text-[#0D0D0D] text-4xl font-bold overflow-hidden">
+              {displayImage? (
+                <img
+                  src={displayImage}
+                  alt={`${user.name}'s profile`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                user?.name?.charAt(0)?.toUpperCase() || "U"
+              )}
+            </div>) : ("")}
         </div>
 
         {/* Profile Info */}
@@ -149,7 +191,7 @@ const handleRemoveSocialLink = (index) => {
                 <div className="flex flex-col sm:flex-row items-center gap-4">
                   <div className="relative">
                     <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#00E5FF] flex items-center justify-center text-[#0D0D0D]  text-4xl font-bold overflow-hidden flex-shrink-0">
-                      {editedUser.profilePic || user.profilePic ? (
+                      {previewImage ?  (
                         <img
                           src={previewImage}
                           alt="Preview"
@@ -175,8 +217,9 @@ const handleRemoveSocialLink = (index) => {
                       accept="image/*"
                       className="hidden"
                     />
-                    {editedUser.profilePicture && (
+                    {editedUser.profilePic && (
                       <button
+                      disabled={isDeleting}
                         onClick={handleRemoveProfilePicture}
                         className="w-full sm:w-auto px-4 py-2 bg-[#1A1A1A] text-[#F5F5F5] text-sm font-medium rounded-lg border border-[#F5F5F5]/10 hover:bg-[#F5F5F5]/10 transition flex items-center justify-center gap-2"
                       >
@@ -189,9 +232,11 @@ const handleRemoveSocialLink = (index) => {
                 <div className="mt-4 flex flex-col sm:flex-row gap-2">
                   <button
                     onClick={handleSaveProfilePicture}
-                    className="flex-1 px-4 py-2 bg-[#00E5FF] text-[#0D0D0D] text-sm font-medium rounded-lg hover:bg-[#00E5FF]/90 transition"
-                  >
-                    Save Picture
+                    disabled={isUploading}
+                    className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium
+    ${isUploading ? "opacity-50 cursor-not-allowed" : "bg-[#00E5FF] hover:bg-[#00E5FF]/90"}
+  `}>
+                    {isUploading ? "Uploading..." : "Save Picture"}
                   </button>
                   <button
                     onClick={handleCancel}
@@ -214,43 +259,43 @@ const handleRemoveSocialLink = (index) => {
                   </button>
                 </div>
                 <div className="space-y-3 max-h-80 overflow-y-auto">
-  {(editedUser?.links || []).map((link, index) => (
-    <div key={index} className="space-y-2 p-3 bg-[#1A1A1A] rounded-lg border border-[#F5F5F5]/5">
-      <div>
-        <label className="block text-xs text-[#F5F5F5]/60 mb-1">Label</label>
-        <input
-          type="text"
-          value={link.label}
-          onChange={(e) => handleSocialLinkChange(index, "label", e.target.value)}
-          required={true}
-          placeholder="e.g., instagram, github"
-          className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-[#FF007F]"
-        />
-      </div>
-      <div>
-        <label className="block text-xs text-[#F5F5F5]/60 mb-1">URL</label>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <input
-            type="url"
-            value={link.url}
-            onChange={(e) => handleSocialLinkChange(index, "url", e.target.value)}
-          required={"true"}
-            placeholder="https://example.com"
-            className="flex-1 bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-[#FF007F]"
-          />
-          <button
-            onClick={() => handleRemoveSocialLink(index)}
-            className="w-full sm:w-auto px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#F5F5F5]/10 hover:bg-[#F5F5F5]/10 text-[#FF007F] transition flex items-center justify-center gap-1"
-            title="Remove"
-          >
-            <Trash2 size={16} />
-            <span className="sm:hidden text-xs">Remove</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
+                  {(editedUser?.links || []).map((link, index) => (
+                    <div key={index} className="space-y-2 p-3 bg-[#1A1A1A] rounded-lg border border-[#F5F5F5]/5">
+                      <div>
+                        <label className="block text-xs text-[#F5F5F5]/60 mb-1">Label</label>
+                        <input
+                          type="text"
+                          value={link.label}
+                          onChange={(e) => handleSocialLinkChange(index, "label", e.target.value)}
+                          required={true}
+                          placeholder="e.g., instagram, github"
+                          className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-[#FF007F]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-[#F5F5F5]/60 mb-1">URL</label>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <input
+                            type="url"
+                            value={link.url}
+                            onChange={(e) => handleSocialLinkChange(index, "url", e.target.value)}
+                            required={"true"}
+                            placeholder="https://example.com"
+                            className="flex-1 bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-[#FF007F]"
+                          />
+                          <button
+                            onClick={() => handleRemoveSocialLink(index)}
+                            className="w-full sm:w-auto px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#F5F5F5]/10 hover:bg-[#F5F5F5]/10 text-[#FF007F] transition flex items-center justify-center gap-1"
+                            title="Remove"
+                          >
+                            <Trash2 size={16} />
+                            <span className="sm:hidden text-xs">Remove</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
                 <div className="mt-4 flex flex-col sm:flex-row gap-2">
                   <button
@@ -269,7 +314,7 @@ const handleRemoveSocialLink = (index) => {
               </div>
             </div>
           ) : (
-            <>
+            <>                
               <div className="flex justify-between items-start w-full">
                 <div>
                   <h1 className="text-2xl font-bold">{user.name || "User"}</h1>
@@ -327,7 +372,21 @@ const handleRemoveSocialLink = (index) => {
               </div>
             </>
           )}
+           {isUploading && (
+                  <div className="w-full mt-3">
+                    <div className="h-2 bg-[#1A1A1A] rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[#00E5FF] transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-[#F5F5F5]/60 mt-1 text-right">
+                      Uploading {uploadProgress}%
+                    </p>
+                  </div>
+                )}
         </div>
+        
       </div>
     </div>
 
