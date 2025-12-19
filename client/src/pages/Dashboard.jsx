@@ -19,7 +19,7 @@ import SkeletonLoader from "../components/dashboard/skeletonLoader.jsx";
 
 export default function Dashboard() {
   // Zustand store
-  const { user, averageScore, fetchUser, getScore, isLoading, error } =
+  const { user, userStates, averageScore, fetchUser, getScore, isLoading, error } =
     useUserStore();
 
   // Fetch user + quiz stats on mount
@@ -32,8 +32,8 @@ export default function Dashboard() {
   if (error) return <p>Error: {error}</p>;
 
   // Safely unwrap user data
-  const userState = user?.userState || {};
-  const userInfo = user?.user || {};
+  const userState = userStates || {};
+  const userInfo = user || {};
   const userData = {
     name: userInfo.name || "User",
     totalNotesUploaded: userState.totalNotes || 0,

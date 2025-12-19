@@ -17,7 +17,7 @@ import { userNotes, userQuizzes, achievements } from '../config/data';
 import { useUserStore } from '../store/userStore.js';
 
 function Profile() {
-    const { user, averageScore, fetchUser, getScore, isLoading, error } =
+    const { user, userStates,averageScore, fetchUser, getScore, isLoading, error } =
         useUserStore();
 
     useEffect(() => {
@@ -26,9 +26,9 @@ function Profile() {
     }, [fetchUser, getScore]);
 
 
-    const userState = user?.userState || {};
-    const userDetails = user?.user || {};
-    const recentActivity = user?.user.recentActivity || [];
+    const userState = userStates || {};
+    const userDetails = user || {};
+    const recentActivity = user?.recentActivity || [];
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
     const [bio, setBio] = useState('');

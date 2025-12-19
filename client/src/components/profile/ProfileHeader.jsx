@@ -30,7 +30,7 @@ function ProfileHeader({
   handleFileChange,
 }) {
 
-  const { fetchUser, updateProfilePic, deleteProfilePic, isUploading, uploadProgress, isDeleting, errorOnDelete, errorOnUpload, } = useUserStore();
+  const { fetchUser, updateProfilePic, deleteProfilePic, isUploading, uploadProgress, isDeleting, updateLinks, isUpdating, errorOnUpdate } = useUserStore();
 
   const [editedUser, setEditedUser] = useState({});
   const [previewImage, setPreviewImage] = useState(user?.profilePic || "");
@@ -140,7 +140,6 @@ function ProfileHeader({
         toast.error("Upload failed. Reverted image.");
         return;
       }
-      fetchUser()
     } catch {
       // rollback if upload fails
       setPreviewImage(user.profilePic || "");
@@ -149,8 +148,13 @@ function ProfileHeader({
   };
 
   const handleSaveSocialLinks = () => {
-    // setUser((prev) => ({ ...prev, socialLinks: editedUser.socialLinks }))
-    console.log(editedUser.links)
+
+    console.log("Saving links:", editedUser.links);
+    const success = updateLinks(editedUser.links);
+    if (!success) {
+      toast.error("Failed to update links. Reverted.");
+      return;
+    }
     setIsEditing(false)
   }
   //remove profile picture
@@ -167,7 +171,6 @@ function ProfileHeader({
       ...prev,
       profilePic: "",
     }));
-    fetchUser();
   }
 
   return (
@@ -177,7 +180,7 @@ function ProfileHeader({
         {/* Profile Picture Section */}
         <div className="relative group">
           {!isEditing ?
-            (<div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#00E5FF] flex items-center justify-center text-[#0D0D0D] text-4xl font-bold overflow-hidden">
+            (<div className={`w-24 h-24 md:w-32 md:h-32 rounded-full ${!displayImage ? "bg-[#00E5FF]" : ""} flex items-center justify-center text-[#0D0D0D] text-4xl font-bold overflow-hidden`}>
               {displayImage ? (
                 <img
                   src={displayImage}

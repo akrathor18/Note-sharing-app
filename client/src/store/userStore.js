@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 
 export const useUserStore = create((set) => ({
     user: null,
+    userStates: null,
     isLoading: false,
     error: null,
     averageScore: null,
@@ -12,13 +13,18 @@ export const useUserStore = create((set) => ({
     errorOnDelete: null,
     errorOnUpload: null,
     uploadProgress: 0,
+    isUpdating: false,
+    errorOnUpdate: null,
 
     fetchUser: async () => {
         set({ isLoading: true, error: null });
         try {
             const response = await API.get('/users/profile');
-            set({ user: response.data, isLoading: false });
-            console.log(response.data)
+            set({
+                user: response.data.user,
+                userStates: response.data.userState,
+                isLoading: false
+            });
         } catch (error) {
             set({ error: error.message || "Failed to load user", isLoading: false });
         }
@@ -115,6 +121,46 @@ export const useUserStore = create((set) => ({
             console.log(error)
             set({ isDeleting: false });
             toast.error("Failed to delete profile picture");
+            return false;
+        }
+    },
+
+    updateLinks: async (links) => {
+        set({ isUpdating: true, errorOnUpdate: null });
+
+        const promise = API.put('/liks/bulk', links);
+
+        toast.promise(promise, {
+            pending: 'Saving links...',
+            success: 'Links updated successfully!',
+            error: {
+                render({ data }) {
+                    return (
+                        data?.response?.data?.message ||
+                        'Failed to save links'
+                    );
+                },
+            },
+        });
+
+        try {
+            const response = await promise;
+
+            set((state) => ({
+                user: {
+                    ...state.user,
+                    links: response.data,
+                },
+            }));
+
+            set({ isUpdating: false });
+            return true;
+        } catch (error) {
+            console.error(error);
+            set({
+                isUpdating: false,
+                errorOnUpdate: 'Failed to update links',
+            });
             return false;
         }
     },

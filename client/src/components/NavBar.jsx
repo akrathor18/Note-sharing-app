@@ -21,7 +21,6 @@ import { useUserStore } from "../store/userStore.js";
 
 function navBar() {
     const {user} = useUserStore();
-    // console.log(user)
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -225,11 +224,11 @@ function navBar() {
                 <div className="mt-auto pt-4 border-t border-[#F5F5F5]/10">
                     <div className="flex items-center gap-3 p-2">
                         <div className="w-8 h-8 rounded-full bg-[#00E5FF] flex items-center justify-center text-[#0D0D0D] font-bold">
-                            {user?.user.name.toUpperCase().charAt(0) || 'U'}
+                            {user?.name.toUpperCase().charAt(0) || 'U'}
                         </div>
                         <div>
-                            <p className="text-sm font-medium">{user?.user.name || 'User'}</p>
-                            <p className="text-xs text-[#F5F5F5]/60">{user?.user.role.role_name || 'Student'}</p>
+                            <p className="text-sm font-medium">{user?.name || 'User'}</p>
+                            <p className="text-xs text-[#F5F5F5]/60">{user?.role.role_name || 'Student'}</p>
                         </div>
                     </div>
                 </div>
