@@ -30,7 +30,7 @@ function ProfileHeader({
   handleFileChange,
 }) {
 
-  const { updateProfilePic, deleteProfilePic, isUploading, uploadProgress, isDeleting, errorOnDelete, errorOnUpload, } = useUserStore();
+  const { fetchUser, updateProfilePic, deleteProfilePic, isUploading, uploadProgress, isDeleting, errorOnDelete, errorOnUpload, } = useUserStore();
 
   const [editedUser, setEditedUser] = useState({});
   const [previewImage, setPreviewImage] = useState(user?.profilePic || "");
@@ -54,11 +54,11 @@ function ProfileHeader({
   }
 
   useEffect(() => {
-  if (!isEditing) {
-    setPreviewImage(user?.profilePic || "");
-    setSelectedFile(null);
-  }
-}, [user?.profilePic, isEditing]);
+    if (!isEditing) {
+      setPreviewImage(user?.profilePic || "");
+      setSelectedFile(null);
+    }
+  }, [user?.profilePic, isEditing]);
 
 
   useEffect(() => {
@@ -72,7 +72,7 @@ function ProfileHeader({
     }
   }, [user]);
 
-const displayImage = isEditing ? previewImage : user?.profilePic;
+  const displayImage = isEditing ? previewImage : user?.profilePic;
 
 
   const handleLocalFileChange = (e) => {
@@ -124,7 +124,7 @@ const displayImage = isEditing ? previewImage : user?.profilePic;
     });
   };
 
-
+//save profile picture
   const handleSaveProfilePicture = async () => {
     if (!selectedFile) {
       toast.info("No new image selected");
@@ -138,7 +138,9 @@ const displayImage = isEditing ? previewImage : user?.profilePic;
       if (!success) {
         setPreviewImage(user.profilePic || "");
         toast.error("Upload failed. Reverted image.");
+        return;
       }
+      fetchUser()
     } catch {
       // rollback if upload fails
       setPreviewImage(user.profilePic || "");
@@ -146,20 +148,26 @@ const displayImage = isEditing ? previewImage : user?.profilePic;
     }
   };
 
-
   const handleSaveSocialLinks = () => {
     // setUser((prev) => ({ ...prev, socialLinks: editedUser.socialLinks }))
     console.log(editedUser.links)
     setIsEditing(false)
   }
-  const handleRemoveProfilePicture = () => {
+  //remove profile picture
+  const handleRemoveProfilePicture = async () => {
+    const success = await deleteProfilePic();
+    if (!success) {
+      toast.error("Failed to delete profile picture. Reverted.");
+      return;
+    }
     setPreviewImage("");
     setEditedUser(false)
+    setIsEditing(false);
     setEditedUser((prev) => ({
       ...prev,
       profilePic: "",
     }));
-    deleteProfilePic();
+    fetchUser();
   }
 
   return (
@@ -170,7 +178,7 @@ const displayImage = isEditing ? previewImage : user?.profilePic;
         <div className="relative group">
           {!isEditing ?
             (<div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#00E5FF] flex items-center justify-center text-[#0D0D0D] text-4xl font-bold overflow-hidden">
-              {displayImage? (
+              {displayImage ? (
                 <img
                   src={displayImage}
                   alt={`${user.name}'s profile`}
@@ -191,7 +199,7 @@ const displayImage = isEditing ? previewImage : user?.profilePic;
                 <div className="flex flex-col sm:flex-row items-center gap-4">
                   <div className="relative">
                     <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#00E5FF] flex items-center justify-center text-[#0D0D0D]  text-4xl font-bold overflow-hidden flex-shrink-0">
-                      {previewImage ?  (
+                      {previewImage ? (
                         <img
                           src={previewImage}
                           alt="Preview"
@@ -219,7 +227,7 @@ const displayImage = isEditing ? previewImage : user?.profilePic;
                     />
                     {editedUser.profilePic && (
                       <button
-                      disabled={isDeleting}
+                        disabled={isDeleting}
                         onClick={handleRemoveProfilePicture}
                         className="w-full sm:w-auto px-4 py-2 bg-[#1A1A1A] text-[#F5F5F5] text-sm font-medium rounded-lg border border-[#F5F5F5]/10 hover:bg-[#F5F5F5]/10 transition flex items-center justify-center gap-2"
                       >
@@ -227,6 +235,7 @@ const displayImage = isEditing ? previewImage : user?.profilePic;
                         Remove
                       </button>
                     )}
+                    {isDeleting && <div className="text-xs text-red-600 mt-1">Removing...</div>}
                   </div>
                 </div>
                 <div className="mt-4 flex flex-col sm:flex-row gap-2">
@@ -234,8 +243,8 @@ const displayImage = isEditing ? previewImage : user?.profilePic;
                     onClick={handleSaveProfilePicture}
                     disabled={isUploading}
                     className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium
-    ${isUploading ? "opacity-50 cursor-not-allowed" : "bg-[#00E5FF] hover:bg-[#00E5FF]/90"}
-  `}>
+                      ${isUploading ? "opacity-50 cursor-not-allowed" : "bg-[#00E5FF] hover:bg-[#00E5FF]/90"}
+                   `}>
                     {isUploading ? "Uploading..." : "Save Picture"}
                   </button>
                   <button
@@ -314,7 +323,7 @@ const displayImage = isEditing ? previewImage : user?.profilePic;
               </div>
             </div>
           ) : (
-            <>                
+            <>
               <div className="flex justify-between items-start w-full">
                 <div>
                   <h1 className="text-2xl font-bold">{user.name || "User"}</h1>
@@ -372,21 +381,21 @@ const displayImage = isEditing ? previewImage : user?.profilePic;
               </div>
             </>
           )}
-           {isUploading && (
-                  <div className="w-full mt-3">
-                    <div className="h-2 bg-[#1A1A1A] rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-[#00E5FF] transition-all duration-300"
-                        style={{ width: `${uploadProgress}%` }}
-                      />
-                    </div>
-                    <p className="text-xs text-[#F5F5F5]/60 mt-1 text-right">
-                      Uploading {uploadProgress}%
-                    </p>
-                  </div>
-                )}
+          {isUploading && (
+            <div className="w-full mt-3">
+              <div className="h-2 bg-[#1A1A1A] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#00E5FF] transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+              <p className="text-xs text-[#F5F5F5]/60 mt-1 text-right">
+                Uploading {uploadProgress}%
+              </p>
+            </div>
+          )}
         </div>
-        
+
       </div>
     </div>
 

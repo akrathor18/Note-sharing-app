@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import API from '../config/axios';
-import { isAuthenticated } from '../utils/auth';
 import { toast } from 'react-toastify';
 
 export const useUserStore = create((set) => ({
@@ -19,6 +18,7 @@ export const useUserStore = create((set) => ({
         try {
             const response = await API.get('/users/profile');
             set({ user: response.data, isLoading: false });
+            console.log(response.data)
         } catch (error) {
             set({ error: error.message || "Failed to load user", isLoading: false });
         }
@@ -69,11 +69,10 @@ export const useUserStore = create((set) => ({
                     },
                 }
             );
-            console.log(response)
             set((state) => ({
                 user: {
                     ...state.user,
-                    profilePic: `${response.data.profilePic}?v=${Date.now()}`
+                    profilePic: `${response.data.profilePic}}`
                 }
             }));
 
@@ -102,7 +101,6 @@ export const useUserStore = create((set) => ({
             set({ isDeleting: true });
 
             await API.delete("/users/delete-profile-pic");
-
             set((state) => ({
                 user: {
                     ...state.user,
@@ -112,9 +110,12 @@ export const useUserStore = create((set) => ({
 
             set({ isDeleting: false });
             toast.success("Profile picture deleted successfully");
+            return true;
         } catch (error) {
+            console.log(error)
             set({ isDeleting: false });
             toast.error("Failed to delete profile picture");
+            return false;
         }
     },
 
