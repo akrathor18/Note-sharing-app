@@ -9,7 +9,7 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 import profilePicUpload from '../middlewares/profilePicUpload.js';
 import cloudinary from '../config/cloudinary.js';
 import bcrypt from 'bcryptjs';
-import {trackActivityAndStreak} from '../utils/activityTracker.js';
+import { trackActivityAndStreak } from '../utils/activityTracker.js';
 
 // Helper function to generate JWT and set cookie 
 function generateSessionId(user, res) {
@@ -22,11 +22,11 @@ function generateSessionId(user, res) {
   const isProd = process.env.NODE_ENV === 'production';
 
   res.cookie('token', token, {
-    httpOnly: true,                 
+    httpOnly: true,
     secure: isProd,                 // set to true in production
-    sameSite: isProd ? 'none' : 'lax', 
+    sameSite: isProd ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    path: '/',                     
+    path: '/',
   });
 
   return token;
@@ -136,34 +136,34 @@ router.get('/profile', authMiddleware, VerifyJwtMiddleware, async (req, res) => 
     const userState = await trackActivityAndStreak(userId);
 
     // fetch user
-   const user = await User.findById(userId)
-  .populate('role')
-  .populate('links')
-  .select('-password -userstate -__v')
-  .lean();
+    const user = await User.findById(userId)
+      .populate('role')
+      .populate('links')
+      .select('-password -userstate -__v')
+      .lean();
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     // only send latest N activities (e.g. 10)
-  const recentActivity =
-  (user.recentActivity || [])
-    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-    .slice(0, 10)
-    .map((activity) => ({
-      type: activity.type,
-      refId: activity.refId,
-      title: activity.refTitle || 'Untitled',   
-      description: activity.description,
-      score: activity.score ?? null,
-      percentageScore: activity.percentageScore ?? null,
-      totalQuestions: activity.totalQuestions ?? null,
-      timestamp: activity.timestamp,
-      subject: activity.subject || 'General',
-    }));
+    const recentActivity =
+      (user.recentActivity || [])
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .slice(0, 10)
+        .map((activity) => ({
+          type: activity.type,
+          refId: activity.refId,
+          title: activity.refTitle || 'Untitled',
+          description: activity.description,
+          score: activity.score ?? null,
+          percentageScore: activity.percentageScore ?? null,
+          totalQuestions: activity.totalQuestions ?? null,
+          timestamp: activity.timestamp,
+          subject: activity.subject || 'General',
+        }));
 
-user.recentActivity = recentActivity;
+    user.recentActivity = recentActivity;
 
     // attach clean recentActivity to user object
     user.recentActivity = recentActivity;
@@ -217,30 +217,37 @@ router.patch('/bio', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
   }
 });
 
-router.put('/upload-profile-pic', authMiddleware, VerifyJwtMiddleware, profilePicUpload.single('image'), async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+router.put('/upload-profile-pic',
+  VerifyJwtMiddleware,
+  authMiddleware,
+  profilePicUpload.single('image'),
+  async (req, res) => {
+    try {
 
-    if (user.profilePicId) { // if user already has a profile pic
-      // Delete old profile picture from Cloudinary
-      await cloudinary.uploader.destroy(user.profilePicId, {
-        resource_type: 'image'
-      });
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+      const user = await User.findById(req.user.id);
+      if (!user) return res.status(404).json({ message: 'User not found' });
+
+      if (user.profilePicId) { // if user already has a profile pic
+        // Delete old profile picture from Cloudinary
+        await cloudinary.uploader.destroy(user.profilePicId, {
+          resource_type: 'image'
+        });
+      }
+      user.profilePic = req.file.path;
+      user.profilePicId = req.file.filename;
+
+      await user.save();
+      res.status(200).json({ message: 'Profile picture updated!', profilePic: user.profilePic });
+    } catch (err) {
+      console.log(err)
+      res.status(500).json({ error: err, message: 'Upload failed' });
     }
+  });
 
-    user.profilePic = req.file.path;
-    user.profilePicId = req.file.filename;
-
-    await user.save();
-    res.status(200).json({ message: 'Profile picture updated!', profilePic: user.profilePic });
-  } catch (err) {
-    console.log(err)
-    res.status(500).json({ message: 'Upload failed' });
-  }
-});
-
-router.delete('/delete-profile-pic', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
+router.delete('/delete-profile-pic', VerifyJwtMiddleware, authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
 
