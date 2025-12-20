@@ -24,7 +24,7 @@ router.post('/createQuiz', verifyJWT, async (req, res) => {
             $push: { quizzes: resp._id }
         });
         await trackActivityAndStreak(userId, { totalQuizCreated: 1 });
-        await logActivity(req.user.id, 'quiz_created', resp._id, 'Created a quiz',{
+        await logActivity(req.user.id, 'quiz_created', resp._id, 'Created a quiz', {
             refTitle: resp.title,
             subject: resp.category
         });
@@ -75,6 +75,22 @@ router.get('/myQuizzes', verifyJWT, async (req, res) => {
 });
 
 
+router.get('/attempts', verifyJWT, authMiddleware, async (req, res) => {
+    try {
+        const attempts = await QuizAttempt.find({
+            user: req.user.id,
+        })
+            .populate('quiz', 'title category difficulty')  
+            .select('quiz score percentageScore attemptedAt')
+            .sort({ attemptedAt: -1 })
+            .limit(10);
+
+        res.status(200).json({ quizAttempts: attempts });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 // Search Quizzes
 router.get('/search', async (req, res) => {
@@ -261,5 +277,7 @@ router.patch("/:id", authMiddleware, verifyJWT, async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+
 
 export default router;

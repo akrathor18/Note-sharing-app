@@ -5,7 +5,7 @@ const tabs = [
     { key: 'notes', label: 'Notes' },
     { key: 'quizzes', label: 'Quizzes' },
     { key: 'activity', label: 'Activity' },
-    { key: 'achievements', label: 'Achievements' },
+    { key: 'attempted', label: 'Attempted Quizzes' },
 ];
 
 function ProfileTabs({ activeTab, setActiveTab }) {

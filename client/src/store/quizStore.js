@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 export const useQuizStore = create((set) => ({    
     QuizzesList: [],
     userQuizzes: [],
+    attemptedQuiz: [],
+    errorOnAttempt:false,
     activeQuiz: null,
     isLoading: false,
     error: null,
@@ -61,7 +63,16 @@ export const useQuizStore = create((set) => ({
         }
     },
 
-
+    getAttemptedQuiz: async () => {
+        try {
+            set({ isLoading: true, errorOnAttempt: null });  
+            const response = await API.get(`/quiz/attempts`);
+            set({ attemptedQuiz: response.data.quizAttempts, isLoading: false });
+        } catch (error) {
+            console.log(error)
+            set({ errorOnAttempt: error.data.message || "Failed to load attempt result", isLoading: false });
+        }
+    },
 
     resetQuizState: () => {
         set({

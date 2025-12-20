@@ -117,7 +117,7 @@ function Profile() {
                 {activeTab === 'notes' && <NotesList userNotes={userNotes} />}
                 {activeTab === 'quizzes' && <QuizzesList userQuizzes={userQuizzes} />}
                 {activeTab === 'activity' && <ActivityHistory recentActivity={recentActivity} />}
-                {activeTab === 'achievements' && <AchievementsList achievements={achievements} />}
+                {activeTab === 'attempted' && <AchievementsList />}
             </div>
         </div>
     );
