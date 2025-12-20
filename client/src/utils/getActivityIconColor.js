@@ -4,6 +4,12 @@ import {
     Activity,
     Flame,
     Upload,
+    Github,
+    Instagram,
+    Linkedin,
+    Twitter,
+    Globe
+
 } from "lucide-react"
 const getActivityIcon = (type) => {
     
@@ -37,4 +43,19 @@ const getActivityIcon = (type) => {
         }
     }
 
-    export { getActivityIcon, getActivityColor };
+    const getLinksIcon=(type)=>{
+    switch(type.toLowerCase()){
+        case "github":
+            return Github
+        case "instagram":
+            return Instagram
+        case "linkedin":
+            return Linkedin
+        case "twitter":
+        return Twitter
+        default:
+            return Globe
+    }
+    }
+
+    export { getActivityIcon, getActivityColor, getLinksIcon };

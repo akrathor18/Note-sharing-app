@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { formatDate } from '../../utils/formatDate';
+import { getLinksIcon } from '../../utils/getActivityIconColor';
 import { useUserStore } from '../../store/userStore';
 import { toast } from 'react-toastify';
 
@@ -364,23 +365,29 @@ function ProfileHeader({
 
                 {/* Social links row */}
                 {user.links && user.links.some((link) => link.url) && (
-                  <div className="flex flex-wrap gap-2 pt-3">
-                    {user.links?.map((link, index) =>
-                      link.url ? (
-                        <a
-                          key={index}
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-3 py-1 rounded-full bg-[#0D0D0D] border border-[#F5F5F5]/10 hover:border-[#FF007F] text-xs flex items-center gap-1 transition-colors"
-                          title={link.label}
-                        >
-                          {link.label}
-                        </a>
-                      ) : null,
-                    )}
-                  </div>
-                )}
+  <div className="flex flex-wrap gap-2 pt-3">
+    {user.links.map((link, index) => {
+      if (!link.url) return null;
+
+      const Icon = getLinksIcon(link.type || link.label);
+
+      return (
+        <a
+          key={index}
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-3 py-1 rounded-full bg-[#0D0D0D] border border-[#F5F5F5]/10 hover:border-[#FF007F] text-sm flex items-center gap-1 transition-colors"
+          title={link.label}
+        >
+          <Icon size={16} />
+          {link.label}
+        </a>
+      );
+    })}
+  </div>
+)}
+
               </div>
             </>
           )}

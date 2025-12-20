@@ -60,10 +60,9 @@ export default function Settings({ user, setUser }) {
                 password: data.currentPassword,
                 newPassword: data.newPassword,
             });
-            console.log(response);
             toast.success(response.data);
         } catch (error) {
-            console.error(error.response?.data); // ✅ this will give exact backend error
+            console.error(error.response?.data);
             toast.error(error.response?.data);
         }
     };
