@@ -6,14 +6,12 @@ import StatsCards from '../components/profile/StatsCards';
 import ProfileTabs from '../components/profile/ProfileTabs';
 import AboutMe from '../components/profile/AboutMe';
 import RecentActivity from '../components/profile/RecentActivity';
-import TopAchievements from '../components/profile/TopAchievements';
 import NotesList from '../components/profile/NotesList';
 import QuizzesList from '../components/profile/QuizzesList';
-import AchievementsList from '../components/profile/AchievementsList';
+import AttemptedQuizList from '../components/profile/AttemptedQuizList';
 import ActivityHistory from '../components/profile/ActivityHistory';
 import ErrorState from '../common/components/ErrorState';
 import { toast } from 'react-toastify';
-import { userNotes, userQuizzes, achievements } from '../config/data';
 import { useUserStore } from '../store/userStore.js';
 
 function Profile() {
@@ -50,7 +48,7 @@ function Profile() {
         setIsEditing(false);
     };
 
-  
+
     const handleFileUpload = () => {
         fileInputRef.current.click();
     };
@@ -111,13 +109,12 @@ function Profile() {
                             setEditingBio={setEditingBio}
                            />
                         <RecentActivity recentActivity={recentActivity} />
-                        <TopAchievements achievements={achievements} />
                     </div>
                 )}
-                {activeTab === 'notes' && <NotesList userNotes={userNotes} />}
-                {activeTab === 'quizzes' && <QuizzesList userQuizzes={userQuizzes} />}
+                {activeTab === 'notes' && <NotesList />}
+                {activeTab === 'quizzes' && <QuizzesList />}
                 {activeTab === 'activity' && <ActivityHistory recentActivity={recentActivity} />}
-                {activeTab === 'attempted' && <AchievementsList />}
+                {activeTab === 'attempted' && <AttemptedQuizList />}
             </div>
         </div>
     );

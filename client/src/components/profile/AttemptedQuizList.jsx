@@ -60,7 +60,7 @@ function AchievementsList() {
             <h2 className="text-lg font-bold">My Attempted Quizzes</h2>
             <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-5">
                 {attemptedQuiz.map((attemptedQuiz) => (
-                    <QuizCard key={attemptedQuiz.id} attempt={attemptedQuiz} />
+                    <QuizCard key={attemptedQuiz._id} attempt={attemptedQuiz} />
                 ))}
             </div>
         </div>
