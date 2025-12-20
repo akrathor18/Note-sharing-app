@@ -19,9 +19,11 @@ export const isTokenExpired = () => {
     const token = getToken();
     const decoded = decodeToken(token);
     if (!decoded || !decoded.exp) return true;
+
     const currentTime = Date.now() / 1000;
     return decoded.exp < currentTime;
 };
+
 
 // Auth-related toast notifications
 export const handleAuthError = (type) => {

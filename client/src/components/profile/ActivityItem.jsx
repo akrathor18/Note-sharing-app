@@ -19,7 +19,7 @@ function ActivityItem({ activity }) {
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-medium truncate">{activity.title}</h3>
+                        <h3 className="font-medium truncate capitalize">{activity.title}</h3>
 
                     </div>
                     <div className="flex items-center gap-2 text-sm text-[#F5F5F5]/60 mb-1">

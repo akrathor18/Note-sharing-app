@@ -227,8 +227,8 @@ function navBar() {
                             {user?.name.toUpperCase().charAt(0) || 'U'}
                         </div>
                         <div>
-                            <p className="text-sm font-medium">{user?.name || 'User'}</p>
-                            <p className="text-xs text-[#F5F5F5]/60">{user?.role.role_name || 'Student'}</p>
+                            <p className="text-sm font-medium capitalize">{user?.name || 'User'}</p>
+                            <p className="text-xs text-[#F5F5F5]/60 capitalize">{user?.role.role_name || 'Student'}</p>
                         </div>
                     </div>
                 </div>

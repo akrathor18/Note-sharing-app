@@ -28,7 +28,7 @@ import SettingsSecurity from '../components/settings/SettingsSecurity';
 export default function Settings({ user, setUser }) {
     const [loading, setLoading] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
-    const [activeSection, setActiveSection] = useState('account');
+    const [activeSection, setActiveSection] = useState('security');
     const [userData, setUserData] = useState({
         id: 'user123',
         name: 'John Doe',
@@ -151,7 +151,7 @@ export default function Settings({ user, setUser }) {
                 />
                 <div className="flex-1 bg-[#1A1A1A] rounded-xl p-6">
                     {/* Section Switcher */}
-                    {activeSection === 'account' && (
+                    {false&& activeSection === 'account' && (
                         <form onSubmit={handleFormChange}>
                             <SettingsAccount
                                 userData={userData}
@@ -161,7 +161,7 @@ export default function Settings({ user, setUser }) {
                             />
                         </form>
                     )}
-                    {activeSection === 'notifications' && (
+                    {false&& activeSection === 'notifications' && (
                         <form onSubmit={handleFormChange}>
                             <SettingsNotifications
                                 formData={formData}
@@ -169,7 +169,7 @@ export default function Settings({ user, setUser }) {
                             />
                         </form>
                     )}
-                    {activeSection === 'appearance' && (
+                    {false&& activeSection === 'appearance' && (
                         <form onSubmit={handleFormChange}>
                             <SettingsAppearance
                                 formData={formData}
@@ -177,7 +177,7 @@ export default function Settings({ user, setUser }) {
                             />
                         </form>
                     )}
-                    {activeSection === 'language' && (
+                    {false&& activeSection === 'language' && (
                         <form onSubmit={handleFormChange}>
                             <SettingsLanguage
                                 formData={formData}
@@ -185,7 +185,7 @@ export default function Settings({ user, setUser }) {
                             />
                         </form>
                     )}
-                    {activeSection === 'privacy' && (
+                    {false&& activeSection === 'privacy' && (
                         <form onSubmit={handleFormChange}>
                             <SettingsPrivacy
                                 formData={formData}

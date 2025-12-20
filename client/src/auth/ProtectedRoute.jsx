@@ -4,14 +4,12 @@ import { getToken, removeToken, isTokenExpired, handleAuthError, decodeToken } f
 
 const ProtectedRoute = () => {
     const token = getToken();
-    const alertShown = useRef(false); // Prevent multiple toasts
+    const alertShown = useRef(false);
 
-    useEffect(() => {
-        if (!token && !alertShown.current && window.location.pathname !== '/signin') {
-            alertShown.current = true;
-            handleAuthError('no-token');
-        }
-    }, [token]);
+    if (!token) {
+        handleAuthError("no-token")
+        return <Navigate to="/signin" replace />;
+    }
 
     try {
         if (isTokenExpired()) {
@@ -20,17 +18,19 @@ const ProtectedRoute = () => {
                 handleAuthError('expired');
             }
             removeToken();
-            return <Navigate to="/signin" />;
+            return <Navigate to="/signin" replace />;
         }
+
         return <Outlet />;
-    } catch (error) {
+    } catch {
         if (!alertShown.current) {
             alertShown.current = true;
             handleAuthError('invalid');
         }
         removeToken();
-        return <Navigate to="/signin" />;
+        return <Navigate to="/signin" replace />;
     }
 };
+
 
 export default ProtectedRoute;

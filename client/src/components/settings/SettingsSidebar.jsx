@@ -1,12 +1,12 @@
 import { Mail, Lock, Bell, Sun, Globe, Shield } from 'lucide-react';
 
 const sections = [
-    { key: 'account', icon: <Mail size={18} />, label: 'Account' },
+    // { key: 'account', icon: <Mail size={18} />, label: 'Account' },
     { key: 'security', icon: <Lock size={18} />, label: 'Security' },
-    { key: 'notifications', icon: <Bell size={18} />, label: 'Notifications' },
-    { key: 'appearance', icon: <Sun size={18} />, label: 'Appearance' },
-    { key: 'language', icon: <Globe size={18} />, label: 'Language' },
-    { key: 'privacy', icon: <Shield size={18} />, label: 'Privacy' },
+    // { key: 'notifications', icon: <Bell size={18} />, label: 'Notifications' },
+    // { key: 'appearance', icon: <Sun size={18} />, label: 'Appearance' },
+    // { key: 'language', icon: <Globe size={18} />, label: 'Language' },
+    // { key: 'privacy', icon: <Shield size={18} />, label: 'Privacy' },
 ];
 
 export default function SettingsSidebar({ activeSection, setActiveSection }) {

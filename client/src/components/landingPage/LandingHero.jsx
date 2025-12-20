@@ -1,4 +1,5 @@
 import { ArrowRight, Upload, Laptop, Tablet, Smartphone, Download, BrainCircuit } from "lucide-react"
+import { Link } from "react-router-dom"
 
 export default function LandingHero({ onGetStarted }) {
     return (
@@ -22,13 +23,13 @@ export default function LandingHero({ onGetStarted }) {
                                 Start Learning Free
                                 <ArrowRight size={20} />
                             </button>
-                            <button
+                            <Link to={'/notes'}
                                 onClick={onGetStarted}
                                 className="border-2 border-[#00E5FF] text-[#00E5FF] hover:bg-[#00E5FF] hover:text-[#0D0D0D] px-8 py-4 rounded-full font-semibold text-lg flex items-center justify-center gap-2 transition-all hover:scale-105"
                             >
                                 <Upload size={20} />
                                 Upload Notes
-                            </button>
+                            </Link>
                         </div>
                         <div className="flex flex-wrap justify-center lg:justify-start gap-8 text-center">
                             <div>

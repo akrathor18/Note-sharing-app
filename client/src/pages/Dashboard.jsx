@@ -107,7 +107,7 @@ export default function Dashboard() {
     <div className="space-y-6 md:space-y-8">
       <div>
         <h1 className="text-xl md:text-2xl font-bold mb-1">
-          Welcome back, {userData.name}!
+          Welcome back,<span className="capitalize"> {userData.name}</span>!
         </h1>
         <p className="text-[#F5F5F5]/60">
           Here's what's happening with your studies

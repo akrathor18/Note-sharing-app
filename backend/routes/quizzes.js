@@ -35,7 +35,7 @@ router.post('/createQuiz', verifyJWT, async (req, res) => {
     }
 });
 
-router.get('/getQuiz', async (req, res) => {
+router.get('/getQuiz',verifyJWT,authMiddleware, async (req, res) => {
     try {
         const quiz = await Quiz.find().populate('createdBy', 'name email'); // optional
         res.status(200).json(quiz);

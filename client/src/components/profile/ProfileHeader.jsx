@@ -124,7 +124,7 @@ function ProfileHeader({
     });
   };
 
-//save profile picture
+  //save profile picture
   const handleSaveProfilePicture = async () => {
     if (!selectedFile) {
       toast.info("No new image selected");
@@ -140,6 +140,7 @@ function ProfileHeader({
         toast.error("Upload failed. Reverted image.");
         return;
       }
+      fetchUser()
     } catch {
       // rollback if upload fails
       setPreviewImage(user.profilePic || "");
@@ -246,8 +247,7 @@ function ProfileHeader({
                     onClick={handleSaveProfilePicture}
                     disabled={isUploading}
                     className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium
-                      ${isUploading ? "opacity-50 cursor-not-allowed" : "bg-[#00E5FF] hover:bg-[#00E5FF]/90"}
-                   `}>
+                      ${isUploading ? "opacity-50 cursor-not-allowed" : "bg-[#00E5FF] hover:bg-[#00E5FF]/90"}`}>
                     {isUploading ? "Uploading..." : "Save Picture"}
                   </button>
                   <button
@@ -329,8 +329,8 @@ function ProfileHeader({
             <>
               <div className="flex justify-between items-start w-full">
                 <div>
-                  <h1 className="text-2xl font-bold">{user.name || "User"}</h1>
-                  <p className="text-[#F5F5F5]/60">{user.role?.role_name}</p>
+                  <h1 className="text-2xl font-bold capitalize">{user.name || "User"}</h1>
+                  <p className="text-[#F5F5F5]/60 capitalize">{user.role?.role_name|| "student"}</p>
                 </div>
                 <button
                   onClick={() => {

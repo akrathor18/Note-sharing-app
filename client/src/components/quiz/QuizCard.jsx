@@ -36,7 +36,7 @@ function QuizCard(quizData) {
                     </span>
                 </div>
 
-                <h3 className="font-medium mb-3 line-clamp-2">{quiz.title}</h3>
+                <h3 className="font-medium mb-3 line-clamp-2 capitalize">{quiz.title}</h3>
 
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-1 text-xs text-[#F5F5F5]/60">

@@ -20,7 +20,7 @@ export default function NoteCard({ note }) {
                     { formatDate(note.createdAt)
                     }</span>
                 </div>
-                <h3 className="font-medium mb-2 line-clamp-2">{note.title}</h3>
+                <h3 className="font-medium mb-2 line-clamp-2 capitalize">{note.title}</h3>
                 <p className="text-xs text-[#F5F5F5]/70 mb-3 line-clamp-2">{note.description}</p>
                 <div className="flex items-center justify-between ">
                     <span className="text-xs text-[#F5F5F5]/60 flex flex-row gap-2"> 

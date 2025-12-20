@@ -15,7 +15,7 @@ import { toast } from 'react-toastify';
 import { useUserStore } from '../store/userStore.js';
 
 function Profile() {
-    const { user, userStates,averageScore, fetchUser, getScore, updateBio, isLoading, error } =
+    const { user, userStates, averageScore, fetchUser, getScore, updateBio, isLoading, error } =
         useUserStore();
 
     useEffect(() => {
@@ -33,7 +33,7 @@ function Profile() {
     const fileInputRef = useRef(null);
 
     if (isLoading) return <SkeletonLoader />;
-    if (error) return <ErrorState title='Unable to load Profile' message="Something went wrong while fetching your Profile."/>;
+    if (error) return <ErrorState title='Unable to load Profile' message="Something went wrong while fetching your Profile." />;
     userState.averageScore = averageScore ? averageScore.averagePercentage : 0;
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -107,7 +107,7 @@ function Profile() {
                         <AboutMe
                             editingBio={editingBio}
                             setEditingBio={setEditingBio}
-                           />
+                        />
                         <RecentActivity recentActivity={recentActivity} />
                     </div>
                 )}
