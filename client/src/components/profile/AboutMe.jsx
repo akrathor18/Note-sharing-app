@@ -1,7 +1,31 @@
-import React from 'react';
+import {React, useState,useEffect} from 'react';
 import { Edit2 } from 'lucide-react';
+import { useUserStore } from '../../store/userStore';
+function AboutMe({editingBio, setEditingBio, }) {
+    const { bio, updateBio, isUpdatingBio } = useUserStore();
+    const [newBio, setNewBio] = useState();
+     const handleBioEdit = () => {
+        setEditingBio(true);
+        setNewBio(bio);
+    };
 
-function AboutMe({ bio, editingBio, newBio, handleBioEdit, handleBioSave, handleBioCancel, setNewBio }) {
+    const handleBioSave = async () => {
+        try {
+            const success = await updateBio(newBio);
+            if (success){
+                setEditingBio(false);
+            }
+        } catch (error) {
+            toast.error("Failed to update bio");
+        }
+    };
+
+    const handleBioCancel = () => {
+        setNewBio(bio);
+        setEditingBio(false);
+    };
+
+   
     return (
         <div className="bg-[#1A1A1A] rounded-xl p-5">
             <div className="flex justify-between items-start mb-4">
@@ -33,13 +57,13 @@ function AboutMe({ bio, editingBio, newBio, handleBioEdit, handleBioSave, handle
                         </button>
                         <button
                             onClick={handleBioSave}
-                            disabled={newBio === bio}
+                            disabled={newBio === bio || isUpdatingBio}
                             className={`px-3 py-1 rounded-lg text-white text-sm ${newBio === bio
                                     ? 'bg-gray-500 cursor-not-allowed'
                                     : 'bg-[#FF007F] hover:bg-[#FF007F]/90'
                                 }`}
                         >
-                            Save
+                            {isUpdatingBio ? 'Saving...' : 'Save'}
                         </button>
                     </div>
                 </div>

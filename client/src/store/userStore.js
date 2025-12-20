@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 export const useUserStore = create((set) => ({
     user: null,
     userStates: null,
+    bio: '',
     isLoading: false,
     error: null,
     averageScore: null,
@@ -12,9 +13,10 @@ export const useUserStore = create((set) => ({
     isDeleting: false,
     errorOnDelete: null,
     errorOnUpload: null,
-    uploadProgress: 0,
-    isUpdating: false,
-    errorOnUpdate: null,
+    uploadProgress: 0,//link upload progress profile 
+    isUpdating: false,//link update in progress
+    errorOnUpdate: null,//link update error
+    isUpdatingBio: false,
 
     fetchUser: async () => {
         set({ isLoading: true, error: null });
@@ -23,6 +25,7 @@ export const useUserStore = create((set) => ({
             set({
                 user: response.data.user,
                 userStates: response.data.userState,
+                bio: response.data.user.bio,
                 isLoading: false
             });
         } catch (error) {
@@ -39,13 +42,33 @@ export const useUserStore = create((set) => ({
         }
     },
 
-    updateBio: async (newBio) => {
-        try {
 
-            await API.patch('/users/bio', { bio: newBio });
-            set((state) => ({ user: { ...state.user, bio: newBio } }));
+    updateBio: async (bio) => {
+        set({ isUpdatingBio: true });
+        const promise = API.patch('/users/bio', { bio });
+
+        toast.promise(promise, {
+            pending: 'Saving bio...',
+            success: 'Bio updated successfully!',
+            error: {
+                render({ data }) {
+                    return (
+                        data?.response?.data?.message ||
+                        'Failed to save bio'
+                    );
+                },
+            },
+        });
+        try {
+            const response = await promise;
+            set({bio: response.data.bio})
+            set({ isUpdatingBio: false });
+            return true;
         } catch (error) {
+            set({ isUpdatingBio: false });
+            console.log(error);
             set({ error: error.message || "Failed to update bio" });
+            return false;
         }
     },
 
@@ -164,6 +187,5 @@ export const useUserStore = create((set) => ({
             return false;
         }
     },
-
 
 }));

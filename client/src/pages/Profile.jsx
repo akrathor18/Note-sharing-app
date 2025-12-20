@@ -17,7 +17,7 @@ import { userNotes, userQuizzes, achievements } from '../config/data';
 import { useUserStore } from '../store/userStore.js';
 
 function Profile() {
-    const { user, userStates,averageScore, fetchUser, getScore, isLoading, error } =
+    const { user, userStates,averageScore, fetchUser, getScore, updateBio, isLoading, error } =
         useUserStore();
 
     useEffect(() => {
@@ -31,9 +31,7 @@ function Profile() {
     const recentActivity = user?.recentActivity || [];
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
-    const [bio, setBio] = useState('');
     const [editingBio, setEditingBio] = useState(false);
-    const [newBio, setNewBio] = useState();
     const fileInputRef = useRef(null);
 
     if (isLoading) return <SkeletonLoader />;
@@ -52,26 +50,7 @@ function Profile() {
         setIsEditing(false);
     };
 
-    const handleBioEdit = () => {
-        setEditingBio(true);
-        setNewBio(bio);
-    };
-
-    const handleBioSave = async () => {
-        try {
-            await API.patch('/users/bio', { bio: newBio });
-            setBio(newBio);
-            setEditingBio(false);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const handleBioCancel = () => {
-        setNewBio(bio);
-        setEditingBio(false);
-    };
-
+  
     const handleFileUpload = () => {
         fileInputRef.current.click();
     };
@@ -128,14 +107,9 @@ function Profile() {
                 {activeTab === 'overview' && (
                     <div className="space-y-6">
                         <AboutMe
-                            bio={userDetails.bio}
                             editingBio={editingBio}
-                            newBio={newBio}
-                            handleBioEdit={handleBioEdit}
-                            handleBioSave={handleBioSave}
-                            handleBioCancel={handleBioCancel}
-                            setNewBio={setNewBio}
-                        />
+                            setEditingBio={setEditingBio}
+                           />
                         <RecentActivity recentActivity={recentActivity} />
                         <TopAchievements achievements={achievements} />
                     </div>
