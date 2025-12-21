@@ -151,7 +151,7 @@ export const useUserStore = create((set) => ({
     updateLinks: async (links) => {
         set({ isUpdating: true, errorOnUpdate: null });
 
-        const promise = API.put('/liks/bulk', links);
+        const promise = API.put('/links/bulk', links);
 
         toast.promise(promise, {
             pending: 'Saving links...',
