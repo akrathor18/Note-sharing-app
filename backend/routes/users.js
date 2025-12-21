@@ -23,11 +23,11 @@ function generateSessionId(user, res) {
 
   res.cookie('token', token, {
     httpOnly: true,
-    secure: isProd,                 // set to true in production
-    sameSite: isProd ? 'none' : 'lax',
+    secure: true,
+    sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    path: '/',
   });
+
 
   return token;
 }
