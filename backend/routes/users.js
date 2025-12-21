@@ -217,35 +217,45 @@ router.patch('/bio', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
   }
 });
 
-router.put('/upload-profile-pic',
+router.put(
+  '/upload-profile-pic',
   VerifyJwtMiddleware,
   authMiddleware,
   profilePicUpload.single('image'),
   async (req, res) => {
     try {
-
       if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });
       }
-      const user = await User.findById(req.user.id);
-      if (!user) return res.status(404).json({ message: 'User not found' });
 
-      if (user.profilePicId) { // if user already has a profile pic
-        // Delete old profile picture from Cloudinary
-        await cloudinary.uploader.destroy(user.profilePicId, {
-          resource_type: 'image'
-        });
+      const user = await User.findById(req.user.id);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
       }
+
+      if (user.profilePicId) {
+        try {
+          await cloudinary.uploader.destroy(user.profilePicId);
+        } catch (err) {
+          console.warn('Cloudinary delete failed:', err.message);
+        }
+      }
+
       user.profilePic = req.file.path;
       user.profilePicId = req.file.filename;
-
       await user.save();
-      res.status(200).json({ message: 'Profile picture updated!', profilePic: user.profilePic });
+
+      res.status(200).json({
+        message: 'Profile picture updated!',
+        profilePic: user.profilePic
+      });
     } catch (err) {
-      console.log(err)
-      res.status(500).json({ error: err, message: 'Upload failed' });
+      console.error(err);
+      res.status(500).json({ message: 'Upload failed' });
     }
-  });
+  }
+);
+
 
 router.delete('/delete-profile-pic', VerifyJwtMiddleware, authMiddleware, async (req, res) => {
   try {
@@ -254,6 +264,11 @@ router.delete('/delete-profile-pic', VerifyJwtMiddleware, authMiddleware, async 
     if (!user) {
       return res.status(404).json({ message: 'No profile picture to delete' });
     }
+
+    if (!user.profilePicId) {
+      return res.status(400).json({ message: 'No profile picture to delete' });
+    }
+
 
     await cloudinary.uploader.destroy(user.profilePicId, {
       resource_type: 'image'

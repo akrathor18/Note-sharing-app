@@ -8,12 +8,9 @@ const profileStorage = new CloudinaryStorage({
     folder: 'user_profiles',
     resource_type: 'image',
     allowed_formats: ['jpg', 'jpeg', 'png'],
-    public_id: (req, file) => {
-      const userId = req.user?.id || 'guest';
-      return `profile-${userId}`;
-    }
   }
 });
+
 
 const profilePicUpload = multer({ storage: profileStorage });
 
