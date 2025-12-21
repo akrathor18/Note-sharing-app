@@ -1,7 +1,7 @@
 import express from 'express';
 import noteUpload from '../middlewares/noteUpload.js'; // path to multer setup
 import Note from '../models/noteSchema.js';
-import verifyJWT from '../middlewares/verifyJWT.js';
+import VerifyJwtMiddleware from '../middlewares/verifyJWT.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import User from '../models/UserSchema.js';
 import { trackActivityAndStreak } from '../utils/activityTracker.js';
@@ -11,7 +11,7 @@ import cloudinary from '../config/cloudinary.js';
 
 const router = express.Router();
 
-router.post('/upload', verifyJWT, authMiddleware, noteUpload.single('file'), async (req, res) => {
+router.post('/upload', VerifyJwtMiddleware, authMiddleware, noteUpload.single('file'), async (req, res) => {
  
   try {
     const { title, description, subject } = req.body;
@@ -44,7 +44,7 @@ router.post('/upload', verifyJWT, authMiddleware, noteUpload.single('file'), asy
   }
 });
 
-router.get('/getnotes', authMiddleware, async (req, res) => {
+router.get('/getnotes',VerifyJwtMiddleware, authMiddleware, async (req, res) => {
   try {
     const notes = await Note.find()
       .populate('uploadedBy', 'name email')
@@ -55,7 +55,7 @@ router.get('/getnotes', authMiddleware, async (req, res) => {
   }
 });
 
-router.get('/mynotes', verifyJWT, authMiddleware, async (req, res) => {
+router.get('/mynotes', VerifyJwtMiddleware, authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
 
@@ -73,7 +73,7 @@ router.get('/mynotes', verifyJWT, authMiddleware, async (req, res) => {
 });
 
 
-router.delete("/:id", verifyJWT, authMiddleware, async (req, res) => {
+router.delete("/:id", VerifyJwtMiddleware, authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
 

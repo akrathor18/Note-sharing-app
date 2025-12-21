@@ -1,10 +1,10 @@
 import express from 'express';
-import verifyJWT from '../middlewares/verifyJWT.js';
+import VerifyJwtMiddleware from '../middlewares/verifyJWT.js';
 const router = express.Router();
 import Link from '../models/Links.js';
 import User from '../models/UserSchema.js';
 
-router.post('/', verifyJWT, async (req, res) => {
+router.post('/', VerifyJwtMiddleware, async (req, res) => {
     const { label, url } = req.body;
 
     if (!label || !url) {
@@ -27,7 +27,7 @@ router.post('/', verifyJWT, async (req, res) => {
     }
 });
 
-router.get('/me', verifyJWT, async (req, res) => {
+router.get('/me', VerifyJwtMiddleware, async (req, res) => {
     try {
         const links = await Link.find({ user: req.user.id });
         res.status(200).json(links);
@@ -36,7 +36,7 @@ router.get('/me', verifyJWT, async (req, res) => {
     }
 });
 
-router.put('/bulk', verifyJWT, async (req, res) => {
+router.put('/bulk', VerifyJwtMiddleware, async (req, res) => {
     const links = req.body;
 
     if (!Array.isArray(links)) {
@@ -63,7 +63,7 @@ router.put('/bulk', verifyJWT, async (req, res) => {
     res.json(newLinks);
 });
 
-router.patch('/:id', verifyJWT, async (req, res) => {
+router.patch('/:id', VerifyJwtMiddleware, async (req, res) => {
     const { label, url } = req.body;
 
     try {
@@ -81,7 +81,7 @@ router.patch('/:id', verifyJWT, async (req, res) => {
     }
 });
 
-router.delete('/:id', verifyJWT, async (req, res) => {
+router.delete('/:id', VerifyJwtMiddleware, async (req, res) => {
     try {
         const deleted = await Link.findOneAndDelete({
             _id: req.params.id,

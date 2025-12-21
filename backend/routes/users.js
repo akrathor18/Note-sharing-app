@@ -105,7 +105,7 @@ router.post("/logout", (req, res) => {
 
 
 //user routes below
-router.post('/changepassword', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
+router.post('/changepassword',VerifyJwtMiddleware, authMiddleware, async (req, res) => {
   try {
     const { password, newPassword } = req.body;
     const userId = req.user.id;
@@ -128,7 +128,7 @@ router.post('/changepassword', authMiddleware, VerifyJwtMiddleware, async (req, 
   }
 });
 
-router.get('/profile', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
+router.get('/profile',VerifyJwtMiddleware, authMiddleware,  async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
 
@@ -175,7 +175,7 @@ router.get('/profile', authMiddleware, VerifyJwtMiddleware, async (req, res) => 
   }
 });
 
-router.get('/average-score', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
+router.get('/average-score',VerifyJwtMiddleware, authMiddleware,  async (req, res) => {
   try {
     const userId = req.user.id;
 
@@ -203,7 +203,7 @@ router.get('/average-score', authMiddleware, VerifyJwtMiddleware, async (req, re
 
 
 
-router.patch('/bio', authMiddleware, VerifyJwtMiddleware, async (req, res) => {
+router.patch('/bio',VerifyJwtMiddleware, authMiddleware, async (req, res) => {
   const userId = req.user.id;
   const { bio } = req.body;
 

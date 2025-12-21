@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import Quiz from '../models/quizSchema.js';
-import verifyJWT from '../middlewares/verifyJWT.js';
+import VerifyJwtMiddleware from '../middlewares/verifyJWT.js';
 import User from '../models/UserSchema.js';
 import QuizAttempt from '../models/QuizAttempt.js';
 import { trackActivityAndStreak } from '../utils/activityTracker.js';
@@ -9,7 +9,7 @@ import { logActivity } from '../utils/logActivity.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import mongoose from 'mongoose';
 
-router.post('/createQuiz', verifyJWT, async (req, res) => {
+router.post('/createQuiz', VerifyJwtMiddleware, async (req, res) => {
     try {
         const userId = req.user.id;
         const quizData = {
@@ -35,7 +35,7 @@ router.post('/createQuiz', verifyJWT, async (req, res) => {
     }
 });
 
-router.get('/getQuiz',verifyJWT,authMiddleware, async (req, res) => {
+router.get('/getQuiz',VerifyJwtMiddleware,authMiddleware, async (req, res) => {
     try {
         const quiz = await Quiz.find().populate('createdBy', 'name email') // optional
         .sort({createdAt:-1})
@@ -46,7 +46,7 @@ router.get('/getQuiz',verifyJWT,authMiddleware, async (req, res) => {
     }
 });
 
-router.get('/myQuizzes', verifyJWT, async (req, res) => {
+router.get('/myQuizzes', VerifyJwtMiddleware, async (req, res) => {
     try {
         const userId = req.user.id;
         if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -76,7 +76,7 @@ router.get('/myQuizzes', verifyJWT, async (req, res) => {
 });
 
 
-router.get('/attempts', verifyJWT, authMiddleware, async (req, res) => {
+router.get('/attempts', VerifyJwtMiddleware, authMiddleware, async (req, res) => {
     try {
         const attempts = await QuizAttempt.find({
             user: req.user.id,
@@ -115,7 +115,7 @@ router.get('/search', async (req, res) => {
 });
 
 // Delete quiz by ID only by the creator
-router.delete("/:id", verifyJWT, async (req, res) => {
+router.delete("/:id", VerifyJwtMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -174,7 +174,7 @@ router.get('/:id', async (req, res) => {
 });
 
 
-router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
+router.post('/:id/attempt',VerifyJwtMiddleware, authMiddleware, async (req, res) => {
     try {
         const quiz = await Quiz.findById(req.params.id);
         if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
@@ -257,7 +257,7 @@ router.post('/:id/attempt', authMiddleware, verifyJWT, async (req, res) => {
     }
 });
 
-router.patch("/:id", authMiddleware, verifyJWT, async (req, res) => {
+router.patch("/:id",VerifyJwtMiddleware, authMiddleware, async (req, res) => {
     try {
         const quizId = req.params.id;
         const userId = req.user.id;
