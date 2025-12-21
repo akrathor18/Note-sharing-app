@@ -47,6 +47,101 @@ StudyHub is a full‑stack web platform built **for students, by students**. It 
 
 ## 🛠️ Tech Stack
 
+---
+
+## 🚀 Getting Started
+
+Follow these steps to run **StudyHub** locally on your machine.
+
+### ✅ Prerequisites
+
+Make sure you have the following installed:
+
+* **Node.js** (v18+ recommended)
+* **MongoDB** (local or MongoDB Atlas)
+* **Git**
+
+---
+
+### 📥 Clone the Repository
+
+```bash
+git clone https://github.com/akrathor18/Note-sharing-app.git
+cd Note-sharing-app
+```
+
+---
+
+### 🔧 Backend Setup
+
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file inside the `backend` folder:
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_cloudinary_key
+CLOUDINARY_API_SECRET=your_cloudinary_secret
+NODE_ENV=development
+```
+
+Start the backend server:
+
+```bash
+npm run dev
+```
+
+The backend will run on:
+
+```
+http://localhost:5000
+```
+
+---
+
+### 🎨 Frontend Setup
+
+```bash
+cd ../client
+npm install
+```
+
+Create a `.env` file inside the `client` folder:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+Start the frontend:
+
+```bash
+npm run dev
+```
+
+The app will be available at:
+
+```
+http://localhost:5173
+```
+
+---
+
+### ✅ You’re Ready!
+
+* Register a new account
+* Upload notes or create quizzes
+* Edit profile & social links
+* Track activity and streaks
+
+---
+
+
 ### Frontend
 
 * React
