@@ -9,7 +9,7 @@ const profileStorage = new CloudinaryStorage({
     resource_type: 'image',
     allowed_formats: ['jpg', 'jpeg', 'png'],
     public_id: (req, file) => {
-      const userId = req.user?._id || 'guest';
+      const userId = req.user?.id || 'guest';
       return `profile-${userId}`;
     }
   }

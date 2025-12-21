@@ -13,7 +13,6 @@ export async function logActivity(userId, type, refId, description, extra = {}) 
         },
       },
     });
-    console.log("✅ Activity logged");
   } catch (err) {
     console.error("Failed to log activity:", err.message);
   }

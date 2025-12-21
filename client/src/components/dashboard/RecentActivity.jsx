@@ -30,7 +30,7 @@ function RecentActivity(activityData) {
 
                         return (
                             <div
-                                key={activity.id}
+                                key={activity._id}
                                 className="flex items-center gap-4 p-4 rounded-lg bg-[#0D0D0D] hover:bg-[#0D0D0D]/80 transition-colors border border-[#F5F5F5]/5"
                             >
                                 <div
