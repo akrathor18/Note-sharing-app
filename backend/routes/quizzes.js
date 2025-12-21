@@ -37,7 +37,8 @@ router.post('/createQuiz', verifyJWT, async (req, res) => {
 
 router.get('/getQuiz',verifyJWT,authMiddleware, async (req, res) => {
     try {
-        const quiz = await Quiz.find().populate('createdBy', 'name email'); // optional
+        const quiz = await Quiz.find().populate('createdBy', 'name email') // optional
+        .sort({createdAt:-1})
         res.status(200).json(quiz);
     } catch (error) {
         console.log(error);

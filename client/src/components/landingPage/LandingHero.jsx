@@ -31,20 +31,6 @@ export default function LandingHero({ onGetStarted }) {
                                 Upload Notes
                             </Link>
                         </div>
-                        <div className="flex flex-wrap justify-center lg:justify-start gap-8 text-center">
-                            <div>
-                                <div className="text-2xl font-bold text-[#FF007F]">50K+</div>
-                                <div className="text-sm text-[#F5F5F5]/60">Active Students</div>
-                            </div>
-                            <div>
-                                <div className="text-2xl font-bold text-[#00E5FF]">100K+</div>
-                                <div className="text-sm text-[#F5F5F5]/60">Notes Shared</div>
-                            </div>
-                            <div>
-                                <div className="text-2xl font-bold text-[#FF007F]">Free</div>
-                                <div className="text-sm text-[#F5F5F5]/60">Forever</div>
-                            </div>
-                        </div>
                     </div>
                     <div className="relative max-md:hidden">
                         <div className="relative bg-gradient-to-br from-[#FF007F]/20 via-[#1A1A1A] to-[#00E5FF]/20 rounded-3xl p-8 border border-[#F5F5F5]/10">

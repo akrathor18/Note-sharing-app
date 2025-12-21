@@ -110,12 +110,34 @@ function ProfileHeader({
     });
   };
 
+  const MAX_LINKS = 5;
+
   const handleAddSocialLink = () => {
     setEditedUser(prev => {
-      const links = Array.isArray(prev.links) ? [...prev.links] : [];
-      return { ...prev, links: [...links, { label: "", url: "", icon: "globe" }] };
+      const links = prev.links || [];
+
+      const hasEmpty = links.some(
+        (link) => !link.label?.trim() || !link.url?.trim()
+      );
+
+      if (hasEmpty) {
+        toast.error("Please complete the current link before adding a new one");
+        return prev;
+      }
+
+      if (links.length >= 5) {
+        toast.error("You can add only 5 social links");
+        return prev;
+      }
+
+      return {
+        ...prev,
+        links: [...links, { label: "", url: "", icon: "globe" }]
+      };
     });
   };
+
+
 
   const handleRemoveSocialLink = (index) => {
     setEditedUser(prev => {
@@ -150,8 +172,28 @@ function ProfileHeader({
   };
 
   const handleSaveSocialLinks = () => {
+    const links = editedUser.links || [];
 
-    console.log("Saving links:", editedUser.links);
+    // Check empty label or url
+    const hasInvalidLink = links.some(
+      (link) => !link.label?.trim() || !link.url?.trim()
+    );
+
+    if (hasInvalidLink) {
+      toast.error("Please fill all social link fields or remove empty ones");
+      return;
+    }
+
+    // URL format validation
+    const invalidUrl = links.some(
+      (link) => !/^https?:\/\/.+/i.test(link.url)
+    );
+
+    if (invalidUrl) {
+      toast.error("Please enter a valid URL (must start with http or https)");
+      return;
+    }
+    console.log(links)
     const success = updateLinks(editedUser.links);
     if (!success) {
       toast.error("Failed to update links. Reverted.");
@@ -248,7 +290,7 @@ function ProfileHeader({
                     onClick={handleSaveProfilePicture}
                     disabled={isUploading}
                     className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium
-                      ${isUploading ? "opacity-50 cursor-not-allowed" : "bg-[#00E5FF] hover:bg-[#00E5FF]/90"}`}>
+                      ${isUploading ? "opacity-50 cursor-not-allowed" : "bg-[#00E5FF] text-[#000000] hover:bg-[#00E5FF]/90"}`}>
                     {isUploading ? "Uploading..." : "Save Picture"}
                   </button>
                   <button
@@ -331,7 +373,7 @@ function ProfileHeader({
               <div className="flex justify-between items-start w-full">
                 <div>
                   <h1 className="text-2xl font-bold capitalize">{user.name || "User"}</h1>
-                  <p className="text-[#F5F5F5]/60 capitalize">{user.role?.role_name|| "student"}</p>
+                  <p className="text-[#F5F5F5]/60 capitalize">{user.role?.role_name || "student"}</p>
                 </div>
                 <button
                   onClick={() => {
@@ -365,28 +407,28 @@ function ProfileHeader({
 
                 {/* Social links row */}
                 {user.links && user.links.some((link) => link.url) && (
-  <div className="flex flex-wrap gap-2 pt-3">
-    {user.links.map((link, index) => {
-      if (!link.url) return null;
+                  <div className="flex flex-wrap gap-2 pt-3">
+                    {user.links.map((link, index) => {
+                      if (!link.url) return null;
 
-      const Icon = getLinksIcon(link.type || link.label);
+                      const Icon = getLinksIcon(link.type || link.label);
 
-      return (
-        <a
-          key={index}
-          href={link.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-3 py-1 rounded-full bg-[#0D0D0D] border border-[#F5F5F5]/10 hover:border-[#FF007F] text-sm flex items-center gap-1 transition-colors"
-          title={link.label}
-        >
-          <Icon size={16} />
-          {link.label}
-        </a>
-      );
-    })}
-  </div>
-)}
+                      return (
+                        <a
+                          key={index}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1 rounded-full bg-[#0D0D0D] border border-[#F5F5F5]/10 hover:border-[#FF007F] text-sm flex items-center gap-1 transition-colors"
+                          title={link.label}
+                        >
+                          <Icon size={16} />
+                          {link.label}
+                        </a>
+                      );
+                    })}
+                  </div>
+                )}
 
               </div>
             </>

@@ -32,8 +32,8 @@ export default function LandingTestimonials() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold mb-6">
-                        Loved by Students
-                        <span className="text-[#FF007F]">Worldwide</span>
+                        Loved by 
+                        <span className="text-[#FF007F]"> Students</span>
                     </h2>
                     <p className="text-xl text-[#F5F5F5]/80">See what students are saying about their StudyHub experience</p>
                 </div>

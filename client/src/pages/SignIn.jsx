@@ -114,7 +114,7 @@ export default function SignIn() {
                     </div>
 
                     {/* Remember me and forgot password */}
-                    <div className="flex items-center justify-between">
+                    {/* <div className="flex items-center justify-between">
                         <div className="flex items-center">
                             <input
                                 id="remember-me"
@@ -128,7 +128,7 @@ export default function SignIn() {
                         <a href="#" className="text-sm text-[#00E5FF] hover:underline">
                             Forgot password?
                         </a>
-                    </div>
+                    </div> */}
 
                     {/* Submit button */}
                     <button

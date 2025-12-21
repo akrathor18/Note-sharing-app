@@ -7,7 +7,7 @@ export default function LandingCommunity() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div>
                         <h2 className="text-3xl md:text-5xl font-bold mb-6">
-                            Join Our Global
+                            Join Our 
                             <span className="text-[#00E5FF]"> Learning Community</span>
                         </h2>
                         <p className="text-xl text-[#F5F5F5]/80 mb-8">

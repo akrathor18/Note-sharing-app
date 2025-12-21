@@ -17,14 +17,14 @@ export default function SearchAndFilter({ searchTerm, onSearchChange }) {
                 />
             </div>
 
-            <div className="flex items-center gap-2 bg-[#1A1A1A] border border-[#F5F5F5]/10 rounded-lg px-3">
+            {/* <div className="flex items-center gap-2 bg-[#1A1A1A] border border-[#F5F5F5]/10 rounded-lg px-3">
                 <Filter size={18} className="text-[#F5F5F5]/40" />
                 <select className="bg-[#1A1A1A] py-2 focus:outline-none w-full">
                     <option>Most Recent</option>
                     <option>Most Downloaded</option>
                     <option>Alphabetical</option>
                 </select>
-            </div>
+            </div> */}
         </div>
     );
 }

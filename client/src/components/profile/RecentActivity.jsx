@@ -8,7 +8,7 @@ function RecentActivity({ recentActivity }) {
 
     {recentActivity.length > 0 ? (
       <div className="space-y-3">
-        {recentActivity.slice(0, 3).map((activity) => (
+        {recentActivity.slice(0, 5).map((activity) => (
           <ActivityItem key={activity._id} activity={activity} />
         ))}
       </div>

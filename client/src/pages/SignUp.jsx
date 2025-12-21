@@ -181,7 +181,7 @@ export default function SignUp() {
                     </div>
 
                     {/* Terms Checkbox */}
-                    <div className="flex items-center">
+                    {/* <div className="flex items-center">
                         <input
                             id="terms"
                             type="checkbox"
@@ -198,7 +198,7 @@ export default function SignUp() {
                                 Privacy Policy
                             </a>
                         </label>
-                    </div>
+                    </div> */}
                     {errors.terms && (
                         <p className="text-red-500 text-xs mt-1">{errors.terms.message}</p>
                     )}
