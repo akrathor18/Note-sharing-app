@@ -125,25 +125,28 @@ router.delete("/:id", VerifyJwtMiddleware, authMiddleware, async (req, res) => {
 router.get('/search', async (req, res) => {
   const { query } = req.query;
 
-  if (!query || query.trim() === '') {
+  if (!query || !query.trim()) {
     return res.status(400).json({ error: 'Search term is required' });
   }
 
-  const searchQuery = {
-    $or: [
-      { title: { $regex: query, $options: 'i' } },
-      { description: { $regex: query, $options: 'i' } },
-      { subject: { $regex: query, $options: 'i' } },
-    ],
-  };
-
   try {
-    const notes = await Note.find(searchQuery).populate('uploadedBy', 'name');
+    const notes = await Note.find({
+      $or: [
+        { title: { $regex: query, $options: 'i' } },
+        { description: { $regex: query, $options: 'i' } },
+        { subject: { $regex: query, $options: 'i' } },
+      ],
+    })
+    .populate('uploadedBy', 'name')
+    .limit(20);
+    // .select('title subject createdAt uploadedBy')
+    
     res.status(200).json(notes);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch notes' });
   }
 });
+
 
 export default router;

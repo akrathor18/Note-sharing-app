@@ -12,7 +12,17 @@ const noteStorage = new CloudinaryStorage({
       const ext = file.originalname.split('.').pop();
       return ext;
     },
-    public_id: (req, file) => file.originalname.split('.')[0],
+    public_id: (req, file) => {
+      const uniqueId = crypto.randomBytes(6).toString('hex');
+      const originalName = file.originalname
+        .split('.')
+        .slice(0, -1)
+        .join('.')
+        .replace(/\s+/g, '-')
+        .toLowerCase();
+
+      return `${originalName}-${uniqueId}`;
+    },
   },
 });
 

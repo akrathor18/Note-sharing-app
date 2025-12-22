@@ -35,10 +35,10 @@ router.post('/createQuiz', VerifyJwtMiddleware, async (req, res) => {
     }
 });
 
-router.get('/getQuiz',VerifyJwtMiddleware,authMiddleware, async (req, res) => {
+router.get('/getQuiz', VerifyJwtMiddleware, authMiddleware, async (req, res) => {
     try {
         const quiz = await Quiz.find().populate('createdBy', 'name email') // optional
-        .sort({createdAt:-1})
+            .sort({ createdAt: -1 })
         res.status(200).json(quiz);
     } catch (error) {
         console.log(error);
@@ -81,7 +81,7 @@ router.get('/attempts', VerifyJwtMiddleware, authMiddleware, async (req, res) =>
         const attempts = await QuizAttempt.find({
             user: req.user.id,
         })
-            .populate('quiz', 'title category difficulty')  
+            .populate('quiz', 'title category difficulty')
             .select('quiz score percentageScore attemptedAt')
             .sort({ attemptedAt: -1 })
             .limit(10);
@@ -95,24 +95,30 @@ router.get('/attempts', VerifyJwtMiddleware, authMiddleware, async (req, res) =>
 
 // Search Quizzes
 router.get('/search', async (req, res) => {
-    const { search } = req.query;
+    const { query } = req.query;
 
-    const query = search
-        ? {
-            $or: [
-                { title: { $regex: search, $options: 'i' } },
-                { category: { $regex: search, $options: 'i' } },
-            ],
-        }
-        : {};
+    if (!query || !query.trim()) {
+        return res.status(400).json({ error: 'Search term is required' });
+    }
 
     try {
-        const quizzes = await Quiz.find(query);
+        const quizzes = await Quiz.find({
+            $or: [
+                { title: { $regex: query, $options: 'i' } },
+                { category: { $regex: query, $options: 'i' } },
+            ],
+        })
+        .limit(20);
+        // .select('title category createdAt')
+
         res.status(200).json(quizzes);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Failed to fetch quizzes' });
     }
 });
+
+
 
 // Delete quiz by ID only by the creator
 router.delete("/:id", VerifyJwtMiddleware, async (req, res) => {
@@ -174,7 +180,7 @@ router.get('/:id', async (req, res) => {
 });
 
 
-router.post('/:id/attempt',VerifyJwtMiddleware, authMiddleware, async (req, res) => {
+router.post('/:id/attempt', VerifyJwtMiddleware, authMiddleware, async (req, res) => {
     try {
         const quiz = await Quiz.findById(req.params.id);
         if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
@@ -257,7 +263,7 @@ router.post('/:id/attempt',VerifyJwtMiddleware, authMiddleware, async (req, res)
     }
 });
 
-router.patch("/:id",VerifyJwtMiddleware, authMiddleware, async (req, res) => {
+router.patch("/:id", VerifyJwtMiddleware, authMiddleware, async (req, res) => {
     try {
         const quizId = req.params.id;
         const userId = req.user.id;

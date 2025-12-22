@@ -24,7 +24,7 @@ export default function SearchResults() {
 
     const fetchResults = async () => {
         try {
-            setTimeout(() => setIsLoading(false), 200);
+            setIsLoading(false)
 
             const [notesResponse, quizzesResponse] = await Promise.all([
                 API.get(`/notes/search?query=${query}`),
