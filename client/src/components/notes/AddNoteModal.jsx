@@ -135,9 +135,14 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
                         <select
                             id="subject"
                             name="subject"
+                            value=''
                             {...register('subject', { required: 'Subject is required' })}
-                            className="w-full bg-[#0D0D0D] border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
+                            className="w-full bg-[#0D0D0D] capitalize border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
                         >
+                            <option value="" disabled>
+                                Select subject
+                            </option>
+
                             {subjects
                                 .filter((s) => s.id !== 'all')
                                 .map((subject) => (

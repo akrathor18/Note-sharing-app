@@ -16,7 +16,7 @@ export default function SubjectTabs({ activeSubject, onSubjectClick }) {
                     <button
                         key={subject.id}
                         onClick={() => onSubjectClick(subject.name)}
-                        className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors 
+                        className={`capitalize px-4 py-2 rounded-lg whitespace-nowrap transition-colors 
               ${activeSubject === subject.name
                                 ? 'bg-[#FF007F] text-white'
                                 : 'bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-[#F5F5F5]'
