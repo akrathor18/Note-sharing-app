@@ -29,7 +29,8 @@ export default function Dashboard() {
   }, [fetchUser, getScore]);
 
   if (isLoading) return <SkeletonLoader />;
-  if (error) return <p>Error: {error}</p>;
+
+  if (error) return <ErrorState title='Unable to load Dashboard' message={error} />;
 
   // Safely unwrap user data
   const userState = userStates || {};

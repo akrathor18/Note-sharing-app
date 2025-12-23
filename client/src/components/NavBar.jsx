@@ -20,7 +20,7 @@ import { removeToken, handleAuthError } from '../utils/auth';
 import { useUserStore } from "../store/userStore.js";
 
 function navBar() {
-    const {user} = useUserStore();
+    const { user } = useUserStore();
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -129,24 +129,27 @@ function navBar() {
     return (
         <div className="flex h-screen bg-[#0D0D0D] text-[#F5F5F5] relative">
             {/* Mobile Menu Button */}
-            <button
-                onClick={toggleMobileMenu}
-                className="md:hidden fixed top-4 left-4 z-30 p-2 rounded-lg bg-[#1A1A1A] text-[#F5F5F5]"
-            >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+
 
             {/* Sidebar - Desktop always visible, Mobile as overlay */}
             <div
                 className={`${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                     } md:translate-x-0 fixed md:static inset-y-0 left-0 z-20 w-64 bg-[#1A1A1A] p-4 flex flex-col transition-transform duration-300 ease-in-out overflow-y-auto`}
             >
-                <NavLink to={'/'} className="flex items-center gap-2 mb-8">
-                    <BookOpen className="text-[#FF007F]" />
-                    <h1 className="text-xl font-bold">StudyHub</h1>
-                </NavLink>
+                <div className="flex justify-between items-center">
+                    <NavLink to={'/'} className="flex items-center gap-2">
+                        <BookOpen className="text-[#FF007F]" />
+                        <h1 className="text-xl font-bold">StudyHub</h1>
+                    </NavLink>
 
-                <nav className="flex-1">
+                    <button
+                        onClick={toggleMobileMenu}
+                        className="md:hidden reletive top-4 left-4 z-30 p-2 rounded-lg bg-[#1A1A1A] text-[#F5F5F5]"
+                    >
+                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
+                </div>
+                <nav className="flex-1 mt-8 border-t border-[#F5F5F5]/10">
                     <ul className="space-y-2">
                         <li>
                             <NavLink
@@ -238,7 +241,16 @@ function navBar() {
             <div className="flex-1 overflow-auto w-full">
                 {/* Header */}
                 <header className="index bg-[#1A1A1A] p-4 flex items-center justify-between sticky top-0">
-                    <div className="relative w-full max-w-xs ml-auto md:ml-0">
+
+                    <button
+                        onClick={toggleMobileMenu}
+                        className="md:hidden reletive top-4 left-4 z-30 p-2 rounded-lg bg-[#1A1A1A] text-[#F5F5F5]"
+                    >
+                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
+
+                    <div className="relative w-full max-w-md ml-auto md:ml-0">
+
                         <form onSubmit={handleSearch}>
                             <Search
                                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#F5F5F5]/40"
@@ -256,7 +268,7 @@ function navBar() {
 
                     <div className="flex items-center gap-4">
                         {/* <div className="relative notification-menu-container"> */}
-                            {/* <button
+                        {/* <button
                                 onClick={toggleNotificationMenu}
                                 className="relative p-2 rounded-full hover:bg-[#F5F5F5]/5 transition-colors"
                             >
@@ -266,8 +278,8 @@ function navBar() {
                                 )}
                             </button> */}
 
-                            {/* Notification Dropdown */}
-                            {/* {isNotificationMenuOpen && (
+                        {/* Notification Dropdown */}
+                        {/* {isNotificationMenuOpen && (
                                 <div className="absolute xs:right-0 -right-14 mt-2 w-80 bg-[#1A1A1A] rounded-lg shadow-lg border border-[#F5F5F5]/10 py-1 z-50">
                                     <div className="px-4 py-2 border-b border-[#F5F5F5]/10">
                                         <h3 className="font-medium">Notifications</h3>

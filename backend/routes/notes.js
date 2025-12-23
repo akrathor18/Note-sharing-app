@@ -48,7 +48,8 @@ router.get('/getnotes',VerifyJwtMiddleware, authMiddleware, async (req, res) => 
   try {
     const notes = await Note.find()
       .populate('uploadedBy', 'name email')
-      .populate('subject', 'name');
+      .populate('subject', 'name')
+      .sort({ createdAt: -1 });
     res.status(200).json(notes);
   } catch (error) {
     res.status(500).json({ message: 'Failed to retrieve notes', error: error.message });

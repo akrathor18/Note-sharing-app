@@ -33,7 +33,7 @@ function Profile() {
     const fileInputRef = useRef(null);
 
     if (isLoading) return <SkeletonLoader />;
-    if (error) return <ErrorState title='Unable to load Profile' message="Something went wrong while fetching your Profile." />;
+    if (error) return <ErrorState title='Unable to load Profile' message={error||"Something went wrong while fetching your Profile."} />;
     userState.averageScore = averageScore ? averageScore.averagePercentage : 0;
     const handleInputChange = (e) => {
         const { name, value } = e.target;
