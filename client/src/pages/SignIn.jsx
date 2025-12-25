@@ -25,7 +25,7 @@ export default function SignIn() {
                 password: data.password,
             });
             setToken(response.data.token);
-            navigate('/');
+            navigate('/dashboard');
             handleAuthError('signin-success');
         } catch (error) {
             toast.error(error.response?.data || 'Login failed');

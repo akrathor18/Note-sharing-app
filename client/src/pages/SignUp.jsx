@@ -32,7 +32,7 @@ export default function SignUp() {
             });
             console.log(response);
             setToken(response.data.token);
-            navigate('/');
+            navigate('/dashboard');
             handleAuthError('signup-success');
         } catch (error) {
             console.log(error);
