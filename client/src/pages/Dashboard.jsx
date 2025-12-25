@@ -16,6 +16,7 @@ import Streak from "../components/dashboard/Streak.jsx";
 import AverageQuizeScore from "../components/dashboard/AverageQuizeScore.jsx";
 import SecondaryStates from "../components/dashboard/SecondaryStates.jsx";
 import SkeletonLoader from "../components/dashboard/skeletonLoader.jsx";
+import ErrorState from '../common/components/ErrorState';
 
 export default function Dashboard() {
   // Zustand store
