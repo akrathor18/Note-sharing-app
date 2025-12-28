@@ -45,9 +45,6 @@ StudyHub is a full‑stack web platform built **for students, by students**. It 
 
 ---
 
-## 🛠️ Tech Stack
-
----
 
 ## 🚀 Getting Started
 
@@ -141,7 +138,9 @@ http://localhost:5173
 
 ---
 
+## 🛠️ Tech Stack
 
+---
 ### Frontend
 
 * React
