@@ -16,7 +16,11 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm();
+    } = useForm({
+  defaultValues: {
+    subject: '',
+  },
+});
 
     // Provide file validation
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -135,7 +139,6 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
                         <select
                             id="subject"
                             name="subject"
-                            value=''
                             {...register('subject', { required: 'Subject is required' })}
                             className="w-full bg-[#0D0D0D] capitalize border border-[#F5F5F5]/10 rounded-lg py-2 px-3 focus:outline-none focus:border-[#FF007F]"
                         >
