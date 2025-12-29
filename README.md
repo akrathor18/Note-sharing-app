@@ -239,6 +239,14 @@ Aspiring Full‑Stack Web Developer (MERN)
 GitHub: [https://github.com/akrathor18](https://github.com/akrathor18)
 
 ---
+## 👥 Contributors
+
+- [**Ashish Kumar**](https://github.com/akrathor18) — Full-Stack Developer, Project Owner  
+
+- [**Prince Rawat**](https://github.com/Kashina69/) — Contributor (feature development / bug fixes / suggestions) 
+  
+
+---
 
 ## ⭐ Feedback
 
