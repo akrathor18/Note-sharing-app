@@ -24,10 +24,14 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: cd client && npm install
+        working-directory: client
+        run: npm install
 
       - name: Build frontend
-        run: cd client && npm run build
+        working-directory: client
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+        run: npm run build
 
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
