@@ -247,6 +247,12 @@ GitHub: [https://github.com/akrathor18](https://github.com/akrathor18)
   
 
 ---
+## License
+This project is licensed under the MIT License.
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+
+
+---
 
 ## ⭐ Feedback
 
