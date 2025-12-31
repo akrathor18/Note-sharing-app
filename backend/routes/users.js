@@ -12,25 +12,14 @@ import bcrypt from 'bcryptjs';
 import { trackActivityAndStreak } from '../utils/activityTracker.js';
 
 // Helper function to generate JWT and set cookie 
-function generateSessionId(user, res) {
-  const token = jwt.sign(
+function generateToken(user) {
+  return jwt.sign(
     { id: user._id, role: user.role },
     process.env.JWT_SECRET,
-    { expiresIn: '7d' }
+    { expiresIn: "7d" }
   );
-
-  const isProd = process.env.NODE_ENV === 'production';
-
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
-
-
-  return token;
 }
+
 
 
 // Auth routes below
@@ -56,7 +45,7 @@ router.post('/register', async (req, res) => {
     });
 
     const savedUser = await newUser.save();
-    const token = generateSessionId(savedUser, res);
+    const token = generateToken(savedUser, res);
 
     res.status(201).json({ message: 'User registered successfully!', token });
   } catch (error) {
@@ -77,7 +66,7 @@ router.post('/login', async (req, res) => {
     const isMatch = await userLogin.comparePassword(password);
     if (!isMatch) return res.status(400).json('Invalid credentials');
 
-    const token = generateSessionId(userLogin, res);
+    const token = generateToken(userLogin, res);
 
     res.status(200).json({
       message: 'User logged in successfully!',
@@ -105,7 +94,7 @@ router.post("/logout", (req, res) => {
 
 
 //user routes below
-router.post('/changepassword',VerifyJwtMiddleware, authMiddleware, async (req, res) => {
+router.post('/changepassword', VerifyJwtMiddleware, authMiddleware, async (req, res) => {
   try {
     const { password, newPassword } = req.body;
     const userId = req.user.id;
@@ -128,7 +117,7 @@ router.post('/changepassword',VerifyJwtMiddleware, authMiddleware, async (req, r
   }
 });
 
-router.get('/profile',VerifyJwtMiddleware, authMiddleware,  async (req, res) => {
+router.get('/profile', VerifyJwtMiddleware, authMiddleware, async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
 
@@ -175,7 +164,7 @@ router.get('/profile',VerifyJwtMiddleware, authMiddleware,  async (req, res) => 
   }
 });
 
-router.get('/average-score',VerifyJwtMiddleware, authMiddleware,  async (req, res) => {
+router.get('/average-score', VerifyJwtMiddleware, authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
 
@@ -203,7 +192,7 @@ router.get('/average-score',VerifyJwtMiddleware, authMiddleware,  async (req, re
 
 
 
-router.patch('/bio',VerifyJwtMiddleware, authMiddleware, async (req, res) => {
+router.patch('/bio', VerifyJwtMiddleware, authMiddleware, async (req, res) => {
   const userId = req.user.id;
   const { bio } = req.body;
 
