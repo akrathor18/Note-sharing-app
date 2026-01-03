@@ -12,7 +12,7 @@ import cloudinary from '../config/cloudinary.js';
 const router = express.Router();
 
 router.post('/upload', VerifyJwtMiddleware, authMiddleware, noteUpload.single('file'), async (req, res) => {
- 
+
   try {
     const { title, description, subject } = req.body;
     const note = await Note.create({
@@ -40,11 +40,11 @@ router.post('/upload', VerifyJwtMiddleware, authMiddleware, noteUpload.single('f
   } catch (err) {
 
     console.log(err)
-    res.status(500).json({success: false, message: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
-router.get('/getnotes',VerifyJwtMiddleware, authMiddleware, async (req, res) => {
+router.get('/getnotes', VerifyJwtMiddleware, authMiddleware, async (req, res) => {
   try {
     const notes = await Note.find()
       .populate('uploadedBy', 'name email')
@@ -138,10 +138,10 @@ router.get('/search', async (req, res) => {
         { subject: { $regex: query, $options: 'i' } },
       ],
     })
-    .populate('uploadedBy', 'name')
-    .limit(20);
+      .populate('uploadedBy', 'name')
+      .limit(20);
     // .select('title subject createdAt uploadedBy')
-    
+
     res.status(200).json(notes);
   } catch (err) {
     console.error(err);
@@ -149,9 +149,9 @@ router.get('/search', async (req, res) => {
   }
 });
 
-router.get('/:id', async(req, res)=>{
+router.get('/:id', async (req, res) => {
   try {
-     const { id } = req.params;
+    const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid note ID" });
@@ -168,5 +168,46 @@ router.get('/:id', async(req, res)=>{
     res.status(501).json("internal Server Error")
   }
 })
+
+// routes/notes.js
+router.post("/:id/view", VerifyJwtMiddleware, async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    if (!note) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+
+    // prevent duplicate views
+    if (!note.viewedBy.includes(req.user.id)) {
+      note.views += 1;
+      note.viewedBy.push(req.user.id);
+      await note.save();
+    }
+
+    res.status(200).json({ views: note.views });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update views" });
+  }
+});
+
+// routes/notes.js
+router.post("/:id/download", VerifyJwtMiddleware, async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    if (!note) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+
+    // prevent duplicate downloads
+      note.totalDownloads += 1;
+      await note.save();
+
+    res.status(200).json({ downloads: note.totalDownloads });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to track download" });
+  }
+});
+
+
 
 export default router;

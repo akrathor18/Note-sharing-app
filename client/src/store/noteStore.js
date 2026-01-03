@@ -118,4 +118,19 @@ export const useNoteStore = create((set, get) => ({
         }
     },
 
+    viewsUpdate: async (id) => {
+        try {
+            const response=await API.post(`/notes/${id}/view`);
+            set((state) => ({
+                previewNote: {
+                    ...state.previewNote,
+                    views: state.previewNote.views + 1,
+                },
+            }))
+        }
+         catch (error) {
+            console.error("View tracking failed", error);
+        }
+    },
+
 }));

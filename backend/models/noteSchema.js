@@ -37,6 +37,17 @@ const noteSchema = new mongoose.Schema({
         default: 0, // Default to 0 if not specified
         required: true,
     },
+    views: {
+        type: Number,
+        default: 0,
+    },
+    viewedBy: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
+    ],
+
     visibility: {
         type: String,
         enum: ['public', 'private'],

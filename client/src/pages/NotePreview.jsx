@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { ArrowLeft, Download, Share2, MoreVertical, Eye } from "lucide-react"
 import ErrorState from "../common/components/ErrorState";
 import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
-
 import { useParams } from "react-router-dom";
 import { useNoteStore } from "../store/noteStore";
 import { formatDate } from "../utils/formatDate";
@@ -13,8 +12,9 @@ import { toast } from "react-toastify";
 export default function previewNote() {
     const navigate = useNavigate()
     const { id } = useParams()
-    const { previewNote, getPreviewNote, loadingPreview, errorPreview } = useNoteStore()
+    const { previewNote, getPreviewNote, loadingPreview, errorPreview, viewsUpdate } = useNoteStore()
 
+    // fteching note
     useEffect(() => {
         if (!id) return
 
@@ -24,6 +24,18 @@ export default function previewNote() {
 
         fetchPreview()
     }, [id])
+
+    // update view count
+    useEffect(() => {
+        if (!id) return;
+
+        const trackView = async () => {
+            await viewsUpdate(id)
+        };
+
+        trackView();
+    }, [id]);
+
 
 
     const onBack = () => {
@@ -68,17 +80,10 @@ export default function previewNote() {
 
     if (!!errorPreview) return <ErrorState title='Unable to load Preview' message={errorPreview} />;
 
-    const sampleDoc = [
-        {
-            // uri: `data:text/plain;base64,${Buffer.from(note.content).toString("base64")}`,
-            fileType: "txt",
-        },
-    ]
-
     const docs = [
         {
             uri: previewNote.fileUrl,
-            fileType: previewNote.fileType, // optional but recommended
+            fileType: previewNote.fileType,
             fileName: previewNote.title,
         },
     ];
@@ -158,7 +163,7 @@ export default function previewNote() {
                     <span>{formatDate(previewNote.createdAt) || new Date().toLocaleDateString()}</span>
                 </div>
                 <div className="text-[#F5F5F5]/60 ml-auto">
-                    <span>{previewNote.downloads || 0} downloads</span>
+                    <span>{previewNote.views || 0} Views</span>
                 </div>
             </div>
 
