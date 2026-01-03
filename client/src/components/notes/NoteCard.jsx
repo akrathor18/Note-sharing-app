@@ -37,7 +37,7 @@ export default function NoteCard({ note }) {
             <div className="flex gap-2 justify-around mb-2   w-full py-2 ">
 
                 <div>
-                    <a href={note.fileUrl} target="_blank" rel="noopener noreferrer">
+                    <a href={note.fileUrl} download rel="noopener noreferrer">
                         <button className="w-full mt-3 p-2 rounded-lg bg-[#FF007F] hover:bg-[#FF007F]/80 transition-colors flex items-center justify-center gap-2 font-medium">
                             <Download size={16} />
                             Download

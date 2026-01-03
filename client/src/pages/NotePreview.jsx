@@ -2,57 +2,71 @@
 
 import { useEffect, useState } from "react"
 import { ArrowLeft, Download, Share2, MoreVertical, Eye } from "lucide-react"
-// import "react-doc-viewer/theme/dark.css"
-
+import ErrorState from "../common/components/ErrorState";
 import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
 
 import { useParams } from "react-router-dom";
 import { useNoteStore } from "../store/noteStore";
-
+import { formatDate } from "../utils/formatDate";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 export default function previewNote() {
+    const navigate = useNavigate()
     const { id } = useParams()
-    console.log(id)
-    const {previewNote, getPreviewNote}= useNoteStore()
+    const { previewNote, getPreviewNote, loadingPreview, errorPreview } = useNoteStore()
 
     useEffect(() => {
-  if (!id) return
+        if (!id) return
 
-  const fetchPreview = async () => {
-    await getPreviewNote(id)
-  }
+        const fetchPreview = async () => {
+            await getPreviewNote(id)
+        }
 
-  fetchPreview()
-}, [id])
+        fetchPreview()
+    }, [id])
 
 
-    const onBack=()=>{
-        console.log("back")
+    const onBack = () => {
+        navigate((-1))
     }
-    
+
+    const handleShare = async () => {
+        const shareUrl = window.location.href;
+
+        try {
+            if (navigator.share) {
+                await navigator.share({
+                    title: previewNote.title,
+                    text: `Check out this note on StudyHub`,
+                    url: shareUrl,
+                });
+            } else {
+                // ❌ Fallback: copy link
+                await navigator.clipboard.writeText(shareUrl);
+                toast.success("Link copied to clipboard!");
+            }
+        } catch (error) {
+            console.error("Share failed:", error);
+        }
+    };
+
+
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
-    if (!previewNote || !previewNote.fileUrl) {
-  return (
-    <div className="flex items-center justify-center h-screen text-[#F5F5F5]/60">
-      Loading preview...
-    </div>
-  )
-}
-const isPDF =
-  previewNote.fileType === "pdf" ||
-  previewNote.fileUrl?.toLowerCase().endsWith(".pdf");
+    if (loadingPreview) {
+        return (
+            <div className="flex items-center justify-center h-screen text-[#F5F5F5]/60">
+                Loading preview...
+            </div>
+        )
+    }
+    const isPDF =
+        previewNote.fileType === "pdf" ||
+        previewNote.fileUrl?.toLowerCase().endsWith(".pdf");
 
 
 
-    // if (!previewNote) {
-    //     return (
-    //         <div className="flex flex-col items-center justify-center h-full bg-[#0D0D0D] text-[#F5F5F5] py-12">
-    //             <Eye size={48} className="text-[#F5F5F5]/40 mb-4" />
-    //             <h2 className="text-lg font-medium mb-2">No Note Selected</h2>
-    //             <p className="text-[#F5F5F5]/60">Select a note to preview it here</p>
-    //         </div>
-    //     )
-    // }
+    if (!!errorPreview) return <ErrorState title='Unable to load Preview' message={errorPreview} />;
 
     const sampleDoc = [
         {
@@ -81,24 +95,29 @@ const isPDF =
                     >
                         <ArrowLeft size={20} />
                     </button>
-                    <div className="min-w-0">
+                    <div className="min-w-0 capitalize">
                         <h1 className="text-lg md:text-xl font-bold truncate">{previewNote.title}</h1>
                         <p className="text-sm text-[#F5F5F5]/60 truncate">{previewNote.subject}</p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0 ml-4">
-                    <button className="p-2 rounded-lg hover:bg-[#F5F5F5]/10 transition-colors hidden sm:flex items-center gap-2 text-sm">
-                        <Download size={18} />
-                        <span className="hidden md:inline">Download</span>
-                    </button>
-                    <button className="p-2 rounded-lg hover:bg-[#F5F5F5]/10 transition-colors hidden sm:flex items-center gap-2 text-sm">
+                    <a href={previewNote.fileUrl} download>
+
+                        <button className="p-2 rounded-lg hover:bg-[#F5F5F5]/10 transition-colors hidden sm:flex items-center gap-2 text-sm">
+                            <Download size={18} />
+                            <span className="hidden md:inline">Download</span>
+                        </button>
+                    </a>
+                    <button
+                        onClick={handleShare}
+                        className="p-2 rounded-lg hover:bg-[#F5F5F5]/10 transition-colors hidden sm:flex items-center gap-2 text-sm">
                         <Share2 size={18} />
                         <span className="hidden md:inline">Share</span>
                     </button>
 
                     {/* More Options */}
-                    <div className="relative">
+                    {false ? <div className="relative">
                         <button
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                             className="p-2 rounded-lg hover:bg-[#F5F5F5]/10 transition-colors"
@@ -121,7 +140,7 @@ const isPDF =
                                 </button>
                             </div>
                         )}
-                    </div>
+                    </div> : ''}
                 </div>
             </div>
 
@@ -136,7 +155,7 @@ const isPDF =
                     {/* <span>{note.pages || "5-30"} pages</span> */}
                 </div>
                 <div className="text-[#F5F5F5]/60 flex items-center gap-2">
-                    <span>{previewNote.createdAt || new Date().toLocaleDateString()}</span>
+                    <span>{formatDate(previewNote.createdAt) || new Date().toLocaleDateString()}</span>
                 </div>
                 <div className="text-[#F5F5F5]/60 ml-auto">
                     <span>{previewNote.downloads || 0} downloads</span>
@@ -152,15 +171,15 @@ const isPDF =
 
                         {/* DOC VIEWER HEIGHT FIX */}
                         <div className="doc-viewer-wrapper h-[75vh]">
-  {isPDF ? (
-    <iframe
-      src={previewNote.fileUrl}
-      className="w-full h-full rounded-lg"
-      title="PDF Preview"
-    />
-  ) : (
-     <DocViewer
-                                className="doc-viewer-wrapper"
+                            {isPDF ? (
+                                <iframe
+                                    src={previewNote.fileUrl}
+                                    className="w-full h-full rounded-lg"
+                                    title="PDF Preview"
+                                />
+                            ) : (
+                                <DocViewer
+                                    className="doc-viewer-wrapper"
                                     documents={docs}
                                     pluginRenderers={DocViewerRenderers}
                                     config={{
@@ -170,19 +189,23 @@ const isPDF =
                                         },
                                     }}
                                 />
-  )}
-</div>
+                            )}
+                        </div>
 
                     </div>
                 </div>
 
                 {/* Footer (NOW STICKY WILL WORK) */}
                 <div className="bg-[#1A1A1A] border-t border-[#F5F5F5]/10 px-4 py-3 flex gap-2 sticky bottom-0">
-                    <button className="flex-1 sm:flex-none px-4 py-2 bg-[#FF007F] text-white rounded-lg flex items-center justify-center gap-2">
-                        <Download size={18} />
-                        <span className="hidden sm:inline">Download Note</span>
-                    </button>
-                    <button className="flex-1 sm:flex-none px-4 py-2 border border-[#F5F5F5]/20 rounded-lg flex items-center justify-center gap-2">
+                    <a href={previewNote.fileUrl} download>
+                        <button className="flex-1 sm:flex-none px-4 py-2 bg-[#FF007F] text-white rounded-lg flex items-center justify-center gap-2">
+                            <Download size={18} />
+                            <span className="hidden sm:inline">Download Note</span>
+                        </button>
+                    </a>
+                    <button
+                        onClick={handleShare}
+                        className="flex-1 sm:flex-none px-4 py-2 border border-[#F5F5F5]/20 rounded-lg flex items-center justify-center gap-2">
                         <Share2 size={18} />
                         <span className="hidden sm:inline">Share Note</span>
                     </button>

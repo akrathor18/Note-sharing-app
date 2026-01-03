@@ -10,7 +10,9 @@ export const useNoteStore = create((set, get) => ({
     isUploading: false,
     errorOnUpload: null,
     errorOnDelete: null,
-    previewNote:[],
+    previewNote: [],
+    errorPreview: null,
+    loadingPreview: false,
 
     //Get notes
     fetchNotes: async () => {
@@ -103,13 +105,16 @@ export const useNoteStore = create((set, get) => ({
         }
     },
 
-    getPreviewNote: async(noteId)=>{
+    getPreviewNote: async (noteId) => {
+        set({ loadingPreview: true })
         try {
-            const response= await API.get(`/notes/${noteId}`);
-            console.log(response.data)
-            set({previewNote:response.data})
+            const response = await API.get(`/notes/${noteId}`);
+            set({ previewNote: response.data, loadingPreview: false })
         } catch (error) {
+            set({ errorPreview: error.message || "Failed to preview note" })
+            set({ loadingPreview: false })
             console.log(error)
+
         }
     },
 
