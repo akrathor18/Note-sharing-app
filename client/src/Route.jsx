@@ -12,7 +12,7 @@ import NotFound from './pages/NotFound.jsx';
 import CreateQuiz from './pages/CreateQuiz.jsx';
 import QuizScreen from './pages/QuizScreen.jsx';
 import Feedback from './pages/Feedback.jsx';
-
+import NotePreview from './pages/NotePreview.jsx';
 import Navbar from './components/NavBar.jsx';
 
 const routes = [
@@ -34,6 +34,7 @@ const routes = [
         element: <NotFound />,
     },
 
+
     // Protected routes
     {
         element: (
@@ -45,6 +46,7 @@ const routes = [
                 children: [
                     { path: 'dashboard', element: <Dashboard /> },
                     { path: 'notes', element: <Notes /> },
+                    { path: 'notes/:id/preview', element: <NotePreview />,},
                     { path: 'quizzes', element: <Quiz /> },
                     { path: 'profile', element: <Profile /> },
                     { path: 'settings', element: <Settings /> },

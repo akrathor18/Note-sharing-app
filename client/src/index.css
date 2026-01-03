@@ -42,3 +42,14 @@ body {
 .index{
     z-index: 15;  
 }
+
+
+.doc-viewer-wrapper {
+  height: calc(100vh - 160px); /* adjust if needed */
+}
+
+.doc-viewer-wrapper iframe {
+  height: 100% !important;
+  width: 100% !important;
+  border: none;
+}

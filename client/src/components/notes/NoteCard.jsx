@@ -1,7 +1,8 @@
-import { FileText, Download, PenLine, UserPen } from 'lucide-react';
+import { FileText, Download, PenLine, UserPen, Eye } from 'lucide-react';
 import { formatDate } from '../../utils/formatDate';
-
+import { useNavigate } from 'react-router-dom';
 export default function NoteCard({ note }) {
+    const navigate = useNavigate()
     return (
         <div
             key={note._id}
@@ -16,28 +17,41 @@ export default function NoteCard({ note }) {
                         {note.subject}
                     </span>
                     <span className="text-xs text-[#F5F5F5]/60 flex flex-row items-center gap-1">
-                    <PenLine size={14} />
-                    { formatDate(note.createdAt)
-                    }</span>
+                        <PenLine size={14} />
+                        {formatDate(note.createdAt)
+                        }</span>
                 </div>
                 <h3 className="font-medium mb-2 line-clamp-2 capitalize">{note.title}</h3>
                 <p className="text-xs text-[#F5F5F5]/70 mb-3 line-clamp-2">{note.description}</p>
                 <div className="flex items-center justify-between ">
-                    <span className="text-xs text-[#F5F5F5]/60 flex flex-row gap-2"> 
-                    <UserPen size={16} />
-                    {(note.uploadedBy && note.uploadedBy.name) ? `Uploaded by ${note.uploadedBy.name}` : 'Uploader info not available'}
+                    <span className="text-xs text-[#F5F5F5]/60 flex flex-row gap-2">
+                        <UserPen size={16} />
+                        {(note.uploadedBy && note.uploadedBy.name) ? `Uploaded by ${note.uploadedBy.name}` : 'Uploader info not available'}
                     </span>
                     <div className="flex items-center gap-1 text-xs text-[#F5F5F5]/60">
                         <Download size={14} />
                         {note.fileType}
                     </div>
                 </div>
-                <a href={note.fileUrl} target="_blank" rel="noopener noreferrer">
-                    <button className="w-full mt-3 py-2 rounded-lg bg-[#0D0D0D] hover:bg-[#00E5FF] hover:text-[#0D0D0D] transition-colors flex items-center justify-center gap-2 font-medium">
-                        <Download size={16} />
-                        Download
+            </div>
+            <div className="flex gap-2 justify-around mb-2   w-full py-2 ">
+
+                <div>
+                    <a href={note.fileUrl} target="_blank" rel="noopener noreferrer">
+                        <button className="w-full mt-3 p-2 rounded-lg bg-[#FF007F] hover:bg-[#FF007F]/80 transition-colors flex items-center justify-center gap-2 font-medium">
+                            <Download size={16} />
+                            Download
+                        </button>
+                    </a>
+                </div>
+                <div>
+                    <button
+                        onClick={() => navigate(`/notes/${note._id}/preview`)}
+                        className="w-full mt-3 p-2 rounded-lg bg-[#00E5FF] hover:bg-[#00E5FF]/80 text-[#0D0D0D] transition-colors flex items-center justify-center gap-2 font-medium">
+                        <Eye size={16} />
+                        Preview
                     </button>
-                </a>
+                </div>
             </div>
         </div>
     );

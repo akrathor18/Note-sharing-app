@@ -10,6 +10,7 @@ export const useNoteStore = create((set, get) => ({
     isUploading: false,
     errorOnUpload: null,
     errorOnDelete: null,
+    previewNote:[],
 
     //Get notes
     fetchNotes: async () => {
@@ -99,6 +100,16 @@ export const useNoteStore = create((set, get) => ({
             toast.error(
                 error?.response?.data?.message || 'Server error. Note could not be deleted.',
             );
+        }
+    },
+
+    getPreviewNote: async(noteId)=>{
+        try {
+            const response= await API.get(`/notes/${noteId}`);
+            console.log(response.data)
+            set({previewNote:response.data})
+        } catch (error) {
+            console.log(error)
         }
     },
 

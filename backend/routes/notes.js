@@ -149,5 +149,24 @@ router.get('/search', async (req, res) => {
   }
 });
 
+router.get('/:id', async(req, res)=>{
+  try {
+     const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid note ID" });
+    }
+
+    const note = await Note.findById(id).select("-description -uploadedBy -__v");
+    if (!note) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+
+    res.status(200).json(note)
+  } catch (error) {
+    console.log(error)
+    res.status(501).json("internal Server Error")
+  }
+})
 
 export default router;
