@@ -2,11 +2,11 @@ import { create } from 'zustand';
 import API from '../config/axios';
 import { toast } from 'react-toastify';
 
-export const useQuizStore = create((set) => ({    
+export const useQuizStore = create((set, get) => ({
     QuizzesList: [],
     userQuizzes: [],
     attemptedQuiz: [],
-    errorOnAttempt:false,
+    errorOnAttempt: false,
     activeQuiz: null,
     isLoading: false,
     error: null,
@@ -18,6 +18,11 @@ export const useQuizStore = create((set) => ({
 
     //Get quizzes
     fetchQuizzes: async () => {
+
+        const { QuizzesList } = get();
+        console.log(QuizzesList.length)
+        if (QuizzesList.length > 0) return;
+
         set({ isLoading: true, error: null });
         try {
             const response = await API.get('quiz/getquiz');
@@ -30,7 +35,12 @@ export const useQuizStore = create((set) => ({
     UploadQuiz: async (quizData) => {
         try {
             set({ isUploading: true });
-            await API.post('quiz/createQuiz', quizData);
+            const response= await API.post('quiz/createQuiz', quizData);
+            set((state) => ({
+            QuizzesList: [response.data, ...state.QuizzesList],
+            isUploading: false,
+        }));
+
             toast.success('Success! Your quiz is ready to use.');
             set({ isUploading: false });
         } catch (error) {
@@ -45,13 +55,13 @@ export const useQuizStore = create((set) => ({
             set({
                 isLoading: true,
                 error: null,
-                result: null, 
+                result: null,
             });
 
             const res = await API.get(`/quiz/${quizId}`);
             console.log(res)
             set({
-                res:res,
+                res: res,
                 activeQuiz: res.data,
                 isLoading: false,
             });
@@ -65,7 +75,7 @@ export const useQuizStore = create((set) => ({
 
     getAttemptedQuiz: async () => {
         try {
-            set({ isLoading: true, errorOnAttempt: null });  
+            set({ isLoading: true, errorOnAttempt: null });
             const response = await API.get(`/quiz/attempts`);
             set({ attemptedQuiz: response.data.quizAttempts, isLoading: false });
         } catch (error) {
@@ -102,7 +112,7 @@ export const useQuizStore = create((set) => ({
                 userQuizzes: state.userQuizzes.filter((quiz) => quiz._id !== quizId),
                 deleteQuizId: null,
             }));
-            
+
             toast.success('Quiz deleted successfully');
         } catch (error) {
             set({ errorOnDelete: error.message || "Failed to delete quiz", deleteQuizId: null });

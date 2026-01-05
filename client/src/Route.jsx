@@ -14,7 +14,8 @@ import QuizScreen from './pages/QuizScreen.jsx';
 import Feedback from './pages/Feedback.jsx';
 import NotePreview from './pages/NotePreview.jsx';
 import Navbar from './components/NavBar.jsx';
-
+import NotesLayout from "./layouts/NotesLayout";
+import QuizzesLayout from "./layouts/QuizzesLayout";
 const routes = [
     // Public routes
     {
@@ -45,14 +46,27 @@ const routes = [
                 element: <ProtectedRoute />,
                 children: [
                     { path: 'dashboard', element: <Dashboard /> },
-                    { path: 'notes', element: <Notes /> },
-                    { path: 'notes/:id/preview', element: <NotePreview />,},
-                    { path: 'quizzes', element: <Quiz /> },
+                    {
+                        path: "notes",
+                        element: <NotesLayout />,
+                        children: [
+                            { index: true, element: <Notes /> },
+                            { path: ":id/preview", element: <NotePreview /> },
+                        ],
+                    },
+
+                    {
+                        path: "quizzes",
+                        element: <QuizzesLayout />,
+                        children: [
+                            { index: true, element: <Quiz /> },
+                            { path: ":quizId", element: <QuizScreen /> },
+                        ],
+                    },
                     { path: 'profile', element: <Profile /> },
                     { path: 'settings', element: <Settings /> },
                     { path: 'search', element: <SearchResults /> },
                     { path: 'quizzes/createquiz', element: <CreateQuiz /> },
-                    { path: 'quizzes/:quizId', element: <QuizScreen /> },
                     { path: 'feedback', element: <Feedback /> },
                 ],
             }]

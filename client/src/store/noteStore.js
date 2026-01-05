@@ -16,6 +16,10 @@ export const useNoteStore = create((set, get) => ({
 
     //Get notes
     fetchNotes: async () => {
+
+        const { notes } = get();
+        if (notes.length > 0) return;
+
         set({ isLoading: true, error: null, errorOnUpload: null });
         try {
             const response = await API.get('/notes/getnotes');
@@ -120,7 +124,7 @@ export const useNoteStore = create((set, get) => ({
 
     viewsUpdate: async (id) => {
         try {
-            const response=await API.post(`/notes/${id}/view`);
+            const response = await API.post(`/notes/${id}/view`);
             set((state) => ({
                 previewNote: {
                     ...state.previewNote,
@@ -128,7 +132,7 @@ export const useNoteStore = create((set, get) => ({
                 },
             }))
         }
-         catch (error) {
+        catch (error) {
             console.error("View tracking failed", error);
         }
     },

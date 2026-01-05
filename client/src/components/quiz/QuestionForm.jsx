@@ -87,9 +87,10 @@ export default function QuestionForm({
                                                 name={`correct-${question.id}`}
                                                 checked={question.correctAnswer === option.id}
                                                 onChange={() => onCorrectAnswerChange(question.id, option.id)}
-                                                className="w-4 h-4 text-[#FF007F] bg-[#1A1A1A] border-[#F5F5F5]/20 focus:ring-[#FF007F]"
+                                                className={`w-4 h-4 text-[#FF007F] bg-[#1A1A1A] border-[#F5F5F5]/20 focus:ring-[#FF007F]`}
                                             />
-                                            <span className="w-6 h-6 rounded-full bg-[#1A1A1A] flex items-center justify-center text-xs font-medium">
+                                            <span className={`${question.correctAnswer === option.id ?"bg-[#00e5ff] text-[#1A1A1A]":""}
+                                                w-6 h-6 rounded-full bg-[#1A1A1A] flex items-center justify-center text-xs font-medium`}>
                                                 {option.id.toUpperCase()}
                                             </span>
                                             <input

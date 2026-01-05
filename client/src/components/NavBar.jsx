@@ -157,7 +157,7 @@ function navBar() {
                                 className={({ isActive }) =>
                                     `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
                                         ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                        : 'hover:bg-[#0d0d0d] text-white' // Default & hover state
                                     }`
                                 }
                             >
@@ -171,7 +171,7 @@ function navBar() {
                                 className={({ isActive }) =>
                                     `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
                                         ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                        : 'hover:bg-[#0d0d0d] text-white' // Default & hover state
                                     }`
                                 }
                             >
@@ -185,7 +185,7 @@ function navBar() {
                                 className={({ isActive }) =>
                                     `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
                                         ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                        : 'hover:bg-[#0d0d0d] text-white' // Default & hover state
                                     }`
                                 }
                             >
@@ -199,7 +199,7 @@ function navBar() {
                                 className={({ isActive }) =>
                                     `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
                                         ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                        : 'hover:bg-[#0d0d0d] text-white' // Default & hover state
                                     }`
                                 }
                             >
@@ -213,7 +213,7 @@ function navBar() {
                                 className={({ isActive }) =>
                                     `w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isActive
                                         ? 'bg-[#FF007F]/10 text-[#FF007F]' // Active state
-                                        : 'hover:bg-[#1A1A1A]/80 text-white' // Default & hover state
+                                        : 'hover:bg-[#0d0d0d] text-white' // Default & hover state
                                     }`
                                 }
                             >
