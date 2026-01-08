@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import API from '../config/axios';
 import { toast } from 'react-toastify';
 
+import { setToken } from '../utils/auth';
 export const useUserStore = create((set) => ({
     user: null,
     userStates: null,
@@ -17,6 +18,71 @@ export const useUserStore = create((set) => ({
     isUpdating: false,//link update in progress
     errorOnUpdate: null,//link update error
     isUpdatingBio: false,
+    isSigning: false,
+
+    signIn: async (data) => {
+        set({ isSigning: true })
+        const promise = API.post('/users/login', {
+            email: data.email,
+            password: data.password,
+        });
+        toast.promise(promise, {
+            pending: 'Sign-in...',
+            success: 'Sing-in successfully!',
+            error: {
+                render({ data }) {
+                    return (
+                        data?.response?.data  ||
+                        'Login failed'
+                    );
+                },
+            },
+        });
+
+        try {
+            const response = await promise;
+            setToken(response.data.token);
+            set({ isSigning: false })
+            return true
+        } catch (error) {
+            set({ isSigning: false, error: error.response?.data || 'Login failed' })
+            return false
+
+        }
+    },
+
+    signUp: async (data) => {
+        set({ isSigning: true })
+        const promise = API.post('users/register', {
+            email: data.email,
+            password: data.password,
+            name: data.name,
+        });
+
+        toast.promise(promise, {
+            pending: 'SignUp...',
+            success: 'Sign-Up successfully!',
+            error: {
+                render({ data }) {
+
+                    return (
+                        data?.response?.data ||
+                        'Failed to Sing-Up'
+                    );
+                },
+            },
+        });
+
+        try {
+            const response = await promise;
+            setToken(response.data.token);
+            set({ isSigning: false })
+            return true
+        } catch (error) {
+            set({ isSigning: false, error: error.response?.data|| "SingUp Failed" })
+            return false;
+        }
+    },
 
     fetchUser: async () => {
         set({ isLoading: true, error: null });
@@ -61,7 +127,7 @@ export const useUserStore = create((set) => ({
         });
         try {
             const response = await promise;
-            set({bio: response.data.bio})
+            set({ bio: response.data.bio })
             set({ isUpdatingBio: false });
             return true;
         } catch (error) {
@@ -150,7 +216,6 @@ export const useUserStore = create((set) => ({
 
     updateLinks: async (links) => {
         set({ isUpdating: true, errorOnUpdate: null });
-        console.log(links)
         const promise = API.put('/links/bulk', links);
 
         toast.promise(promise, {
@@ -159,7 +224,7 @@ export const useUserStore = create((set) => ({
             error: {
                 render({ data }) {
                     return (
-                        data?.response?.data?.message ||
+                        data?.promise?.data?.message ||
                         'Failed to save links'
                     );
                 },
@@ -179,7 +244,6 @@ export const useUserStore = create((set) => ({
             set({ isUpdating: false });
             return true;
         } catch (error) {
-            console.error(error);
             set({
                 isUpdating: false,
                 errorOnUpdate: 'Failed to update links',

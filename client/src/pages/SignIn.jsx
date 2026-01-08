@@ -2,36 +2,20 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { BookOpen, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import API from '../config/axios';
-import { setToken, handleAuthError } from '../utils/auth';
-
+import { useUserStore } from '../store/userStore';
 export default function SignIn() {
+    const {signIn, isSigning}= useUserStore()
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm();
     const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const onSubmit = async (data) => {
-        if (loading) return; // Prevent multiple clicks
 
-        setLoading(true);
-        try {
-            const response = await API.post('/users/login', {
-                email: data.email,
-                password: data.password,
-            });
-            setToken(response.data.token);
-            navigate('/dashboard');
-            handleAuthError('signin-success');
-        } catch (error) {
-            toast.error(error.response?.data || 'Login failed');
-        } finally {
-            setLoading(false);
-        }
+    const onSubmit = async (data) => {
+        const success = await signIn(data)
+        if(success) {navigate("/dashboard")}
     };
     return (
         <div className="min-h-screen bg-[#0D0D0D] text-[#F5F5F5] flex items-center justify-center p-4">
@@ -132,11 +116,11 @@ export default function SignIn() {
 
                     {/* Submit button */}
                     <button
-                        disabled={loading}
+                        disabled={isSigning}
                         type="submit"
                         className="w-full bg-[#FF007F] hover:bg-[#FF007F]/90 text-white py-2 rounded-lg transition-colors font-medium"
                     >
-                        {loading ? 'Signing in...' : 'Sign In'}
+                        {isSigning ? 'Signing in...' : 'Sign In'}
                     </button>
                 </form>
 

@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { BookOpen, Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { setToken, handleAuthError } from '../utils/auth';
+import { useUserStore } from '../store/userStore';
 
-import API from '../config/axios';
 
 export default function SignUp() {
+
+    const { signUp, isSigning, } = useUserStore()
     const navigate = useNavigate();
+
     const {
         register,
         handleSubmit,
@@ -18,28 +19,12 @@ export default function SignUp() {
 
     // States
     const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
 
     // Form
     const onSubmit = async (data) => {
-        if (loading) return;
-        setLoading(true);
-        try {
-            const response = await API.post('users/register', {
-                email: data.email,
-                password: data.password,
-                name: data.name,
-            });
-            console.log(response);
-            setToken(response.data.token);
-            navigate('/dashboard');
-            handleAuthError('signup-success');
-        } catch (error) {
-            console.log(error);
-            toast.error(error.response?.data);
-        } finally {
-            setLoading(false);
-        }
+        const success = await signUp(data)
+        if (success) {navigate('/dashboard')};
+
     };
 
     const password = watch('password');
@@ -205,11 +190,11 @@ export default function SignUp() {
 
                     {/* Submit Button */}
                     <button
-                        disabled={loading}
+                        disabled={isSigning}
                         type="submit"
                         className="w-full bg-[#FF007F] hover:bg-[#FF007F]/90 text-white py-2 rounded-lg transition-colors font-medium"
                     >
-                        {loading ? 'Signing Up...' : 'Sign Up'}
+                        {isSigning ? 'Signing Up...' : 'Sign Up'}
                     </button>
                 </form>
 
