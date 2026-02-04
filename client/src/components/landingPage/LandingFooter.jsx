@@ -73,7 +73,7 @@ export default function LandingFooter() {
                         </ul>
                     </div>
                 </div>
-                <div className="border-t border-[#F5F5F5]/10 mt-12 pt-8 text-center text-[#F5F5F5]">
+                {false && <div className="border-t border-[#F5F5F5]/10 mt-12 pt-8 text-center text-[#F5F5F5]">
                     <p>
                         Built with ❤️ by <a href="https://github.com/akrathor18" target="_blank" className=" text-[#00E5FF] hover:text-[#FF007F]" >Ashish Kumar.</a>
                     </p>
@@ -92,7 +92,7 @@ export default function LandingFooter() {
                                 <Mail size={24} />
                             </a>
                         </div>
-                </div>
+                </div>}
             </div>
         </footer>
     )
