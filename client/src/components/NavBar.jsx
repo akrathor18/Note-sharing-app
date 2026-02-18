@@ -85,7 +85,7 @@ function navBar() {
 
     const handleLogout = async () => {
         try {
-            const response = await API.post('/users/logout');
+            const response = await API.post('/auth/logout');
             if (response.status === 200) {
                 removeToken();
                 setIsAuthenticated(false);
