@@ -1,10 +1,12 @@
 import express from 'express';
 import db from './config/db.js';
 
-import usersRoutes from './routes/users.js';
-import quizRoutes from './routes/quizzes.js';
-import notesRoutes from './routes/notes.js';
-import linkRoutes from './routes/links.js';
+import usersRoutes from './routes/user.routes.js';
+import quizRoutes from './routes/quiz.routes.js';
+import notesRoutes from './routes/notes.routes.js';
+import linkRoutes from './routes/links.routes.js';
+import authRoutes from './routes/auth.routes.js';
+
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -63,7 +65,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/links', linkRoutes);
-
+app.use('/api/auth', authRoutes);
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });

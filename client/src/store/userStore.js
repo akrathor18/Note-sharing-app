@@ -22,7 +22,7 @@ export const useUserStore = create((set) => ({
 
     signIn: async (data) => {
         set({ isSigning: true })
-        const promise = API.post('/users/login', {
+        const promise = API.post('/auth/login', {
             email: data.email,
             password: data.password,
         });
@@ -53,7 +53,7 @@ export const useUserStore = create((set) => ({
 
     signUp: async (data) => {
         set({ isSigning: true })
-        const promise = API.post('users/register', {
+        const promise = API.post('auth/register', {
             email: data.email,
             password: data.password,
             name: data.name,
