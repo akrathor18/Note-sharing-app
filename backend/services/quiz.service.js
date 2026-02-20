@@ -36,6 +36,7 @@ export const getMyQuizzes = async (userId) => {
                 description: 1,
                 createdAt: 1,
                 category: 1,
+                difficulty: 1,
                 questionCount: { $size: '$questions' },
             },
         },
