@@ -8,7 +8,8 @@ import {
     Instagram,
     Linkedin,
     Twitter,
-    Globe
+    Globe,
+    Trash2,
 
 } from "lucide-react"
 const getActivityIcon = (type) => {
@@ -23,6 +24,10 @@ const getActivityIcon = (type) => {
                 return Plus
             case "streak_milestone":
                 return Flame
+            case "note_deleted":
+                return Trash2
+            case "quiz_deleted":
+                return Trash2
             default:
                 return Activity
         }
@@ -38,6 +43,10 @@ const getActivityIcon = (type) => {
                 return "#4CAF50"
             case "streak_milestone":
                 return "#FF6B35"
+            case "note_deleted":
+                return "#FF0000"
+            case "quiz_deleted":
+                return "#FF0000"
             default:
                 return "#9E9E9E"
         }

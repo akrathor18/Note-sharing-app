@@ -1,5 +1,6 @@
 import Note from '../models/noteSchema.js';
 import User from '../models/UserSchema.js';
+import UserState from '../models/UserStates.js';
 import cloudinary from '../config/cloudinary.js';
 import { trackActivityAndStreak } from '../utils/activityTracker.js';
 import { logActivity } from '../utils/logActivity.js';
@@ -51,7 +52,11 @@ export const deleteNote = async ({ id, userId }) => {
 
     await note.deleteOne();
     await User.findByIdAndUpdate(userId, { $pull: { notes: id } });
-
+    await UserState.findByIdAndUpdate(userId, { $inc: { totalNotes: -1 } });
+    await logActivity(userId, 'note_deleted', note._id, 'Deleted a note', {
+        refTitle: note.title,
+        subject: note.subject,
+    });
     return { success: true };
 };
 

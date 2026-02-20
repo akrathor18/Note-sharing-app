@@ -94,7 +94,6 @@ export default function AddNoteModal({ onClose, onNoteAdded }) {
 
 
     const onSubmit = async (data) => {
-        console.log("Submitting note with data:", data);
         if (!selectedFile) {
             toast.error("Please upload a file");
             return;

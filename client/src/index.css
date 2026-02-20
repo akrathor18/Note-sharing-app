@@ -53,3 +53,18 @@ body {
   width: 100% !important;
   border: none;
 }
+
+ @keyframes ncFadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes ncScan {
+    0%   { transform: translateY(-100%); }
+    100% { transform: translateY(400%); }
+  }
+  @keyframes ncPulse {
+    0%,100% { opacity: 1; } 50% { opacity: 0.35; }
+  }
+  .nc-card  { animation: ncFadeUp 0.35s ease both; }
+  .nc-card:hover .nc-scan { animation: ncScan 1.8s linear infinite; }
+  .nc-deleting { animation: ncPulse 1s ease infinite; }

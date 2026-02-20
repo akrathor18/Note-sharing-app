@@ -53,12 +53,10 @@ export const useNoteStore = create((set, get) => ({
                 {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
-
             set((state) => ({
-                notes: [...state.notes, response.data],
+                notes: [response.data.note, ...state.notes],
                 isUploading: false, abortController: null
             }));
-
             toast.success('Note uploaded successfully');
             if (onSuccess) onSuccess(); // refresh notes
             if (onClose) onClose();     // close modal
@@ -68,8 +66,8 @@ export const useNoteStore = create((set, get) => ({
                 return false;
             }
             console.error(error);
-            set({ errorOnUpload: error.response.data.message || "Failed to upload note" });
-            toast.error(error.response.data.message);
+            set({ errorOnUpload: error.response?.data?.message || "Failed to upload note" });
+            toast.error(error.response?.data?.message || "Failed to upload note");
             set({ isUploading: false });
         }
     },

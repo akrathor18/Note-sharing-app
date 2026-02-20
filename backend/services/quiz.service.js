@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Quiz from '../models/quizSchema.js';
+import UserState from '../models/UserStates.js';
 import User from '../models/UserSchema.js';
 import QuizAttempt from '../models/QuizAttempt.js';
 import { trackActivityAndStreak } from '../utils/activityTracker.js';
@@ -10,7 +11,8 @@ export const createQuiz = async ({ body, userId }) => {
     const saved = await newQuiz.save();
 
     await User.findByIdAndUpdate(userId, { $push: { quizzes: saved._id } });
-    await trackActivityAndStreak(userId, { totalQuizCreated: 1 });
+    await trackActivityAndStreak(userId, { totalQuizzesCreated: 1 });
+    
     await logActivity(userId, 'quiz_created', saved._id, 'Created a quiz', {
         refTitle: saved.title,
         subject: saved.category,
@@ -121,6 +123,11 @@ export const deleteQuiz = async ({ id, userId }) => {
     if (quiz.createdBy.toString() !== userId.toString()) return { forbidden: true };
 
     await quiz.deleteOne();
+    await UserState.findByIdAndUpdate(userId, { $inc: { totalQuizCreated: -1 } });
+    await logActivity(userId, 'quiz_deleted', quiz._id, 'Deleted a quiz', {
+        refTitle: quiz.title,
+        subject: quiz.category,
+    });
     return { success: true };
 };
 
