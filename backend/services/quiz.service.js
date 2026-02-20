@@ -41,12 +41,65 @@ export const getMyQuizzes = async (userId) => {
 };
 
 export const getMyAttempts = async (userId) => {
-    return await QuizAttempt.find({ user: userId })
-        .populate('quiz', 'title category difficulty')
-        .select('quiz score percentageScore attemptedAt')
-        .sort({ attemptedAt: -1 })
-        .limit(10);
+  return await QuizAttempt.aggregate([
+    {
+      $match: {
+        user: new mongoose.Types.ObjectId(userId),
+      },
+    },
+
+    // Join Quiz collection
+    {
+      $lookup: {
+        from: "quizzes", // ⚠️ collection name (usually plural + lowercase)
+        localField: "quiz",
+        foreignField: "_id",
+        as: "quiz",
+      },
+    },
+
+    // quiz will be an array, convert to object
+    {
+      $unwind: "$quiz",
+    },
+
+    // Add computed fields
+    {
+      $addFields: {
+        totalQuestions: { $size: "$answers" },
+        correctQuestions: {
+          $size: {
+            $filter: {
+              input: "$answers",
+              as: "a",
+              cond: { $eq: ["$$a.isCorrect", true] },
+            },
+          },
+        },
+      },
+    },
+
+    // Pick only needed quiz fields (like populate select)
+    {
+      $project: {
+        quiz: {
+          title: 1,
+          category: 1,
+          difficulty: 1,
+        },
+        score: 1,
+        percentageScore: 1,
+        attemptedAt: 1,
+        totalQuestions: 1,
+        correctQuestions: 1,
+      },
+    },
+
+    { $sort: { attemptedAt: -1 } },
+    { $limit: 10 },
+  ]);
 };
+
 
 export const searchQuizzes = async (query) => {
     return await Quiz.find({
