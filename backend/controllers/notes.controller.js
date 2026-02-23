@@ -9,7 +9,7 @@ export const uploadNote = async (req, res) => {
             description,
             subject,
             file: req.file,
-            userId: req.user.id,
+            userId:  req.user._id,
         });
         res.status(201).json({ success: true, note });
     } catch (err) {
@@ -29,7 +29,7 @@ export const getAllNotes = async (req, res) => {
 
 export const getMyNotes = async (req, res) => {
     try {
-        const notes = await NoteService.getNotesByUser(req.user.id);
+        const notes = await NoteService.getNotesByUser( req.user._id);
         res.status(200).json(notes);
     } catch (err) {
         res.status(500).json({ message: 'Failed to retrieve user notes', error: err.message });
@@ -44,7 +44,7 @@ export const deleteNote = async (req, res) => {
             return res.status(400).json({ message: 'Invalid note ID' });
         }
 
-        const result = await NoteService.deleteNote({ id, userId: req.user.id });
+        const result = await NoteService.deleteNote({ id, userId:  req.user._id });
 
         if (result.notFound) return res.status(404).json({ message: 'Note not found' });
         if (result.forbidden) return res.status(403).json({ message: 'Not authorized' });
@@ -92,7 +92,7 @@ export const getNoteById = async (req, res) => {
 
 export const trackView = async (req, res) => {
     try {
-        const result = await NoteService.trackView({ noteId: req.params.id, userId: req.user.id });
+        const result = await NoteService.trackView({ noteId: req.params.id, userId:  req.user._id });
         if (result.notFound) return res.status(404).json({ message: 'Note not found' });
         res.status(200).json({ views: result.views });
     } catch (err) {

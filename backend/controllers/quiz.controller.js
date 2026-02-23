@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 export const createQuiz = async (req, res) => {
     try {
-        const quiz = await QuizService.createQuiz({ body: req.body, userId: req.user.id });
+        const quiz = await QuizService.createQuiz({ body: req.body, userId:  req.user._id });
         res.status(201).json(quiz);
     } catch (err) {
         console.error(err);
@@ -23,7 +23,7 @@ export const getAllQuizzes = async (req, res) => {
 
 export const getMyQuizzes = async (req, res) => {
     try {
-        const userId = req.user.id;
+        const userId =  req.user._id;
 
         if (!mongoose.Types.ObjectId.isValid(userId)) {
             return res.status(400).json({ message: 'Invalid user ID' });
@@ -39,7 +39,7 @@ export const getMyQuizzes = async (req, res) => {
 
 export const getMyAttempts = async (req, res) => {
     try {
-        const attempts = await QuizService.getMyAttempts(req.user.id);
+        const attempts = await QuizService.getMyAttempts( req.user._id);
         res.status(200).json({ quizAttempts: attempts });
     } catch (err) {
         console.error(err);
@@ -106,7 +106,7 @@ export const attemptQuiz = async (req, res) => {
         const { answers } = req.body;
         const result = await QuizService.attemptQuiz({
             quizId: req.params.id,
-            userId: req.user.id,
+            userId:  req.user._id,
             answers,
         });
 
@@ -125,7 +125,7 @@ export const updateQuiz = async (req, res) => {
     try {
         const result = await QuizService.updateQuiz({
             quizId: req.params.id,
-            userId: req.user.id,
+            userId:  req.user._id,
             updateData: req.body,
         });
 

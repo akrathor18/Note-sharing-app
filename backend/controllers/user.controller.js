@@ -3,7 +3,7 @@ import * as UserService from '../services/user.service.js';
 export const changePassword = async (req, res) => {
     try {
         const { password, newPassword } = req.body;
-        const result = await UserService.changePassword({ userId: req.user.id, password, newPassword });
+        const result = await UserService.changePassword({ userId:  req.user._id, password, newPassword });
 
         if (result.notFound) return res.status(404).json('User not found');
         if (result.incorrectPassword) return res.status(400).json('Incorrect current password!');
@@ -17,7 +17,7 @@ export const changePassword = async (req, res) => {
 
 export const getProfile = async (req, res) => {
     try {
-        const userId = req.user._id || req.user.id;
+        const userId = req.user._id;
         const result = await UserService.getProfile(userId);
 
         if (result.notFound) return res.status(404).json({ message: 'User not found' });
@@ -31,7 +31,7 @@ export const getProfile = async (req, res) => {
 
 export const getAverageScore = async (req, res) => {
     try {
-        const result = await UserService.getAverageScore(req.user.id);
+        const result = await UserService.getAverageScore( req.user._id);
         res.status(200).json(result);
     } catch (err) {
         console.error(err);
@@ -41,7 +41,7 @@ export const getAverageScore = async (req, res) => {
 
 export const updateBio = async (req, res) => {
     try {
-        const result = await UserService.updateBio({ userId: req.user.id, bio: req.body.bio });
+        const result = await UserService.updateBio({ userId:  req.user._id, bio: req.body.bio });
 
         if (result.notFound) return res.status(404).json({ message: 'User not found' });
 
@@ -56,7 +56,7 @@ export const uploadProfilePic = async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
-        const result = await UserService.uploadProfilePic({ userId: req.user.id, file: req.file });
+        const result = await UserService.uploadProfilePic({ userId:  req.user._id, file: req.file });
 
         if (result.notFound) return res.status(404).json({ message: 'User not found' });
 
@@ -69,7 +69,7 @@ export const uploadProfilePic = async (req, res) => {
 
 export const deleteProfilePic = async (req, res) => {
     try {
-        const result = await UserService.deleteProfilePic(req.user.id);
+        const result = await UserService.deleteProfilePic( req.user._id);
 
         if (result.notFound) return res.status(404).json({ message: 'User not found' });
         if (result.noPic) return res.status(400).json({ message: 'No profile picture to delete' });
