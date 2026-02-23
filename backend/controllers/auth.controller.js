@@ -4,13 +4,15 @@ export const register = async (req, res) => {
     try {
         const result = await AuthService.register(req.body);
 
-        if (result.emailTaken) return res.status(400).json('Email already registered');
-        if (result.invalidRole) return res.status(400).json('Invalid role');
+        if (result.emailTaken)
+            return res.status(400).json({ success: false, message: 'Email already registered', data: null });
+        if (result.invalidRole)
+            return res.status(400).json({ success: false, message: 'Invalid role', data: null });
 
-        res.status(201).json({ message: 'User registered successfully!', token: result.token });
+        res.status(201).json({ success: true, message: 'User registered successfully!', data: { token: result.token } });
     } catch (err) {
         console.error(err);
-        res.status(500).json('Internal server error');
+        res.status(500).json({ success: false, message: 'Internal server error', data: null });
     }
 };
 
@@ -19,17 +21,19 @@ export const login = async (req, res) => {
         const { email, password } = req.body;
         const result = await AuthService.login({ email, password });
 
-        if (result.notFound) return res.status(404).json('User not found');
-        if (result.invalidCredentials) return res.status(400).json('Invalid credentials');
+        if (result.notFound)
+            return res.status(404).json({ success: false, message: 'User not found', data: null });
+        if (result.invalidCredentials)
+            return res.status(400).json({ success: false, message: 'Invalid credentials', data: null });
 
         res.status(200).json({
+            success: true,
             message: 'User logged in successfully!',
-            token: result.token,
-            user: result.user,
+            data: { token: result.token, user: result.user },
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json('Internal server error');
+        res.status(500).json({ success: false, message: 'Internal server error', data: null });
     }
 };
 
@@ -39,5 +43,5 @@ export const logout = (req, res) => {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
     });
-    res.status(200).json({ message: 'Logged out successfully!' });
+    res.status(200).json({ success: true, message: 'Logged out successfully!', data: null });
 };
