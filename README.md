@@ -1,264 +1,170 @@
 # 📚 StudyHub – Note Sharing & Quiz Platform
 
-StudyHub is a full‑stack web platform built **for students, by students**. It allows users to **share study notes**, **create and attempt quizzes**, and **track learning activity** in one place. The project focuses on real‑world product problems like authentication, validation, responsive UI, and clean backend architecture.
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Zustand](https://img.shields.io/badge/Zustand-orange?style=flat)](https://github.com/pmndrs/zustand)
+
+> **Empowering students to share, learn, and grow together.**
+
+StudyHub is a feature-rich, full-stack web platform designed to solve real-world academic challenges. It enables students to seamlessly share study resources, create interactive quizzes, and maintain learning consistency through daily streak tracking and progress analytics.
 
 🌐 **Live Demo:** [https://studyhub-dev.web.app/](https://studyhub-dev.web.app/)
 
-💻 **GitHub Repository:** [https://github.com/akrathor18/Note-sharing-app](https://github.com/akrathor18/Note-sharing-app)
+---
+
+## ✨ Key Features
+
+### 🔐 Secure Authentication
+- **Identity Management:** Robust login and registration system.
+- **JWT Protection:** Secure API communication with protected routes.
+- **Profile Customization:** Personalize your presence with bios and social links.
+
+### 📄 Intelligent Note Sharing
+- **Multi-format Support:** Share resources in PDF, DOC, and DOCX formats.
+- **Organized Subjects:** Categorize notes by subject for easy discoverability.
+- **Cloud-Powered:** Reliable file storage and delivery via Cloudinary.
+
+### 🧠 Interactive Quizzes
+- **Dynamic Creation:** Build custom multiple-choice quizzes for any subject.
+- **Instant Result:** Real-time scoring and feedback upon attempt.
+- **Performance Tracking:** Monitor average scores and progress over time.
+
+### 📊 Gamified Learning
+- **Activity Timeline:** Visualize your recent contributions and attempts.
+- **Daily Streaks:** Stay motivated with a Duolingo-style streak system.
+- **Analytics Dashboard:** Overview of total notes shared and quizzes completed.
 
 ---
 
-## 🚀 Features
+## 🏗️ Architecture & Folder Structure
 
-### 🔐 Authentication & User Management
+The project follows a modular and decoupled architecture, ensuring scalability and ease of maintenance.
 
-* Secure login & registration
-* JWT-based authentication with protected routes
-* Profile management with editable bio and social links (max 5 links)
+### File Structure Overview
+```text
+Note-sharing-app/
+├── 📁 backend/           # Node.js & Express API
+│   ├── 📁 controllers/   # Request handlers & logic
+│   ├── 📁 middlewares/   # JWT verification & file upload logic
+│   ├── 📁 models/        # Mongoose database schemas
+│   ├── 📁 routes/        # API endpoint definitions
+│   ├── 📁 services/      # Business logic isolation layer
+│   └── 📄 index.js       # Entry point
+├── 📁 client/            # React & Vite Frontend
+│   ├── 📁 src/
+│   │   ├── 📁 components/ # Reusable UI components
+│   │   ├── 📁 pages/      # Route-level views
+│   │   ├── 📁 store/      # Zustand state management
+│   │   └── 📁 config/     # Axios & environment setup
+└── 📄 README.md          # Project documentation
+```
+---
 
-### 📄 Notes Module
+## 🗄️ Database Design
 
-* Upload and share notes (PDF, DOC, DOCX)
-* Notes linked to subjects
-* View and manage your own uploaded notes
-* Cloudinary integration for file storage
+StudyHub was designed with a structured database schema to handle complex relationships between users, study materials, and learning analytics.
 
-### 🧠 Quiz Module
+- **Entity Isolation:** Separate collections for Users, Notes, and Quizzes to maintain data integrity.
+- **Analytics & Tracking:** Dedicated `UserState` model for high-performance streak and activity tracking.
+- **Scalable Attempts:** Quiz results are stored independently, allowing for detailed historical performance analysis.
 
-* Create quizzes with multiple‑choice questions
-* Attempt quizzes and get instant scores
-* Track total quizzes taken and average score
-* Question count optimization using MongoDB aggregation
+📊 **Database Diagram:** [View on dbdiagram.io](https://dbdiagram.io/d/686783bbf413ba3508438d32)
 
-### 📊 Activity & Streak Tracking
-
-* Recent activity timeline (notes, quizzes)
-* Daily login streak logic (Duolingo‑style)
-* Highest streak tracking
-* User analytics like total notes, quizzes created, quizzes taken
-
-### 📱 Responsive UI
-
-* Fully responsive design (desktop & mobile)
-* Mobile‑friendly activity cards
-* Dark‑theme focused UI
+<p align="center">
+  <img width="1129" alt="studyhub schema design" src="https://github.com/user-attachments/assets/5829ea96-98e7-436c-a095-f2c3f1512df7" />
+</p>
 
 ---
 
+## 🔧 Installation & Setup
 
-## 🚀 Getting Started
+Follow these steps to get your local development environment running.
 
-Follow these steps to run **StudyHub** locally on your machine.
+### Prerequisites
+- **Node.js** (v18 or higher)
+- **MongoDB** (Local instance or Atlas)
+- **Git**
 
-### ✅ Prerequisites
-
-Make sure you have the following installed:
-
-* **Node.js** (v18+ recommended)
-* **MongoDB** (local or MongoDB Atlas)
-* **Git**
-
----
-
-### 📥 Clone the Repository
-
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/akrathor18/Note-sharing-app.git
 cd Note-sharing-app
 ```
 
----
-
-### 🔧 Backend Setup
-
+### 2. Configure Backend
 ```bash
 cd backend
 npm install
 ```
-
-Create a `.env` file inside the `backend` folder:
-
+Create a `.env` file in the `backend/` directory:
 ```env
-PORT=5000
+PORT=3000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 CLOUDINARY_CLOUD_NAME=your_cloudinary_name
 CLOUDINARY_API_KEY=your_cloudinary_key
 CLOUDINARY_API_SECRET=your_cloudinary_secret
-NODE_ENV=development
 ```
-
-Start the backend server:
-
+Start the server:
 ```bash
 npm run dev
 ```
 
-The backend will run on:
-
-```
-http://localhost:5000
-```
-
----
-
-### 🎨 Frontend Setup
-
+### 3. Configure Frontend
 ```bash
 cd ../client
 npm install
 ```
-
-Create a `.env` file inside the `client` folder:
-
+Create a `.env` file in the `client/` directory:
 ```env
-VITE_API_BASE_URL=http://localhost:5000/api
+VITE_API_BASE_URL=http://localhost:3000/api
 ```
-
-Start the frontend:
-
+Start the app:
 ```bash
 npm run dev
 ```
 
-The app will be available at:
+---
 
-```
-http://localhost:5173
-```
+## 🛠️ Technology Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | React, Tailwind CSS, Vite |
+| **State Management** | Zustand |
+| **Backend** | Node.js, Express.js |
+| **Database** | MongoDB, Mongoose |
+| **File Storage** | Cloudinary |
+| **Authentication** | JSON Web Tokens (JWT) |
 
 ---
 
-### ✅ You’re Ready!
+## 🤝 Contributing
 
-* Register a new account
-* Upload notes or create quizzes
-* Edit profile & social links
-* Track activity and streaks
-
----
-
-## 🛠️ Tech Stack
-
----
-### Frontend
-
-* React
-* Tailwind CSS
-* Zustand (state management)
-* React Router
-* react-toastify (notifications)
-
-### Backend
-
-* Node.js
-* Express.js
-* MongoDB + Mongoose
-* JWT Authentication
-* Multer + Cloudinary (file uploads)
-
-### Deployment
-
-* Frontend: Firebase Hosting
-* Backend: Render / Node hosting
----
-## 🗄️ Database Design
-
-StudyHub was designed with a structured database schema before and during development.
-
-- Separate collections for core entities (Users, Notes, Quizzes)
-- Analytics and streaks handled via a dedicated UserState model
-- Quiz attempts stored independently to support multiple attempts per user
-- Activity tracking designed for scalability and future analytics
-
-📊 Database Diagram:  
-https://dbdiagram.io/d/686783bbf413ba3508438d32
-
-<img width="1129" height="896" alt="studyhub schema design" src="https://github.com/user-attachments/assets/5829ea96-98e7-436c-a095-f2c3f1512df7" />
----
-
-## 🧩 Project Structure (Simplified)
-
-```
-Note-sharing-app/
-├── backend/
-│   ├── controllers/
-│   ├── middlewares/
-│   ├── models/
-│   ├── routes/
-│   ├── utils/
-│   └── index.js
-├── client/
-│   ├── components/
-│   ├── pages/
-│   ├── store/ (Zustand)
-│   ├── utils/
-│   └── App.jsx
-└── README.md
-```
+We welcome contributions! To contribute:
+1. Fork the project.
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the Branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
 
 ---
 
-## 🧠 Key Learnings
+## 📄 License & Credits
 
-* Designing **streak logic** that updates only once per day
-* Preventing invalid data with **frontend + backend validation**
-* Using **MongoDB aggregation** for computed fields (e.g., question count)
-* Fixing real‑world **responsive UI issues**
-* Managing complex user state and activity tracking
-* Deploying a full‑stack project to production
+Distributed under the **MIT License**. See `LICENSE` for more information.
 
----
-
-## 🧪 Validation & UX Highlights
-
-* Prevent saving empty social links
-* Limit social links to maximum 5
-* URL format validation (http / https)
-* Mobile‑first layout fixes for activity cards
-* Toast‑based feedback for all user actions
+### Authors
+- **Ashish Kumar** - *Project Lead* - [akrathor18](https://github.com/akrathor18)
+- **Prince Rawat** - *Contributor* - [Kashina69](https://github.com/Kashina69)
 
 ---
 
-## 📌 Future Improvements
+## ⭐ Support the Project
 
-* Advanced analytics dashboard
-* Search & filter for notes and quizzes
-* Public user profiles
-* Bookmark / favorite notes
-* Admin moderation tools
+If you find this project helpful, please consider giving it a **Star**! Your support keeps the development alive.
 
----
-
-## 👨‍💻 Author
-
-**Ashish Kumar**
-Diploma Computer Science Engineering Student
-Aspiring Full‑Stack Web Developer (MERN)
-
-GitHub: [https://github.com/akrathor18](https://github.com/akrathor18)
-
----
-## 👥 Contributors
-
-- [**Ashish Kumar**](https://github.com/akrathor18) — Full-Stack Developer, Project Owner  
-
-- [**Prince Rawat**](https://github.com/Kashina69/) — Contributor (feature development / bug fixes / suggestions) 
-  
-
----
-## License
-This project is licensed under the MIT License.
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-
-
----
-
-## ⭐ Feedback
-
-If you have suggestions or feedback, feel free to open an issue or reach out.
-If you like this project, consider giving it a ⭐ on GitHub!
-
----
-
-> *Built with a focus on real‑world problems, not just tutorials.*
+[⭐ Star on GitHub](https://github.com/akrathor18/Note-sharing-app)
