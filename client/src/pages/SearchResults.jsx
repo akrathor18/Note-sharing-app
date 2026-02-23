@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react';
-import { FileText, BrainCircuit, Search, Filter, Download, ChevronRight } from 'lucide-react';
+import { Search, Filter, Download, ChevronRight } from 'lucide-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { formatDate } from '../utils/formatDate';
 import { SearchResultsSkeleton } from '../common/components/SearchResultsSkeleton';
+import ErrorState from '../common/components/ErrorState';
 import NoteCard from '../components/notes/NoteCard';
 import API from '../config/axios';
 import QuizCard from '../components/quiz/QuizCard';
 
 export default function SearchResults() {
-
-    const navigate = useNavigate();
 
     const [results, setSearchResults] = useState({ notes: [], quizzes: [], query: '' });
     const [activeTab, setActiveTab] = useState('all');
@@ -20,40 +18,43 @@ export default function SearchResults() {
     const searchQuery = searchParams.get('query') || '';
 
     useEffect(() => {
-    const query = searchQuery.toLowerCase();
+        const query = searchQuery.toLowerCase();
 
-    const fetchResults = async () => {
-        try {
-            setIsLoading(false)
+        const fetchResults = async () => {
+            try {
+                setIsLoading(true)
 
-            const [notesResponse, quizzesResponse] = await Promise.all([
-                API.get(`/notes/search?query=${query}`),
-                API.get(`/quiz/search?query=${query}`)
-            ]);
+                const [notesResponse, quizzesResponse] = await Promise.all([
+                    API.get(`/notes/search?query=${query}`),
+                    API.get(`/quiz/search?query=${query}`)
+                ]);
 
-            setSearchResults({
-                notes: notesResponse.data,
-                quizzes: quizzesResponse.data,
-                query
-            });
-        } catch (error) {
-            toast.error(
-                error.response?.data?.error ||
-                'An error occurred while fetching search results.'
-            );
-        } finally {
-            setIsLoading(false); 
-        }
-    };
+                console.log("notes", notesResponse, "quizzesResponse", quizzesResponse)
+                setSearchResults({
+                    notes: notesResponse.data.data.notes,
+                    quizzes: quizzesResponse.data.data.quizzes,
+                    query
+                });
+            } catch (error) {
+                console.log(error)
+                toast.error(
+                    error.response?.data?.data?.message ||
+                    'An error occurred while fetching search results.'
+                );
+                return <ErrorState title="Error fetching search results" message={error.response?.data?.data?.message || 'An error occurred while fetching search results.'} />;
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-    if (query) fetchResults();
-}, [searchQuery]);
+        if (query) fetchResults();
+    }, [searchQuery]);
 
 
 
-    
-    if(isLoading){
-        return <SearchResultsSkeleton/>
+
+    if (isLoading) {
+        return <SearchResultsSkeleton />
     }
 
     const filteredResults =
