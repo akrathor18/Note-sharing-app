@@ -8,7 +8,7 @@ export const createLink = async (req, res) => {
     }
 
     try {
-        const link = await LinkService.createLink({ userId: req.user.id, label, url });
+        const link = await LinkService.createLink({ userId:  req.user._id, label, url });
         res.status(201).json({ message: 'Link created', link });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
@@ -17,7 +17,7 @@ export const createLink = async (req, res) => {
 
 export const getMyLinks = async (req, res) => {
     try {
-        const links = await LinkService.getLinksByUser(req.user.id);
+        const links = await LinkService.getLinksByUser( req.user._id);
         res.status(200).json(links);
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
@@ -32,7 +32,7 @@ export const bulkUpdateLinks = async (req, res) => {
     }
 
     try {
-        const newLinks = await LinkService.bulkUpdateLinks({ userId: req.user.id, links });
+        const newLinks = await LinkService.bulkUpdateLinks({ userId:  req.user._id, links });
         res.status(200).json(newLinks);
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
@@ -43,7 +43,7 @@ export const updateLink = async (req, res) => {
     const { label, url } = req.body;
 
     try {
-        const link = await LinkService.updateLink({ id: req.params.id, userId: req.user.id, label, url });
+        const link = await LinkService.updateLink({ id: req.params.id, userId:  req.user._id, label, url });
 
         if (!link) return res.status(404).json({ message: 'Link not found' });
 
@@ -55,7 +55,7 @@ export const updateLink = async (req, res) => {
 
 export const deleteLink = async (req, res) => {
     try {
-        const deleted = await LinkService.deleteLink({ id: req.params.id, userId: req.user.id });
+        const deleted = await LinkService.deleteLink({ id: req.params.id, userId:  req.user._id });
 
         if (!deleted) return res.status(404).json({ message: 'Link not found' });
 
