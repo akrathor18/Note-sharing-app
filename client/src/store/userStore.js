@@ -32,7 +32,7 @@ export const useUserStore = create((set) => ({
             error: {
                 render({ data }) {
                     return (
-                        data?.response?.data  ||
+                        data?.response?.data ||
                         'Login failed'
                     );
                 },
@@ -41,7 +41,7 @@ export const useUserStore = create((set) => ({
 
         try {
             const response = await promise;
-            setToken(response.data.token);
+            setToken(response.data.data.token);
             set({ isSigning: false })
             return true
         } catch (error) {
@@ -75,11 +75,11 @@ export const useUserStore = create((set) => ({
 
         try {
             const response = await promise;
-            setToken(response.data.token);
+            setToken(response.data.data.token);
             set({ isSigning: false })
             return true
         } catch (error) {
-            set({ isSigning: false, error: error.response?.data|| "SingUp Failed" })
+            set({ isSigning: false, error: error.response?.data || "SingUp Failed" })
             return false;
         }
     },
@@ -89,9 +89,9 @@ export const useUserStore = create((set) => ({
         try {
             const response = await API.get('/users/profile');
             set({
-                user: response.data.user,
-                userStates: response.data.userState,
-                bio: response.data.user.bio,
+                user: response.data.data.user,
+                userStates: response.data.data.userState,
+                bio: response.data.data.user.bio,
                 isLoading: false
             });
         } catch (error) {
@@ -102,7 +102,7 @@ export const useUserStore = create((set) => ({
     getScore: async () => {
         try {
             const response = await API.get('/users/average-score');
-            set({ averageScore: response.data });
+            set({ averageScore: response.data.data });
         } catch (error) {
             console.log(error)
         }
@@ -127,7 +127,7 @@ export const useUserStore = create((set) => ({
         });
         try {
             const response = await promise;
-            set({ bio: response.data.bio })
+            set({ bio: response.data.data.bio })
             set({ isUpdatingBio: false });
             return true;
         } catch (error) {
@@ -167,7 +167,7 @@ export const useUserStore = create((set) => ({
             set((state) => ({
                 user: {
                     ...state.user,
-                    profilePic: `${response.data.profilePic}}`
+                    profilePic: `${response.data.data.profilePic}}`
                 }
             }));
 
@@ -237,7 +237,7 @@ export const useUserStore = create((set) => ({
             set((state) => ({
                 user: {
                     ...state.user,
-                    links: response.data,
+                    links: response.data.data.links,
                 },
             }));
 

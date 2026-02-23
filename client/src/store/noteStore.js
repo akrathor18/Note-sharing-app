@@ -23,7 +23,7 @@ export const useNoteStore = create((set, get) => ({
         set({ isLoading: true, error: null, errorOnUpload: null });
         try {
             const response = await API.get('/notes');
-            set({ notes: response.data, isLoading: false });
+            set({ notes: response.data.data.notes, isLoading: false });
         }
         catch (error) {
             set({ error: error.message || "Failed to load notes", isLoading: false });
@@ -55,7 +55,7 @@ export const useNoteStore = create((set, get) => ({
                 });
 
             set((state) => ({
-                notes: [...state.notes, response.data],
+                notes: [...state.notes, response.data.data.note],
                 isUploading: false, abortController: null
             }));
 
@@ -83,7 +83,7 @@ export const useNoteStore = create((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await API.get('/notes/me');
-            set({ userNotes: response.data, isLoading: false });
+            set({ userNotes: response.data.data.notes, isLoading: false });
         }
         catch (error) {
             console.log(error)
@@ -113,7 +113,7 @@ export const useNoteStore = create((set, get) => ({
         set({ loadingPreview: true })
         try {
             const response = await API.get(`/notes/${noteId}`);
-            set({ previewNote: response.data, loadingPreview: false })
+            set({ previewNote: response.data.data.note, loadingPreview: false })
         } catch (error) {
             set({ errorPreview: error.message || "Failed to preview note" })
             set({ loadingPreview: false })

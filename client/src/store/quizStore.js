@@ -26,7 +26,7 @@ export const useQuizStore = create((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await API.get('/quiz');
-            set({ QuizzesList: response.data, isLoading: false });
+            set({ QuizzesList: response.data.data.quizzes, isLoading: false });
         } catch (error) {
             set({ error: error.message || "Failed to load quizzes", isLoading: false });
         }
@@ -35,11 +35,11 @@ export const useQuizStore = create((set, get) => ({
     UploadQuiz: async (quizData) => {
         try {
             set({ isUploading: true });
-            const response= await API.post('/quiz', quizData);
+            const response = await API.post('/quiz', quizData);
             set((state) => ({
-            QuizzesList: [response.data, ...state.QuizzesList],
-            isUploading: false,
-        }));
+                QuizzesList: [response.data.data.quiz, ...state.QuizzesList],
+                isUploading: false,
+            }));
 
             toast.success('Success! Your quiz is ready to use.');
             set({ isUploading: false });
@@ -62,7 +62,7 @@ export const useQuizStore = create((set, get) => ({
             console.log(res)
             set({
                 res: res,
-                activeQuiz: res.data,
+                activeQuiz: res.data.data.quiz,
                 isLoading: false,
             });
         } catch (err) {
@@ -77,7 +77,7 @@ export const useQuizStore = create((set, get) => ({
         try {
             set({ isLoading: true, errorOnAttempt: null });
             const response = await API.get(`/quiz/attempts`);
-            set({ attemptedQuiz: response.data.quizAttempts, isLoading: false });
+            set({ attemptedQuiz: response.data.data.quizAttempts, isLoading: false });
         } catch (error) {
             console.log(error)
             set({ errorOnAttempt: error.data.message || "Failed to load attempt result", isLoading: false });
@@ -97,7 +97,7 @@ export const useQuizStore = create((set, get) => ({
         try {
             set({ isLoading: true, error: null });
             const response = await API.get('/quiz/me');
-            set({ userQuizzes: response.data, isLoading: false });
+            set({ userQuizzes: response.data.data.quizzes, isLoading: false });
         } catch (error) {
             console.log(error)
             set({ error: error.message || "Failed to load user quizzes", isLoading: false });
@@ -132,7 +132,7 @@ export const useQuizStore = create((set, get) => ({
             );
 
             set({
-                result: response.data,
+                result: response.data.data,
                 uploadingAnswers: false
             });
 

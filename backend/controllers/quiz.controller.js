@@ -1,49 +1,49 @@
-import * as QuizService from '../services/quiz.service.js';
+﻿import * as QuizService from '../services/quiz.service.js';
 import mongoose from 'mongoose';
 
 export const createQuiz = async (req, res) => {
     try {
-        const quiz = await QuizService.createQuiz({ body: req.body, userId:  req.user._id });
-        res.status(201).json(quiz);
+        const quiz = await QuizService.createQuiz({ body: req.body, userId: req.user._id });
+        res.status(201).json({ success: true, message: 'Quiz created', data: { quiz } });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ success: false, message: 'Internal server error', data: null });
     }
 };
 
 export const getAllQuizzes = async (req, res) => {
     try {
         const quizzes = await QuizService.getAllQuizzes();
-        res.status(200).json(quizzes);
+        res.status(200).json({ success: true, message: 'Quizzes retrieved', data: { quizzes } });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ success: false, message: 'Internal server error', data: null });
     }
 };
 
 export const getMyQuizzes = async (req, res) => {
     try {
-        const userId =  req.user._id;
+        const userId = req.user._id;
 
         if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({ message: 'Invalid user ID' });
+            return res.status(400).json({ success: false, message: 'Invalid user ID', data: null });
         }
 
         const quizzes = await QuizService.getMyQuizzes(userId);
-        res.status(200).json(quizzes);
+        res.status(200).json({ success: true, message: 'Quizzes retrieved', data: { quizzes } });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ success: false, message: 'Internal server error', data: null });
     }
 };
 
 export const getMyAttempts = async (req, res) => {
     try {
-        const attempts = await QuizService.getMyAttempts( req.user._id);
-        res.status(200).json({ quizAttempts: attempts });
+        const attempts = await QuizService.getMyAttempts(req.user._id);
+        res.status(200).json({ success: true, message: 'Attempts retrieved', data: { quizAttempts: attempts } });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ success: false, message: 'Server error', data: null });
     }
 };
 
@@ -51,15 +51,15 @@ export const searchQuizzes = async (req, res) => {
     const { query } = req.query;
 
     if (!query || !query.trim()) {
-        return res.status(400).json({ error: 'Search term is required' });
+        return res.status(400).json({ success: false, message: 'Search term is required', data: null });
     }
 
     try {
         const quizzes = await QuizService.searchQuizzes(query);
-        res.status(200).json(quizzes);
+        res.status(200).json({ success: true, message: 'Quizzes found', data: { quizzes } });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Failed to fetch quizzes' });
+        res.status(500).json({ success: false, message: 'Failed to fetch quizzes', data: null });
     }
 };
 
@@ -68,16 +68,16 @@ export const getQuizById = async (req, res) => {
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(404).json({ message: 'Quiz not found' });
+            return res.status(404).json({ success: false, message: 'Quiz not found', data: null });
         }
 
         const quiz = await QuizService.getQuizById(id);
-        if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
+        if (!quiz) return res.status(404).json({ success: false, message: 'Quiz not found', data: null });
 
-        res.status(200).json(quiz);
+        res.status(200).json({ success: true, message: 'Quiz retrieved', data: { quiz } });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ success: false, message: 'Server error', data: null });
     }
 };
 
@@ -86,18 +86,19 @@ export const deleteQuiz = async (req, res) => {
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'Invalid quiz ID' });
+            return res.status(400).json({ success: false, message: 'Invalid quiz ID', data: null });
         }
 
         const result = await QuizService.deleteQuiz({ id, userId: req.user._id });
 
-        if (result.notFound) return res.status(404).json({ message: 'Quiz not found' });
-        if (result.forbidden) return res.status(403).json({ message: 'Not authorized to delete this quiz' });
+        if (result.notFound) return res.status(404).json({ success: false, message: 'Quiz not found', data: null });
+        if (result.forbidden)
+            return res.status(403).json({ success: false, message: 'Not authorized to delete this quiz', data: null });
 
-        res.status(200).json({ message: 'Quiz deleted successfully', quizId: id });
+        res.status(200).json({ success: true, message: 'Quiz deleted successfully', data: { quizId: id } });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Failed to delete quiz', error: err });
+        res.status(500).json({ success: false, message: 'Failed to delete quiz', data: null });
     }
 };
 
@@ -106,18 +107,20 @@ export const attemptQuiz = async (req, res) => {
         const { answers } = req.body;
         const result = await QuizService.attemptQuiz({
             quizId: req.params.id,
-            userId:  req.user._id,
+            userId: req.user._id,
             answers,
         });
 
-        if (result.notFound) return res.status(404).json({ message: 'Quiz not found' });
-        if (result.unanswered) return res.status(400).json({ message: 'Please answer all questions before submitting the quiz' });
-        if (result.invalidFormat) return res.status(400).json({ message: 'Invalid answers format' });
+        if (result.notFound) return res.status(404).json({ success: false, message: 'Quiz not found', data: null });
+        if (result.unanswered)
+            return res.status(400).json({ success: false, message: 'Please answer all questions before submitting the quiz', data: null });
+        if (result.invalidFormat)
+            return res.status(400).json({ success: false, message: 'Invalid answers format', data: null });
 
-        res.status(200).json(result.data);
+        res.status(200).json({ success: true, message: 'Quiz submitted', data: result.data });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ success: false, message: 'Server error', data: null });
     }
 };
 
@@ -125,16 +128,17 @@ export const updateQuiz = async (req, res) => {
     try {
         const result = await QuizService.updateQuiz({
             quizId: req.params.id,
-            userId:  req.user._id,
+            userId: req.user._id,
             updateData: req.body,
         });
 
-        if (result.notFound) return res.status(404).json({ message: 'Quiz not found' });
-        if (result.forbidden) return res.status(403).json({ message: 'Unauthorized: You can only update your own quizzes' });
+        if (result.notFound) return res.status(404).json({ success: false, message: 'Quiz not found', data: null });
+        if (result.forbidden)
+            return res.status(403).json({ success: false, message: 'Unauthorized: You can only update your own quizzes', data: null });
 
-        res.status(200).json(result.quiz);
+        res.status(200).json({ success: true, message: 'Quiz updated', data: { quiz: result.quiz } });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ success: false, message: 'Server error', data: null });
     }
 };
