@@ -5,7 +5,7 @@ import * as UserController from '../controllers/user.controller.js';
 
 const router = express.Router();
 
-router.post('/changepassword', VerifyJwtMiddleware, UserController.changePassword);
+router.patch('/me/password', VerifyJwtMiddleware, UserController.changePassword);
 router.get('/profile', VerifyJwtMiddleware, UserController.getProfile);
 router.get('/average-score', VerifyJwtMiddleware, UserController.getAverageScore);
 router.patch('/bio', VerifyJwtMiddleware, UserController.updateBio);

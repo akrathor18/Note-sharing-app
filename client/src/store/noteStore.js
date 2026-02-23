@@ -22,7 +22,7 @@ export const useNoteStore = create((set, get) => ({
 
         set({ isLoading: true, error: null, errorOnUpload: null });
         try {
-            const response = await API.get('/notes/getnotes');
+            const response = await API.get('/notes');
             set({ notes: response.data, isLoading: false });
         }
         catch (error) {
@@ -80,7 +80,7 @@ export const useNoteStore = create((set, get) => ({
     fetchUserNotes: async (userId) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await API.get('/notes/mynotes');
+            const response = await API.get('/notes/me');
             set({ userNotes: response.data, isLoading: false });
         }
         catch (error) {

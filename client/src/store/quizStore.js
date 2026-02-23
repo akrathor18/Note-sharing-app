@@ -25,7 +25,7 @@ export const useQuizStore = create((set, get) => ({
 
         set({ isLoading: true, error: null });
         try {
-            const response = await API.get('quiz/getquiz');
+            const response = await API.get('/quiz');
             set({ QuizzesList: response.data, isLoading: false });
         } catch (error) {
             set({ error: error.message || "Failed to load quizzes", isLoading: false });
@@ -35,7 +35,7 @@ export const useQuizStore = create((set, get) => ({
     UploadQuiz: async (quizData) => {
         try {
             set({ isUploading: true });
-            const response= await API.post('quiz/createQuiz', quizData);
+            const response= await API.post('/quiz', quizData);
             set((state) => ({
             QuizzesList: [response.data, ...state.QuizzesList],
             isUploading: false,
@@ -96,7 +96,7 @@ export const useQuizStore = create((set, get) => ({
     ftechUserQuizzes: async (userId) => {
         try {
             set({ isLoading: true, error: null });
-            const response = await API.get('/quiz/myQuizzes');
+            const response = await API.get('/quiz/me');
             set({ userQuizzes: response.data, isLoading: false });
         } catch (error) {
             console.log(error)

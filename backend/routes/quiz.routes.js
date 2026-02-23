@@ -4,9 +4,9 @@ import * as QuizController from '../controllers/quiz.controller.js';
 
 const router = express.Router();
 
-router.post('/createQuiz', VerifyJwtMiddleware, QuizController.createQuiz);
-router.get('/getQuiz', VerifyJwtMiddleware, QuizController.getAllQuizzes);
-router.get('/myQuizzes', VerifyJwtMiddleware, QuizController.getMyQuizzes);
+router.post('/', VerifyJwtMiddleware, QuizController.createQuiz);
+router.get('/', VerifyJwtMiddleware, QuizController.getAllQuizzes);
+router.get('/me', VerifyJwtMiddleware, QuizController.getMyQuizzes);
 router.get('/attempts', VerifyJwtMiddleware, QuizController.getMyAttempts);
 router.get('/search', QuizController.searchQuizzes);
 router.get('/:id', QuizController.getQuizById);
