@@ -29,7 +29,6 @@ export default function SearchResults() {
                     API.get(`/quiz/search?query=${query}`)
                 ]);
 
-                console.log("notes", notesResponse, "quizzesResponse", quizzesResponse)
                 setSearchResults({
                     notes: notesResponse.data.data.notes,
                     quizzes: quizzesResponse.data.data.quizzes,
