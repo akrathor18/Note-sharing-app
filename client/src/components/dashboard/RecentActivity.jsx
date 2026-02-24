@@ -1,94 +1,102 @@
 import React from 'react'
-import {
-    Clock,
-} from "lucide-react"
+import { Clock } from "lucide-react"
 
 import { formatDate } from '../../utils/formatDate';
 import { getActivityIcon, getActivityColor } from '../../utils/getActivityIconColor';
+
 function RecentActivity(activityData) {
     const activity = activityData.activity;
 
-
     return (
-        <div className="bg-[#1A1A1A] rounded-xl p-6 border border-[#F5F5F5]/5">
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-bold flex items-center gap-2">
-                    <Clock size={20} className="text-[#4CAF50]" />Recent Activity
-                </h2>
-                {/* <button className="text-[#00E5FF] text-sm flex items-center hover:underline">
-                    View All <ChevronRight size={16} />
-                </button> */}
+        <div className="bg-[#111111] rounded-2xl p-6 border border-white/[0.06] shadow-xl shadow-black/40">
+
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-6">
+                <div className="w-9 h-9 rounded-xl bg-[#4CAF50]/10 flex items-center justify-center shrink-0">
+                    <Clock size={17} className="text-[#4CAF50]" />
+                </div>
+                <h2 className="text-base font-semibold tracking-tight text-white/90">Recent Activity</h2>
+                {activity.length > 0 && (
+                    <span className="ml-auto text-xs font-medium text-white/30 bg-white/5 px-2.5 py-1 rounded-full border border-white/[0.06]">
+                        {activity.length} {activity.length === 1 ? 'entry' : 'entries'}
+                    </span>
+                )}
             </div>
 
-
-
+            {/* Activity List */}
             {activity.length > 0 ? (
-                <div className="space-y-3">
-                    {activity.map((activity) => {
-                        const ActivityIcon = getActivityIcon(activity.type)
-                        const activityColor = getActivityColor(activity.type)
+                <div className="flex flex-col gap-2">
+                    {activity.map((item, index) => {
+                        const ActivityIcon = getActivityIcon(item.type)
+                        const activityColor = getActivityColor(item.type)
 
                         return (
                             <div
-                                key={activity._id}
-                                className="flex gap-4 p-4 rounded-lg bg-[#0D0D0D] hover:bg-[#0D0D0D]/80 transition-colors border border-[#F5F5F5]/5"
+                                key={item._id}
+                                className="group flex gap-3.5 p-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-200 border border-white/[0.04] hover:border-white/[0.09] cursor-default"
+                                style={{ animationDelay: `${index * 40}ms` }}
                             >
                                 {/* Icon */}
                                 <div
-                                    className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
-                                    style={{ backgroundColor: `${activityColor}20` }}
+                                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105"
+                                    style={{ backgroundColor: `${activityColor}18`, boxShadow: `0 0 0 1px ${activityColor}25` }}
                                 >
-                                    <ActivityIcon size={20} style={{ color: activityColor }} />
+                                    <ActivityIcon size={17} style={{ color: activityColor }} />
                                 </div>
 
                                 {/* Content */}
-                                <div className="flex-1 min-w-0">
-                                    {/* Title */}
-                                    <h3 className="font-medium truncate mb-1">
-                                        {activity.title}
-                                    </h3>
-
-                                    {/* Meta info */}
-                                    <div className="text-sm text-[#F5F5F5]/60 flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-                                        <span className="capitalize">{activity.description}</span>
-
-                                        {activity.subject && (
-                                            <>
-                                                <span className="hidden sm:inline">•</span>
-                                                <span>{activity.subject}</span>
-                                            </>
-                                        )}
-
-                                        {activity.score && (
-                                            <>
-                                                <span className="hidden sm:inline">•</span>
-                                                <span>{`Score: ${activity.percentageScore}%`}</span>
-                                            </>
-                                        )}
-
-                                        {/* Date */}
-                                        <span className="text-xs opacity-70 sm:ml-auto">
-                                            {formatDate(activity.timestamp)}
+                                <div className="flex-1 min-w-0 flex flex-col justify-center gap-0.5">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <h3 className="font-medium text-sm text-white/85 truncate leading-snug">
+                                            {item.title}
+                                        </h3>
+                                        <span className="text-[11px] text-white/30 shrink-0 mt-0.5 tabular-nums">
+                                            {formatDate(item.timestamp)}
                                         </span>
+                                    </div>
+
+                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[12px] text-white/45">
+                                        <span className="capitalize">{item.description}</span>
+
+                                        {item.subject && (
+                                            <>
+                                                <span className="text-white/20">·</span>
+                                                <span>{item.subject}</span>
+                                            </>
+                                        )}
+
+                                        {item.score && (
+                                            <>
+                                                <span className="text-white/20">·</span>
+                                                <span
+                                                    className="font-semibold"
+                                                    style={{ color: activityColor }}
+                                                >
+                                                    {item.percentageScore}%
+                                                </span>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             </div>
-
                         )
                     })}
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center py-12">
-                    <div className="w-16 h-16 rounded-full bg-[#0D0D0D] flex items-center justify-center mb-4">
-                        <Clock size={32} className="text-[#F5F5F5]/30" />
+                /* Empty State */
+                <div className="flex flex-col items-center justify-center py-14 text-center">
+                    <div className="relative mb-5">
+                        <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
+                            <Clock size={28} className="text-white/20" />
+                        </div>
+                        <div className="absolute -inset-3 rounded-3xl bg-white/[0.015] -z-10 blur-sm" />
                     </div>
-                    <h3 className="text-lg font-medium text-[#F5F5F5]/70 mb-2">No Recent Activity</h3>
-                    <p className="text-sm text-[#F5F5F5]/50 text-center max-w-xs">
-                        Start uploading notes or taking quizzes to see your activity here. Your learning journey starts now!
+                    <h3 className="text-sm font-semibold text-white/50 mb-1.5">No activity yet</h3>
+                    <p className="text-xs text-white/30 max-w-[220px] leading-relaxed">
+                        Upload notes or take a quiz to start tracking your learning journey.
                     </p>
                 </div>
             )}
-
         </div>
     )
 }
