@@ -1,21 +1,40 @@
 function SecondaryStates(statsData) {
     const secondaryStats = statsData.statsData;
+
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {secondaryStats.map((stat, index) => (
-                <div key={index} className="bg-[#1A1A1A] rounded-xl p-6 border border-[#F5F5F5]/5">
-                    <div className="flex items-center gap-4">
+                <div
+                    key={index}
+                    className="group relative bg-[#111111] rounded-2xl p-5 border border-white/[0.06] shadow-xl shadow-black/40 overflow-hidden transition-all duration-200 hover:border-white/[0.10]"
+                >
+                    {/* Background glow */}
+                    <div
+                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                        style={{ background: `radial-gradient(ellipse at 0% 50%, ${stat.color}0D 0%, transparent 70%)` }}
+                    />
+
+                    <div className="flex items-center gap-4 relative">
+                        {/* Icon */}
                         <div
-                            className="w-14 h-14 rounded-lg flex items-center justify-center"
-                            style={{ backgroundColor: `${stat.color}20` }}
+                            className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105"
+                            style={{
+                                backgroundColor: `${stat.color}15`,
+                                boxShadow: `0 0 0 1px ${stat.color}22`,
+                            }}
                         >
-                            <stat.icon size={28} style={{ color: stat.color }} />
+                            <stat.icon size={22} style={{ color: stat.color }} />
                         </div>
-                        <div>
-                            <div className="text-2xl font-bold mb-1" style={{ color: stat.color }}>
+
+                        {/* Text */}
+                        <div className="min-w-0">
+                            <div
+                                className="text-2xl font-bold leading-none mb-1 tabular-nums"
+                                style={{ color: stat.color }}
+                            >
                                 {stat.value}
                             </div>
-                            <div className="text-sm font-medium text-[#F5F5F5] mb-1">{stat.label}</div>
+                            <div className="text-sm text-white/50 truncate">{stat.label}</div>
                         </div>
                     </div>
                 </div>
