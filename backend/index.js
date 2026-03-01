@@ -15,58 +15,71 @@ import rateLimit from 'express-rate-limit';
 // import swaggerUi from 'swagger-ui-express';
 import generateSwaggerJSONFromRouter from './config/swagger.js';
 import helmet from 'helmet';
+import * as Sentry from "@sentry/node";
+import { logger } from "./utils/logger.js";
+
+import morgan from "morgan";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
 const app = express();
-// setupSwagger(app);
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 1000, // limit each IP to 100 requests per windowMs
-});
-// Middle wares
+const PORT = process.env.PORT || 3000;
 
+// SENTRY (Note: Ensure @sentry/node is installed if using)
+// Sentry.init({ ... });
+
+// SECURITY + CORE MIDDLEWARE
 app.set("trust proxy", 1);
 
-app.use(limiter);
-app.use(
-  helmet({
+app.use(morgan("dev", {
+    stream: {
+        write: (message) => logger.info(message.trim()),
+    },
+}));
+
+app.use(rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+}));
+
+app.use(helmet({
     crossOriginResourcePolicy: false,
-  })
-);
+}));
+
+app.use(cors({
+    origin: [
+        "http://localhost:5173",
+        "https://studyhub-dev.web.app",
+    ],
+    credentials: true,
+}));
 
 app.use(cookieParser());
-app.use(
-    cors({
-        origin: [
-            'http://localhost:5173',
-            'https://studyhub-dev.web.app', // Firebase URL
-        ],
-        credentials: true,
-    })
-);
 app.use(bodyParser.json());
 
-app.get('/health', (req, res) => {
-    res.status(200).send('OK');
-})
-
-// Routes
-app.get('/', (_, res) => {
-    res.send('StudyHub API is running ');
+// ROUTES
+app.get("/health", (req, res) => {
+    res.status(200).send("OK");
 });
-// app.use(
-//     '/api-docs',
-//     swaggerUi.serve,
-//     swaggerUi.setup(generateSwaggerJSONFromRouter(routes, fields)),
-// );
-app.use('/api/users', usersRoutes);
-app.use('/api/quiz', quizRoutes);
-app.use('/api/notes', notesRoutes);
-app.use('/api/links', linkRoutes);
-app.use('/api/auth', authRoutes);
+
+app.get("/", (_, res) => {
+    res.send("StudyHub API is running");
+});
+
+app.use("/api/users", usersRoutes);
+app.use("/api/quiz", quizRoutes);
+app.use("/api/notes", notesRoutes);
+app.use("/api/links", linkRoutes);
+app.use("/api/auth", authRoutes);
+
+//     CUSTOM ERROR HANDLER
+app.use((err, req, res, next) => {
+    logger.error("Unhandled Error", err);
+
+    res.status(500).json({ message: "Internal Server Error" });
+});
+
+
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+    logger.info(`🚀 Server running on port ${PORT}`);
 });
-

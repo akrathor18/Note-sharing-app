@@ -1,4 +1,5 @@
 import * as AuthService from '../services/auth.service.js';
+import { logger } from '../utils/logger.js';
 
 export const register = async (req, res) => {
     try {
@@ -9,9 +10,10 @@ export const register = async (req, res) => {
         if (result.invalidRole)
             return res.status(400).json({ success: false, message: 'Invalid role', data: null });
 
+        logger.info(`User registered successfully: ${req.body.email}`);
         res.status(201).json({ success: true, message: 'User registered successfully!', data: { token: result.token } });
     } catch (err) {
-        console.error(err);
+        logger.error('Registration error', err);
         res.status(500).json({ success: false, message: 'Internal server error', data: null });
     }
 };
@@ -26,13 +28,14 @@ export const login = async (req, res) => {
         if (result.invalidCredentials)
             return res.status(400).json({ success: false, message: 'Invalid credentials', data: null });
 
+        logger.info(`User logged in successfully: ${email}`);
         res.status(200).json({
             success: true,
             message: 'User logged in successfully!',
             data: { token: result.token, user: result.user },
         });
     } catch (err) {
-        console.error(err);
+        logger.error('Login error', err);
         res.status(500).json({ success: false, message: 'Internal server error', data: null });
     }
 };
@@ -43,5 +46,6 @@ export const logout = (req, res) => {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
     });
+    logger.info(`User logged out`);
     res.status(200).json({ success: true, message: 'Logged out successfully!', data: null });
 };

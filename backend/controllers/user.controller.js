@@ -1,4 +1,5 @@
 import * as UserService from '../services/user.service.js';
+import { logger } from '../utils/logger.js';
 
 export const changePassword = async (req, res) => {
     try {
@@ -10,9 +11,10 @@ export const changePassword = async (req, res) => {
         if (result.incorrectPassword)
             return res.status(400).json({ success: false, message: 'Incorrect current password!', data: null });
 
+        logger.info(`Password changed for user ${req.user._id}`);
         res.status(200).json({ success: true, message: 'Password changed successfully', data: null });
     } catch (err) {
-        console.error(err);
+        logger.error(`Error changing password for user ${req.user._id}`, err);
         res.status(500).json({ success: false, message: 'Internal server error', data: null });
     }
 };
@@ -30,7 +32,7 @@ export const getProfile = async (req, res) => {
             data: { userState: result.userState, user: result.user },
         });
     } catch (err) {
-        console.error(err);
+        logger.error(`Error retrieving profile for user ${req.user._id}`, err);
         res.status(500).json({ success: false, message: 'Internal server error', data: null });
     }
 };
@@ -40,7 +42,7 @@ export const getAverageScore = async (req, res) => {
         const result = await UserService.getAverageScore(req.user._id);
         res.status(200).json({ success: true, message: 'Average score retrieved', data: result });
     } catch (err) {
-        console.error(err);
+        logger.error(`Error retrieving average score for user ${req.user._id}`, err);
         res.status(500).json({ success: false, message: 'Server error', data: null });
     }
 };
@@ -51,9 +53,10 @@ export const updateBio = async (req, res) => {
 
         if (result.notFound) return res.status(404).json({ success: false, message: 'User not found', data: null });
 
+        logger.info(`Bio updated for user ${req.user._id}`);
         res.status(200).json({ success: true, message: 'Bio updated', data: { bio: result.bio } });
     } catch (err) {
-        console.error(err);
+        logger.error(`Error updating bio for user ${req.user._id}`, err);
         res.status(500).json({ success: false, message: 'Server error', data: null });
     }
 };
@@ -67,13 +70,14 @@ export const uploadProfilePic = async (req, res) => {
 
         if (result.notFound) return res.status(404).json({ success: false, message: 'User not found', data: null });
 
+        logger.info(`Profile picture updated for user ${req.user._id}`);
         res.status(200).json({
             success: true,
             message: 'Profile picture updated!',
             data: { profilePic: result.profilePic },
         });
     } catch (err) {
-        console.error(err);
+        logger.error(`Error uploading profile pic for user ${req.user._id}`, err);
         res.status(500).json({ success: false, message: 'Upload failed', data: null });
     }
 };
@@ -86,9 +90,10 @@ export const deleteProfilePic = async (req, res) => {
         if (result.noPic)
             return res.status(400).json({ success: false, message: 'No profile picture to delete', data: null });
 
+        logger.info(`Profile picture deleted for user ${req.user._id}`);
         res.status(200).json({ success: true, message: 'Profile picture deleted successfully', data: null });
     } catch (err) {
-        console.error(err);
+        logger.error(`Error deleting profile pic for user ${req.user._id}`, err);
         res.status(500).json({ success: false, message: 'Failed to delete profile picture', data: null });
     }
 };
