@@ -32,7 +32,7 @@ export const useUserStore = create((set) => ({
             error: {
                 render({ data }) {
                     return (
-                        data?.response?.data ||
+                        data?.response?.data?.message ||
                         'Login failed'
                     );
                 },
@@ -45,7 +45,7 @@ export const useUserStore = create((set) => ({
             set({ isSigning: false })
             return true
         } catch (error) {
-            set({ isSigning: false, error: error.response?.data || 'Login failed' })
+            set({ isSigning: false, error: error.response?.data?.message || 'Login failed' })
             return false
 
         }
@@ -66,7 +66,7 @@ export const useUserStore = create((set) => ({
                 render({ data }) {
 
                     return (
-                        data?.response?.data ||
+                        data?.response?.data?.message ||
                         'Failed to Sing-Up'
                     );
                 },
