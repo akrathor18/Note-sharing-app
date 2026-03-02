@@ -78,24 +78,31 @@ export const getNoteById = async (id) => {
 };
 
 export const trackView = async ({ noteId, userId }) => {
-    const note = await Note.findById(noteId);
-    if (!note) return { notFound: true };
+    const result = await Note.updateOne(
+        { _id: noteId, viewedBy: { $ne: userId } },
+        {
+            $inc: { views: 1 },
+            $addToSet: { viewedBy: userId }
+        }
+    );
 
-    if (!note.viewedBy.includes(userId)) {
-        note.views += 1;
-        note.viewedBy.push(userId);
-        await note.save();
+    if (result.matchedCount === 0) {
+        return { alreadyViewed: true };
     }
 
-    return { views: note.views };
+    const updatedNote = await Note.findById(noteId).select("views");
+
+    return { views: updatedNote.views };
 };
 
 export const trackDownload = async (noteId) => {
-    const note = await Note.findById(noteId);
-    if (!note) return { notFound: true };
+    const note = await Note.findByIdAndUpdate(
+        noteId,
+        { $inc: { totalDownloads: 1 } },
+        { new: true }
+    ).select("totalDownloads");
 
-    note.totalDownloads += 1;
-    await note.save();
+    if (!note) return { notFound: true };
 
     return { downloads: note.totalDownloads };
 };

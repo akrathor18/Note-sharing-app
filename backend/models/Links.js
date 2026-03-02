@@ -11,4 +11,7 @@ const linkSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+
+linkSchema.index({ user: 1 });
+
 export default mongoose.model("Link", linkSchema);
