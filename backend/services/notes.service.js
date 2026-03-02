@@ -31,6 +31,7 @@ export const getAllNotes = async () => {
     return await Note.find()
         .populate('uploadedBy', 'name email')
         .populate('subject', 'name')
+        .limit(20)
         .sort({ createdAt: -1 });
 };
 

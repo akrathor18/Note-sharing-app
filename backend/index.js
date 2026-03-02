@@ -25,17 +25,20 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// SENTRY (Note: Ensure @sentry/node is installed if using)
-// Sentry.init({ ... });
 
 // SECURITY + CORE MIDDLEWARE
 app.set("trust proxy", 1);
 
-app.use(morgan("dev", {
-    stream: {
+app.use(
+  morgan(
+    ":remote-addr :method :url :status :response-time ms",
+    {
+      stream: {
         write: (message) => logger.info(message.trim()),
-    },
-}));
+      },
+    }
+  )
+);
 
 app.use(rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -74,9 +77,15 @@ app.use("/api/auth", authRoutes);
 
 //     CUSTOM ERROR HANDLER
 app.use((err, req, res, next) => {
-    logger.error("Unhandled Error", err);
+  logger.error("Unhandled Error", {
+    message: err.message,
+    stack: err.stack,
+    route: req.originalUrl,
+    method: req.method,
+    userId: req.user?.id || null,
+  });
 
-    res.status(500).json({ message: "Internal Server Error" });
+  res.status(500).json({ message: "Internal Server Error" });
 });
 
 
