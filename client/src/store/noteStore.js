@@ -16,10 +16,6 @@ export const useNoteStore = create((set, get) => ({
 
     //Get notes
     fetchNotes: async () => {
-
-        const { notes } = get();
-        if (notes.length > 0) return;
-
         set({ isLoading: true, error: null, errorOnUpload: null });
         try {
             const response = await API.get('/notes');
@@ -55,6 +51,7 @@ export const useNoteStore = create((set, get) => ({
                 });
             set((state) => ({
                 notes: [...state.notes, response.data.data.note],
+                userNotes: [...state.userNotes, response.data.data.note],
                 isUploading: false, abortController: null
             }));
             toast.success('Note uploaded successfully');

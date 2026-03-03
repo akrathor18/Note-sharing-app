@@ -18,11 +18,6 @@ export const useQuizStore = create((set, get) => ({
 
     //Get quizzes
     fetchQuizzes: async () => {
-
-        const { QuizzesList } = get();
-        console.log(QuizzesList.length)
-        if (QuizzesList.length > 0) return;
-
         set({ isLoading: true, error: null });
         try {
             const response = await API.get('/quiz');
@@ -38,6 +33,7 @@ export const useQuizStore = create((set, get) => ({
             const response = await API.post('/quiz', quizData);
             set((state) => ({
                 QuizzesList: [response.data.data.quiz, ...state.QuizzesList],
+                userQuizzes: [response.data.data.quiz, ...state.userQuizzes],
                 isUploading: false,
             }));
 
@@ -59,7 +55,6 @@ export const useQuizStore = create((set, get) => ({
             });
 
             const res = await API.get(`/quiz/${quizId}`);
-            console.log(res)
             set({
                 res: res,
                 activeQuiz: res.data.data.quiz,
@@ -93,7 +88,7 @@ export const useQuizStore = create((set, get) => ({
         });
     },
 
-    ftechUserQuizzes: async (userId) => {
+    fetchUserQuizzes: async (userId) => {
         try {
             set({ isLoading: true, error: null });
             const response = await API.get('/quiz/me');

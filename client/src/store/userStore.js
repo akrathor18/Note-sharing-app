@@ -9,7 +9,6 @@ export const useUserStore = create((set) => ({
     bio: '',
     isLoading: false,
     error: null,
-    averageScore: null,
     isUploading: false,
     isDeleting: false,
     errorOnDelete: null,
@@ -96,15 +95,6 @@ export const useUserStore = create((set) => ({
             });
         } catch (error) {
             set({ error: error.message || "Failed to load user", isLoading: false });
-        }
-    },
-
-    getScore: async () => {
-        try {
-            const response = await API.get('/users/average-score');
-            set({ averageScore: response.data.data });
-        } catch (error) {
-            console.log(error)
         }
     },
 

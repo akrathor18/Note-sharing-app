@@ -20,15 +20,14 @@ import ErrorState from '../common/components/ErrorState';
 
 export default function Dashboard() {
   // Zustand store
-  const { user, userStates, averageScore, fetchUser, getScore, isLoading, error } =
+  const { user, userStates, fetchUser, isLoading, error } =
     useUserStore();
 
-  // Fetch user + quiz stats on mount
   useEffect(() => {
-    fetchUser();
-    getScore();
-  }, [fetchUser, getScore]);
-
+    if (!user) {
+      fetchUser();
+    }
+  }, [user, fetchUser]);
   if (isLoading) return <SkeletonLoader />;
 
   if (error) return <ErrorState title='Unable to load Dashboard' message={error} />;
@@ -42,8 +41,8 @@ export default function Dashboard() {
     totalQuizzesCreated: userState.totalQuizCreated || 0,
     totalQuizAttempts: userState.totalQuizzesTaken || 0,
     currentStreak: userState.streak || 0,
-    averageQuizScore: averageScore ? averageScore.averagePercentage : 0,
-    attemptedQuizzes: averageScore ? averageScore.attempts : 0,
+    averageQuizScore: userState.averagePercentage || 0,
+    attemptedQuizzes: userState.totalAttempts || 0,
     highestStreak: userState.highestStreak || 0,
   };
 

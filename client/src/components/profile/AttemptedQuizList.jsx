@@ -201,8 +201,10 @@ function AchievementsList() {
     const { getAttemptedQuiz, attemptedQuiz, isLoading, errorOnAttempt } = useQuizStore();
 
     useEffect(() => {
+        if(attemptedQuiz.length === 0){
         getAttemptedQuiz();
-    }, []);
+        }
+    }, [attemptedQuiz, getAttemptedQuiz]);
 
     if (isLoading) return <CardSkeleton />;
     if (errorOnAttempt)

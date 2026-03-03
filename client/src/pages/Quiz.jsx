@@ -17,9 +17,10 @@ export default function Quiz() {
     const { QuizzesList, fetchQuizzes, isLoading, error } = useQuizStore();
 
     useEffect(() => {
-        fetchQuizzes();
-    }, [fetchQuizzes]);
-
+        if (QuizzesList.length === 0) {
+            fetchQuizzes();
+        }
+    }, [QuizzesList, fetchQuizzes]);
     if (isLoading) return <Skeleton />;
     if (error) return <ErrorState title="Unable to load quizzes"
         message={error} />;
@@ -32,8 +33,8 @@ export default function Quiz() {
         navigate('./createquiz');
     }
 
-const filteredQuiz = QuizzesList
-        .filter((quiz) => {return activeSubject === 'All Subjects' || quiz.category.toLowerCase() === activeSubject.toLowerCase()})
+    const filteredQuiz = QuizzesList
+        .filter((quiz) => { return activeSubject === 'All Subjects' || quiz.category.toLowerCase() === activeSubject.toLowerCase() })
         .filter(
             (quiz) =>
                 searchTerm === '' ||

@@ -169,10 +169,12 @@ function QuizCard({ quiz, index }) {
 //    QuizzesList ← default export
 
 function QuizzesList() {
-    const { ftechUserQuizzes, userQuizzes, isLoading, error } = useQuizStore();
+    const { fetchUserQuizzes, userQuizzes, isLoading, error } = useQuizStore();
     useEffect(() => {
-        ftechUserQuizzes();
-    }, [ftechUserQuizzes]);
+        if (userQuizzes.length === 0) {
+            fetchUserQuizzes();
+        }
+    }, [userQuizzes, fetchUserQuizzes]);
 
     if (isLoading) return <CardSkeleton />;
     if (error) return (

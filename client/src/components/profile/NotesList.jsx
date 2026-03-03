@@ -197,8 +197,10 @@ function NotesList() {
     const { fetchUserNotes, userNotes, isLoading, error } = useNoteStore();
 
     useEffect(() => {
-        fetchUserNotes();
-    }, [fetchUserNotes]);
+        if (userNotes.length === 0){
+            fetchUserNotes();
+        }
+    }, [userNotes, fetchUserNotes]);
 
     if (isLoading) return <CardSkeleton />;
     if (error) return (

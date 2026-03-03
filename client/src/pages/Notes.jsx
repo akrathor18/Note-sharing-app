@@ -19,8 +19,10 @@ export default function Notes() {
     // Data fetching
 
     useEffect(() => {
-        fetchNotes();
-    }, [fetchNotes]);
+        if (notes.length === 0) {
+            fetchNotes();
+        }
+    }, [notes, fetchNotes]);
 
     if (isLoading) return <Skeleton />;
     if (error) return <ErrorState title='Unable to load notes' message={error} />;
