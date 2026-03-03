@@ -12,7 +12,15 @@ const userStateSchema = new mongoose.Schema({
     totalQuizzesTaken: { type: Number, default: 0 },
     streak: { type: Number, default: 0 },
     highestStreak: { type: Number, default: 0 },
-    lastActive: { type: Date, default: Date.now }
+    lastActive: { type: Date, default: Date.now },
+    averagePercentage: {
+        type: Number,
+        default: 0
+    },
+    totalAttempts: {
+        type: Number,
+        default: 0
+    }
 });
 
 userStateSchema.index({ user: 1 }, { unique: true });

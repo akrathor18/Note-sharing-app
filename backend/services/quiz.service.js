@@ -5,7 +5,7 @@ import User from '../models/UserSchema.js';
 import QuizAttempt from '../models/QuizAttempt.js';
 import { trackActivityAndStreak } from '../utils/activityTracker.js';
 import { logActivity } from '../utils/logActivity.js';
-
+import { updateUserAverage } from '../utils/updateUserAverage.js';
 export const createQuiz = async ({ body, userId }) => {
   const newQuiz = new Quiz({ ...body, createdBy: userId });
   const saved = await newQuiz.save();
@@ -134,27 +134,31 @@ export const deleteQuiz = async ({ id, userId }) => {
 };
 
 export const attemptQuiz = async ({ quizId, userId, answers }) => {
-  const quiz = await Quiz.findById(quizId);
+const quiz = await Quiz.findById(quizId)
+  .select("questions title category")
+  .lean()
+
   if (!quiz) return { notFound: true };
 
-  const unanswered = quiz.questions.filter(q => !answers[q._id.toString()]);
-  if (unanswered.length > 0) return { unanswered: true };
-  if (!answers || typeof answers !== 'object') return { invalidFormat: true };
+ let score = 0;
+let unansweredFound = false;
 
-  let score = 0;
-  const results = quiz.questions.map((q) => {
-    const userAnswer = answers[q._id.toString()];
-    const isCorrect = q.correctAnswer === userAnswer;
-    if (isCorrect) score++;
+const results = quiz.questions.map((q) => {
+  const userAnswer = answers[q._id.toString()];
 
-    return {
-      question: q.text,
-      questionId: q._id,
-      userAnswer,
-      correctAnswer: q.correctAnswer,
-      isCorrect,
-    };
-  });
+  if (!userAnswer) unansweredFound = true;
+
+  const isCorrect = q.correctAnswer === userAnswer;
+  if (isCorrect) score++;
+
+  return {
+    questionId: q._id,
+    selectedAnswer: userAnswer ?? null,
+    isCorrect,
+  };
+});
+
+if (unansweredFound) return { unanswered: true };
 
   const totalQuestions = quiz.questions.length;
   const percentageScore = (score / totalQuestions) * 100;
@@ -171,16 +175,25 @@ export const attemptQuiz = async ({ quizId, userId, answers }) => {
     })),
   });
 
-  await attempt.save();
-  await User.findByIdAndUpdate(userId, { $push: { quizzesTaken: quiz._id } });
-  await trackActivityAndStreak(userId, { totalQuizzesTaken: 1, correctAnswers: percentageScore });
-  await logActivity(userId, 'quiz_attempt', quizId, 'Attempted a quiz', {
+ await Promise.all([
+  User.findByIdAndUpdate(userId, {
+    $addToSet: { quizzesTaken: quiz._id },
+  }),
+
+  updateUserAverage(userId, percentageScore),
+
+  trackActivityAndStreak(userId, {
+    totalQuizzesTaken: 1,
+  }),
+
+  logActivity(userId, "quiz_attempt", quizId, "Attempted a quiz", {
     score,
     totalQuestions,
     percentageScore,
     refTitle: quiz.title,
     subject: quiz.category,
-  });
+  }),
+]);
 
   return {
     data: { score, total: totalQuestions, results, percentageScore },

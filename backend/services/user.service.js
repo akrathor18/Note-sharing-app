@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import User from '../models/UserSchema.js';
 import QuizAttempt from '../models/QuizAttempt.js';
 import cloudinary from '../config/cloudinary.js';
-import { trackActivityAndStreak } from '../utils/activityTracker.js';
+import UserState from '../models/UserStates.js';
 
 export const changePassword = async ({ userId, password, newPassword }) => {
     const user = await User.findById(userId);
@@ -18,7 +18,7 @@ export const changePassword = async ({ userId, password, newPassword }) => {
 };
 
 export const getProfile = async (userId) => {
-    const userState = await trackActivityAndStreak(userId);
+    const userState = await UserState.findOne({ user: userId }).lean();
 
     const user = await User.findById(userId)
         .populate('role')

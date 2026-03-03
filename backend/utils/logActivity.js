@@ -5,11 +5,8 @@ export async function logActivity(userId, type, refId, description, extra = {}) 
     await User.findByIdAndUpdate(userId, {
       $push: {
         recentActivity: {
-          type,
-          refId,
-          description,
-          ...extra,
-          timestamp: new Date(),
+          $each: [{ type, refId, description, ...extra, timestamp: new Date() }],
+          $slice: -50,  // keep only the 50 most recent entries
         },
       },
     });
