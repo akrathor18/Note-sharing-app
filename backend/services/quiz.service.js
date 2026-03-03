@@ -152,9 +152,11 @@ const results = quiz.questions.map((q) => {
   if (isCorrect) score++;
 
   return {
-    questionId: q._id,
-    selectedAnswer: userAnswer ?? null,
-    isCorrect,
+     question: q.text,
+      questionId: q._id,
+      userAnswer,
+      correctAnswer: q.correctAnswer,
+      isCorrect,
   };
 });
 
@@ -174,18 +176,15 @@ if (unansweredFound) return { unanswered: true };
       isCorrect: r.isCorrect,
     })),
   });
-
- await Promise.all([
+await attempt.save(); 
+Promise.all([
   User.findByIdAndUpdate(userId, {
     $addToSet: { quizzesTaken: quiz._id },
   }),
-
   updateUserAverage(userId, percentageScore),
-
   trackActivityAndStreak(userId, {
     totalQuizzesTaken: 1,
   }),
-
   logActivity(userId, "quiz_attempt", quizId, "Attempted a quiz", {
     score,
     totalQuestions,
@@ -193,7 +192,7 @@ if (unansweredFound) return { unanswered: true };
     refTitle: quiz.title,
     subject: quiz.category,
   }),
-]);
+]).catch(console.error);
 
   return {
     data: { score, total: totalQuestions, results, percentageScore },
