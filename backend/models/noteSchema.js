@@ -63,6 +63,9 @@ const noteSchema = new mongoose.Schema({
     },
 });
 
+noteSchema.index({ user: 1 });
+noteSchema.index({ title: "text" });
+
 const Note = mongoose.model('Note', noteSchema);
 
 export default Note;

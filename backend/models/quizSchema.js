@@ -29,4 +29,6 @@ const quizSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
 });
 
+quizSchema.index({ user: 1 });
+quizSchema.index({ quiz: 1 });
 export default mongoose.model('Quiz', quizSchema);
