@@ -1,105 +1,138 @@
-# 📚 StudyHub – Note Sharing & Quiz Platform
+# StudyHub
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Zustand](https://img.shields.io/badge/Zustand-orange?style=flat)](https://github.com/pmndrs/zustand)
+A full-stack academic platform for collaborative note sharing, interactive quizzes, and learning analytics.
 
-> **Empowering students to share, learn, and grow together.**
-
-StudyHub is a feature-rich, full-stack web platform designed to solve real-world academic challenges. It enables students to seamlessly share study resources, create interactive quizzes, and maintain learning consistency through daily streak tracking and progress analytics.
-
-🌐 **Live Demo:** [https://studyhub-dev.web.app/](https://studyhub-dev.web.app/)
+[![Live Demo](https://img.shields.io/badge/Live-studyhub--dev.web.app-blue?style=flat-square)](https://studyhub-dev.web.app/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](./LICENSE)
 
 ---
 
-## ✨ Key Features
+## Features
 
-### 🔐 Secure Authentication
-- **Identity Management:** Robust login and registration system.
-- **JWT Protection:** Secure API communication with protected routes.
-- **Profile Customization:** Personalize your presence with bios and social links.
+**Notes System** — Upload, browse, and preview study materials (PDF, DOC, DOCX) with subject-based categorization, view tracking, and public/private visibility controls. Files stored via Cloudinary CDN.
 
-### 📄 Intelligent Note Sharing
-- **Multi-format Support:** Share resources in PDF, DOC, and DOCX formats.
-- **Organized Subjects:** Categorize notes by subject for easy discoverability.
-- **Cloud-Powered:** Reliable file storage and delivery via Cloudinary.
+**Quiz Engine** — Create MCQ quizzes with configurable difficulty levels (Easy / Medium / Hard), time limits, and multi-option questions. Instant scoring with detailed attempt history and running average tracking.
 
-### 🧠 Interactive Quizzes
-- **Dynamic Creation:** Build custom multiple-choice quizzes for any subject.
-- **Instant Result:** Real-time scoring and feedback upon attempt.
-- **Performance Tracking:** Monitor average scores and progress over time.
+**Learning Analytics** — Daily streak tracking, activity timeline, aggregate stats (notes shared, quizzes taken, average scores), and per-user performance history via a dedicated `UserState` model.
 
-### 📊 Gamified Learning
-- **Activity Timeline:** Visualize your recent contributions and attempts.
-- **Daily Streaks:** Stay motivated with a Duolingo-style streak system.
-- **Analytics Dashboard:** Overview of total notes shared and quizzes completed.
+**User Profiles** — Customizable profiles with bio, social links, profile pictures (Cloudinary-backed), tabbed views for authored notes/quizzes, and recent activity feed.
+
+**Settings & Preferences** — Appearance (theme), notification preferences, privacy controls, security (password management), and account management including deletion.
 
 ---
 
-## 🏗️ Architecture & Folder Structure
+## Architecture
 
-The project follows a modular and decoupled architecture, ensuring scalability and ease of maintenance.
+The backend follows a strict **Service → Controller → Route** layered architecture with clear separation of concerns:
 
-### File Structure Overview
-```text
-Note-sharing-app/
-├── 📁 backend/           # Node.js & Express API
-│   ├── 📁 controllers/   # Request handlers & logic
-│   ├── 📁 middlewares/   # JWT verification & file upload logic
-│   ├── 📁 models/        # Mongoose database schemas
-│   ├── 📁 routes/        # API endpoint definitions
-│   ├── 📁 services/      # Business logic isolation layer
-│   └── 📄 index.js       # Entry point
-├── 📁 client/            # React & Vite Frontend
-│   ├── 📁 src/
-│   │   ├── 📁 components/ # Reusable UI components
-│   │   ├── 📁 pages/      # Route-level views
-│   │   ├── 📁 store/      # Zustand state management
-│   │   └── 📁 config/     # Axios & environment setup
-└── 📄 README.md          # Project documentation
 ```
----
+Route (request validation, auth middleware)
+  → Controller (HTTP handling, response formatting)
+    → Service (business logic, database operations)
+```
 
-## 🗄️ Database Design
+Key architectural decisions:
+- **Stateless JWT auth** with bcrypt password hashing and HTTP-only cookies
+- **Dedicated analytics model** (`UserState`) decoupled from the `User` document for high-frequency stat updates without impacting user reads
+- **Embedded activity log** on the user document for fast profile rendering without joins
+- **Rate limiting** (100 req/15 min), **Helmet** security headers, and **CORS** whitelisting
+- **Structured logging** via Winston + Morgan with Sentry error tracking
+- **Cloudinary** integration for file and image storage with public ID tracking for cleanup
+- **Database indexing** on high-query fields (`user`, `title` text index) for performant lookups
 
-StudyHub was designed with a structured database schema to handle complex relationships between users, study materials, and learning analytics.
+### Database Schema
 
-- **Entity Isolation:** Separate collections for Users, Notes, and Quizzes to maintain data integrity.
-- **Analytics & Tracking:** Dedicated `UserState` model for high-performance streak and activity tracking.
-- **Scalable Attempts:** Quiz results are stored independently, allowing for detailed historical performance analysis.
+Entity-relationship design with isolated collections for Users, Notes, Quizzes, Quiz Attempts, User States, Roles, and Links.
 
-📊 **Database Diagram:** [View on dbdiagram.io](https://dbdiagram.io/d/686783bbf413ba3508438d32)
+[View full schema on dbdiagram.io](https://dbdiagram.io/d/686783bbf413ba3508438d32)
 
 <p align="center">
-  <img width="1129" alt="studyhub schema design" src="https://github.com/user-attachments/assets/5829ea96-98e7-436c-a095-f2c3f1512df7" />
+  <img width="1129" alt="StudyHub database schema" src="https://github.com/user-attachments/assets/5829ea96-98e7-436c-a095-f2c3f1512df7" />
 </p>
 
 ---
 
-## 🔧 Installation & Setup
+## Tech Stack
 
-Follow these steps to get your local development environment running.
+| Layer | Technology |
+| :--- | :--- |
+| Frontend | React 19, Vite, Tailwind CSS |
+| State Management | Zustand |
+| Backend | Node.js, Express.js (ES Modules) |
+| Database | MongoDB, Mongoose |
+| File Storage | Cloudinary |
+| Auth | JWT, bcrypt |
+| Monitoring | Sentry, Winston, Morgan |
+| Security | Helmet, express-rate-limit, CORS |
+| Hosting | Firebase Hosting (client) |
+
+---
+
+## Project Structure
+
+```
+StudyHub/
+├── backend/
+│   ├── config/          # DB, Cloudinary, Swagger, Redis, Logger config
+│   ├── controllers/     # HTTP request handlers
+│   │   ├── auth.controller.js
+│   │   ├── notes.controller.js
+│   │   ├── quiz.controller.js
+│   │   ├── user.controller.js
+│   │   └── links.controller.js
+│   ├── services/        # Business logic layer
+│   ├── models/          # Mongoose schemas (User, Note, Quiz, QuizAttempt, UserState, Role, Link)
+│   ├── middlewares/     # JWT verification, file upload (Multer + Cloudinary)
+│   ├── routes/          # Express route definitions
+│   ├── utils/           # Activity tracking, logging, score calculations
+│   └── index.js         # Server entry point
+│
+├── client/
+│   └── src/
+│       ├── pages/       # Route-level views (Dashboard, Notes, Quiz, Profile, Settings, etc.)
+│       ├── components/  # Feature-scoped UI components
+│       │   ├── dashboard/    # Stats, streaks, quick actions, activity feed
+│       │   ├── profile/      # Profile header, tabs, notes/quiz lists, achievements
+│       │   ├── notes/        # Note cards, upload forms, preview
+│       │   ├── quiz/         # Quiz cards, quiz screen, creation form
+│       │   ├── settings/     # Account, security, privacy, appearance, notifications
+│       │   └── feedback/     # User feedback components
+│       ├── store/       # Zustand stores (userStore, noteStore, quizStore)
+│       ├── auth/        # Protected route wrapper
+│       ├── layouts/     # Shared layout components (Notes, Quizzes)
+│       ├── config/      # Axios instance, static data
+│       └── utils/       # Client-side utilities
+│
+└── types/               # Shared type definitions
+```
+
+---
+
+## Getting Started
 
 ### Prerequisites
-- **Node.js** (v18 or higher)
-- **MongoDB** (Local instance or Atlas)
-- **Git**
 
-### 1. Clone the Repository
+- Node.js v18+
+- MongoDB (local or [Atlas](https://www.mongodb.com/atlas))
+- Cloudinary account ([free tier](https://cloudinary.com/))
+- Git
+
+### 1. Clone
+
 ```bash
 git clone https://github.com/akrathor18/Note-sharing-app.git
 cd Note-sharing-app
 ```
 
-### 2. Configure Backend
+### 2. Backend Setup
+
 ```bash
 cd backend
 npm install
 ```
-Create a `.env` file in the `backend/` directory:
+
+Create `backend/.env`:
+
 ```env
 PORT=3000
 MONGO_URI=your_mongodb_connection_string
@@ -108,63 +141,77 @@ CLOUDINARY_CLOUD_NAME=your_cloudinary_name
 CLOUDINARY_API_KEY=your_cloudinary_key
 CLOUDINARY_API_SECRET=your_cloudinary_secret
 ```
-Start the server:
+
 ```bash
 npm run dev
 ```
 
-### 3. Configure Frontend
+### 3. Frontend Setup
+
 ```bash
 cd ../client
 npm install
 ```
-Create a `.env` file in the `client/` directory:
+
+Create `client/.env`:
+
 ```env
 VITE_API_BASE_URL=http://localhost:3000/api
 ```
-Start the app:
+
 ```bash
 npm run dev
 ```
 
----
-
-## 🛠️ Technology Stack
-
-| Layer | Technologies |
-| :--- | :--- |
-| **Frontend** | React, Tailwind CSS, Vite |
-| **State Management** | Zustand |
-| **Backend** | Node.js, Express.js |
-| **Database** | MongoDB, Mongoose |
-| **File Storage** | Cloudinary |
-| **Authentication** | JSON Web Tokens (JWT) |
+The app will be available at `http://localhost:5173`.
 
 ---
 
-## 🤝 Contributing
+## API Overview
 
-We welcome contributions! To contribute:
-1. Fork the project.
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the Branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
+| Method | Endpoint | Description |
+| :----- | :------- | :---------- |
+| `POST` | `/api/auth/register` | User registration |
+| `POST` | `/api/auth/login` | JWT authentication |
+| `GET` | `/api/notes` | List all notes |
+| `POST` | `/api/notes` | Upload a note (multipart) |
+| `GET` | `/api/quiz` | List all quizzes |
+| `POST` | `/api/quiz` | Create a quiz |
+| `POST` | `/api/quiz/:id/attempt` | Submit quiz attempt |
+| `GET` | `/api/users/profile` | Get user profile + stats |
+| `PUT` | `/api/users/profile` | Update profile |
+| `GET` | `/api/links` | Get user social links |
 
----
-
-## 📄 License & Credits
-
-Distributed under the **MIT License**. See `LICENSE` for more information.
-
-### Authors
-- **Ashish Kumar** - *Project Lead* - [akrathor18](https://github.com/akrathor18)
-- **Prince Rawat** - *Contributor* - [Kashina69](https://github.com/Kashina69)
+All protected endpoints require a valid JWT via `Authorization: Bearer <token>` or HTTP-only cookie.
 
 ---
 
-## ⭐ Support the Project
+## Roadmap
 
-If you find this project helpful, please consider giving it a **Star**! Your support keeps the development alive.
+- [ ] Real-time collaboration (WebSockets)
+- [ ] AI-powered quiz generation and note recommendations
+- [ ] Advanced analytics dashboard with charts
+- [ ] Gamification (badges, leaderboards, streak rewards)
+- [ ] Commenting and discussion threads on notes
+- [ ] Full-text search across notes and quizzes
 
-[⭐ Star on GitHub](https://github.com/akrathor18/Note-sharing-app)
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m 'Add your-feature'`)
+4. Push to the branch (`git push origin feature/your-feature`)
+5. Open a Pull Request
+
+---
+
+## License
+
+MIT — see [LICENSE](./LICENSE) for details.
+
+## Authors
+
+- **Ashish Kumar** — [akrathor18](https://github.com/akrathor18)
+- **Prince Rawat** — [Kashina69](https://github.com/Kashina69)
