@@ -18,9 +18,10 @@ const noteStorage = new CloudinaryStorage({
         .split('.')
         .slice(0, -1)
         .join('.')
-        .replace(/\s+/g, '-')
-        .toLowerCase();
-
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
       return `${originalName}-${uniqueId}`;
     },
   },
