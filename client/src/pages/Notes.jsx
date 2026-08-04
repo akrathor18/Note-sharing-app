@@ -5,24 +5,27 @@ import SearchAndFilter from '../common/components/SearchAndFilter';
 import SubjectTabs from '../common/components/SubjectTabs';
 import NotesGrid from '../components/notes/NotesGrid';
 import AddNoteModal from '../components/notes/AddNoteModal';
+import Pagination from '../common/components/Pagination';
 import Skeleton from '../common/components/Skeleton';
 import ErrorState from '../common/components/ErrorState';
 import { useNoteStore } from '../store/noteStore';
 
 export default function Notes() {
-    const { notes, error, isLoading, fetchNotes, cancelCreateNote } = useNoteStore();
+    const {
+        notes, error, isLoading,
+        fetchNotes, cancelCreateNote,
+        currentPage, totalPages,
+    } = useNoteStore();
+
     // States
     const [activeSubject, setActiveSubject] = useState('All Subjects');
     const [searchTerm, setSearchTerm] = useState('');
     const [isAddNoteModalOpen, setIsAddNoteModalOpen] = useState(false);
 
     // Data fetching
-
     useEffect(() => {
-        if (notes.length === 0) {
-            fetchNotes();
-        }
-    }, [notes, fetchNotes]);
+        fetchNotes(currentPage);
+    }, []);
 
     if (isLoading) return <Skeleton />;
     if (error) return <ErrorState title='Unable to load notes' message={error} />;
@@ -42,7 +45,12 @@ export default function Notes() {
     };
 
     const handleNoteAdded = () => {
-        fetchNotes(); // Re-fetch notes after a new one is added
+        fetchNotes(1); // Re-fetch from page 1 after a new note is added
+    };
+
+    const handlePageChange = (page) => {
+        fetchNotes(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     // Derived state
@@ -69,6 +77,12 @@ export default function Notes() {
                 notes={filteredNotes}
                 searchTerm={searchTerm}
                 onAddNoteClick={handleAddNoteClick}
+            />
+
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
             />
 
             {isAddNoteModalOpen && (

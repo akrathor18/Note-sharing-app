@@ -14,13 +14,28 @@ export const useNoteStore = create((set, get) => ({
     errorPreview: null,
     loadingPreview: false,
 
+    // Pagination state
+    currentPage: 1,
+    totalPages: 1,
+    totalNotes: 0,
+    notesPerPage: 12,
+
     //Get notes
-    fetchNotes: async () => {
+    fetchNotes: async (page = 1, limit) => {
+        const perPage = limit || get().notesPerPage;
         set({ isLoading: true, error: null, errorOnUpload: null });
         try {
-            const response = await API.get('/notes');
-            console.log(response)
-            set({ notes: response.data.data.notes, isLoading: false });
+            const response = await API.get('/notes', {
+                params: { page, limit: perPage },
+            });
+            const { notes, page: currentPage, totalPages, total } = response.data.data;
+            set({
+                notes,
+                currentPage,
+                totalPages,
+                totalNotes: total,
+                isLoading: false,
+            });
         }
         catch (error) {
             set({ error: error.message || "Failed to load notes", isLoading: false });
