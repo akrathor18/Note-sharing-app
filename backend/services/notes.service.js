@@ -27,12 +27,29 @@ export const uploadNote = async ({ title, description, subject, file, userId }) 
     return note;
 };
 
-export const getAllNotes = async () => {
-    return await Note.find()
-        .populate('uploadedBy', 'name email')
-        .populate('subject', 'name')
-        .limit(20)
-        .sort({ createdAt: -1 });
+export const getAllNotes = async (page, limit) => {
+    const skip = (page - 1) * limit;
+
+    const [notes, total] = await Promise.all([
+        Note.find()
+            .populate("uploadedBy", "name email")
+            .populate("subject", "name")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit),
+
+        Note.countDocuments(),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+        page,
+        limit,
+        total,
+        totalPages,
+        notes: notes,
+    };
 };
 
 export const getNotesByUser = async (userId) => {

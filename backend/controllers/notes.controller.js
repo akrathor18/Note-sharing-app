@@ -22,11 +22,24 @@ export const uploadNote = async (req, res) => {
 
 export const getAllNotes = async (req, res) => {
     try {
-        const notes = await NoteService.getAllNotes();
-        res.status(200).json({ success: true, message: 'Notes retrieved', data: { notes } });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const result = await NoteService.getAllNotes(page, limit);
+
+        res.status(200).json({
+            success: true,
+            message: "Notes retrieved",
+            data: result,
+        });
     } catch (err) {
-        logger.error('Error retrieving all notes', err);
-        res.status(500).json({ success: false, message: 'Failed to retrieve notes', data: null });
+        logger.error("Error retrieving all notes", err);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to retrieve notes",
+            data: null,
+        });
     }
 };
 

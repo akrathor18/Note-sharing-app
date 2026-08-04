@@ -19,6 +19,7 @@ export const useNoteStore = create((set, get) => ({
         set({ isLoading: true, error: null, errorOnUpload: null });
         try {
             const response = await API.get('/notes');
+            console.log(response)
             set({ notes: response.data.data.notes, isLoading: false });
         }
         catch (error) {
