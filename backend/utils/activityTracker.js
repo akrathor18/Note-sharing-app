@@ -38,12 +38,12 @@ export const trackActivityAndStreak = async (userId, updates = {}) => {
   if (diff === 1) {
     userState.streak += 1;
   } 
-  // ❌ BROKEN STREAK
+  // BROKEN STREAK
   else {
-    userState.streak = 1;
+    userState.streak = 0;
   }
 
-  // 🔥 Highest streak update
+  // Highest streak update
   userState.highestStreak = Math.max(
     userState.highestStreak || 0,
     userState.streak
