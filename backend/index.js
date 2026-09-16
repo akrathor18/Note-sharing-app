@@ -7,6 +7,7 @@ import notesRoutes from './routes/notes.routes.js';
 import linkRoutes from './routes/links.routes.js';
 import authRoutes from './routes/auth.routes.js';
 
+import { connectRedis , redisClient} from "./config/redis.js";
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -69,6 +70,17 @@ app.get("/", (_, res) => {
     res.send("StudyHub API is running");
 });
 
+app.get("/redis-test", async (req, res) => {
+    await redisClient.set("studyhub:test", "Redis is working!");
+
+    const value = await redisClient.get("studyhub:test");
+
+    res.json({
+        success: true,
+        value,
+    });
+});
+
 app.use("/api/users", usersRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/notes", notesRoutes);
@@ -89,6 +101,21 @@ app.use((err, req, res, next) => {
 });
 
 
-app.listen(PORT, () => {
-    logger.info(`🚀 Server running on port ${PORT}`);
-});
+const startServer = async () => {
+    try {
+        await connectRedis();
+
+        app.listen(PORT, () => {
+            logger.info(`🚀 Server running on port ${PORT}`);
+        });
+    } catch (error) {
+        logger.error("Failed to start server", {
+            message: error.message,
+            stack: error.stack,
+        });
+
+        process.exit(1);
+    }
+};
+
+startServer();
