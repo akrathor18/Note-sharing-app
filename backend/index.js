@@ -103,7 +103,13 @@ app.use((err, req, res, next) => {
 
 const startServer = async () => {
     try {
-        await connectRedis();
+        try {
+            await connectRedis();
+        } catch (error) {
+            logger.error("Redis unavailable at startup; Redis-backed rate limits will fail open", {
+                message: error.message,
+            });
+        }
 
         app.listen(PORT, () => {
             logger.info(`🚀 Server running on port ${PORT}`);
