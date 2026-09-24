@@ -6,6 +6,7 @@ const createRedisRateLimiter = ({
     windowMs,
     limit,
     message = "Too many requests, please try again later.",
+    prefix = "rl:",
 }) => {
     return rateLimit({
         windowMs,
@@ -15,6 +16,7 @@ const createRedisRateLimiter = ({
 
         store: new RedisStore({
             sendCommand: (...args) => redisClient.sendCommand(args),
+            prefix,
         }),
 
         handler: (req, res) => {

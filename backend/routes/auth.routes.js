@@ -8,12 +8,14 @@ const authAttemptLimiter = createRedisRateLimiter({
     windowMs: 15 * 60 * 1000,
     limit: 10,
     message: 'Too many authentication attempts. Please try again later.',
+    prefix: 'studyhub:rate-limit:auth-register:',
 });
 
 const loginLimiter = createRedisRateLimiter({
     windowMs: 15 * 60 * 1000,
     limit: 5,
     message: 'Too many login attempts. Please try again later.',
+    prefix: 'studyhub:rate-limit:auth-login:',
 });
 
 router.post('/register', authAttemptLimiter, AuthController.register);
