@@ -1,17 +1,11 @@
+import 'dotenv/config';
 import express from 'express';
 import db from './config/db.js';
-
-import usersRoutes from './routes/user.routes.js';
-import quizRoutes from './routes/quiz.routes.js';
-import notesRoutes from './routes/notes.routes.js';
-import linkRoutes from './routes/links.routes.js';
-import authRoutes from './routes/auth.routes.js';
 
 import { connectRedis , redisClient} from "./config/redis.js";
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 // import swaggerUi from 'swagger-ui-express';
 import generateSwaggerJSONFromRouter from './config/swagger.js';
@@ -20,8 +14,6 @@ import * as Sentry from "@sentry/node";
 import { logger } from "./utils/logger.js";
 
 import morgan from "morgan";
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -61,7 +53,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(bodyParser.json());
 
-// ROUTES
+// Core routes that do not initialize Redis-backed stores.
 app.get("/health", (req, res) => {
     res.status(200).send("OK");
 });
@@ -81,12 +73,6 @@ app.get("/redis-test", async (req, res) => {
     });
 });
 
-app.use("/api/users", usersRoutes);
-app.use("/api/quiz", quizRoutes);
-app.use("/api/notes", notesRoutes);
-app.use("/api/links", linkRoutes);
-app.use("/api/auth", authRoutes);
-
 //     CUSTOM ERROR HANDLER
 app.use((err, req, res, next) => {
   logger.error("Unhandled Error", {
@@ -103,19 +89,38 @@ app.use((err, req, res, next) => {
 
 const startServer = async () => {
     try {
-        try {
-            await connectRedis();
-        } catch (error) {
-            logger.error("Redis unavailable at startup; Redis-backed rate limits will fail open", {
-                message: error.message,
-            });
+        await connectRedis();
+
+        if (!redisClient.isOpen || !redisClient.isReady) {
+            throw new Error("Redis connection completed without an open, ready client");
         }
 
+        logger.info("Redis ready before route imports", {
+            isOpen: redisClient.isOpen,
+            isReady: redisClient.isReady,
+        });
+
+        const [users, quiz, notes, links, auth] = await Promise.all([
+            import("./routes/user.routes.js"),
+            import("./routes/quiz.routes.js"),
+            import("./routes/notes.routes.js"),
+            import("./routes/links.routes.js"),
+            import("./routes/auth.routes.js"),
+        ]);
+
+        app.use("/api/users", users.default);
+        app.use("/api/quiz", quiz.default);
+        app.use("/api/notes", notes.default);
+        app.use("/api/links", links.default);
+        app.use("/api/auth", auth.default);
+
+        logger.info("Route modules imported after Redis became ready");
+
         app.listen(PORT, () => {
-            logger.info(`🚀 Server running on port ${PORT}`);
+            logger.info(`Server running on port ${PORT}`);
         });
     } catch (error) {
-        logger.error("Failed to start server", {
+        logger.error("Failed to start server; Redis-backed routes were not initialized", {
             message: error.message,
             stack: error.stack,
         });
