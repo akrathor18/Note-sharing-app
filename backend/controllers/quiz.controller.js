@@ -10,7 +10,7 @@ import {
 export const createQuiz = async (req, res) => {
     try {
         const quiz = await QuizService.createQuiz({ body: req.body, userId: req.user._id });
-        await deleteCache("quizzes:all");
+        await deleteCacheByPattern("quizzes:all:*");
         await deleteCache(`quizzes:user:${req.user._id}`);
         await deleteCacheByPattern("quizzes:search:*");
         logger.info(`Quiz created by user ${req.user._id}: ${req.body.title}`);
@@ -23,7 +23,9 @@ export const createQuiz = async (req, res) => {
 
 export const getAllQuizzes = async (req, res) => {
     try {
-        const cacheKey = "quizzes:all";
+        const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 12));
+        const cacheKey = `quizzes:all:page:${page}:limit:${limit}`;
 
         const cachedQuizzes = await getCache(cacheKey);
 
@@ -33,20 +35,20 @@ export const getAllQuizzes = async (req, res) => {
             return res.status(200).json({
                 success: true,
                 message: "Quizzes retrieved",
-                data: { quizzes: cachedQuizzes },
+                data: cachedQuizzes,
             });
         }
 
         logger.info(`Redis cache MISS: ${cacheKey}`);
 
-        const quizzes = await QuizService.getAllQuizzes();
+        const result = await QuizService.getAllQuizzes(page, limit);
 
-        await setCache(cacheKey, quizzes, 300);
+        await setCache(cacheKey, result, 300);
 
         res.status(200).json({
             success: true,
             message: "Quizzes retrieved",
-            data: { quizzes },
+            data: result,
         });
 
     } catch (err) {
@@ -250,7 +252,7 @@ export const deleteQuiz = async (req, res) => {
         if (result.forbidden)
             return res.status(403).json({ success: false, message: 'Not authorized to delete this quiz', data: null });
 
-        await deleteCache("quizzes:all");
+        await deleteCacheByPattern("quizzes:all:*");
         await deleteCache(`quiz:${id}`);
         await deleteCache(`quizzes:user:${req.user._id}`);
         await deleteCacheByPattern("quizzes:search:*");
@@ -297,7 +299,7 @@ export const updateQuiz = async (req, res) => {
         if (result.forbidden)
             return res.status(403).json({ success: false, message: 'Unauthorized: You can only update your own quizzes', data: null });
 
-        await deleteCache("quizzes:all");
+        await deleteCacheByPattern("quizzes:all:*");
         await deleteCache(`quiz:${req.params.id}`);
         await deleteCache(`quizzes:user:${req.user._id}`);
         await deleteCacheByPattern("quizzes:search:*");

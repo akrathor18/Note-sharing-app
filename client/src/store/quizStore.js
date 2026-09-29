@@ -4,6 +4,10 @@ import { toast } from 'react-toastify';
 
 export const useQuizStore = create((set, get) => ({
     QuizzesList: [],
+    currentPage: 1,
+    totalPages: 1,
+    totalQuizzes: 0,
+    quizzesPerPage: 12,
     userQuizzes: [],
     attemptedQuiz: [],
     errorOnAttempt: false,
@@ -17,11 +21,13 @@ export const useQuizStore = create((set, get) => ({
     result: null,
 
     //Get quizzes
-    fetchQuizzes: async () => {
+    fetchQuizzes: async (page = 1, limit) => {
+        const perPage = limit || get().quizzesPerPage;
         set({ isLoading: true, error: null });
         try {
-            const response = await API.get('/quiz');
-            set({ QuizzesList: response.data.data.quizzes, isLoading: false });
+            const response = await API.get('/quiz', { params: { page, limit: perPage } });
+            const { quizzes, page: currentPage, totalPages, total } = response.data.data;
+            set({ QuizzesList: quizzes, currentPage, totalPages, totalQuizzes: total, isLoading: false });
         } catch (error) {
             set({ error: error.message || "Failed to load quizzes", isLoading: false });
         }
@@ -34,6 +40,7 @@ export const useQuizStore = create((set, get) => ({
             set((state) => ({
                 QuizzesList: [response.data.data.quiz, ...state.QuizzesList],
                 userQuizzes: [response.data.data.quiz, ...state.userQuizzes],
+                totalQuizzes: state.totalQuizzes + 1,
                 isUploading: false,
             }));
 

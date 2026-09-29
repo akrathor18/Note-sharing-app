@@ -21,11 +21,24 @@ export const createQuiz = async ({ body, userId }) => {
   return saved;
 };
 
-export const getAllQuizzes = async () => {
-  return await Quiz.find()
-    .populate('createdBy', 'name email')
-    .limit(20)
-    .sort({ createdAt: -1 });
+export const getAllQuizzes = async (page, limit) => {
+  const skip = (page - 1) * limit;
+  const [quizzes, total] = await Promise.all([
+    Quiz.find()
+      .populate('createdBy', 'name email')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    Quiz.countDocuments(),
+  ]);
+
+  return {
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+    quizzes,
+  };
 };
 
 export const getMyQuizzes = async (userId) => {

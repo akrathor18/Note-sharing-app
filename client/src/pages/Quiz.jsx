@@ -8,17 +8,18 @@ import SearchAndFilter from '../common/components/SearchAndFilter';
 import SubjectTabs from '../common/components/SubjectTabs';
 import { useQuizStore } from '../store/quizStore';
 import Header from '../common/components/Header';
+import Pagination from '../common/components/Pagination';
 
 export default function Quiz() {
     const navigate = useNavigate();
 
     const [activeSubject, setActiveSubject] = useState('All Subjects');
     const [searchTerm, setSearchTerm] = useState('');
-    const { QuizzesList, fetchQuizzes, isLoading, error } = useQuizStore();
+    const { QuizzesList, fetchQuizzes, isLoading, error, currentPage, totalPages } = useQuizStore();
 
     useEffect(() => {
         if (QuizzesList.length === 0) {
-            fetchQuizzes();
+            fetchQuizzes(currentPage);
         }
     }, [QuizzesList, fetchQuizzes]);
     if (isLoading) return <Skeleton />;
@@ -32,6 +33,10 @@ export default function Quiz() {
     const handleAddQuizClick = () => {
         navigate('./createquiz');
     }
+    const handlePageChange = (page) => {
+        fetchQuizzes(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     const filteredQuiz = QuizzesList
         .filter((quiz) => { return activeSubject === 'All Subjects' || quiz.category.toLowerCase() === activeSubject.toLowerCase() })
@@ -51,6 +56,7 @@ export default function Quiz() {
             <SubjectTabs activeSubject={activeSubject} onSubjectClick={setActiveSubject} />
             {/* Quiz Cards */}
             <QuizGrid quiz={filteredQuiz} searchTerm={searchTerm} />
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
         </div>
     );
 }
